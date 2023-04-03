@@ -27,6 +27,10 @@
       "@DigiUtils/*": [
         "src/utils/*"
       ]
+      ,
+      "@Hooks/*": [
+        "src/hooks/*"
+      ]
     }
   },
   "exclude": ["node_modules"]

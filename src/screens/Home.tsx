@@ -5,12 +5,13 @@ import Calendar from "@Components/Calendar/Calendar";
 import ShortcutBox from "@Components/Shortcut/ShortcutBox";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import WeatherAndLocation from "@Components/WeatherAndLocation/WeatherAndLocation";
 
 export default function Home() {
   const navigation = useNavigation();
   const [quote, setQuote] = useState<string>("");
+
   useEffect(() => {
     const fetchURL = (url: string) => {
       fetch(url)
@@ -31,19 +32,11 @@ export default function Home() {
             <SimpleLineIcons name="user" size={24} color="black" />
           </TouchableOpacity>
         </View>
-        <View style={{ marginTop: 32 }}>
+        <View style={{ marginVertical: 16 }}>
           <Text style={{ fontSize: 32, color: "white" }}>Hello, Jule-Sophie!</Text>
           <Text style={{ fontSize: 12, fontStyle: "italic", color: "#808080", marginTop: 4 }}>{quote}</Text>
         </View>
-        <View style={{ position: "absolute", right: 16, bottom: 32, flexDirection: "row", alignItems: "center", gap: 22 }}>
-          <Feather name="cloud-rain" size={36} color="black" />
-          <View>
-            <Text style={{ fontSize: 32 }}>8°C</Text>
-            <Text style={{}}>
-              <SimpleLineIcons name="location-pin" size={12} color="black" /> Berlin
-            </Text>
-          </View>
-        </View>
+        <WeatherAndLocation />
       </View>
       <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
         <ShortcutBox />

@@ -12,6 +12,7 @@ module.exports = function (api) {
             "@Components": "./src/components",
             "@Models": "./src/models",
             "@DigiUtils": "./src/utils",
+            "@Hooks": "./src/hooks",
           },
           extensions: [".ts", ".tsx"],
         },
