@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, Dimensions } from "react-native";
 import { layout } from "@Styles/global";
-import { Item } from "@Models/Item";
 import Detail from "@Components/Detail/Detail";
 import { LineChart } from "react-native-chart-kit";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
@@ -36,6 +35,7 @@ export default function ItemDetails({}) {
             <Detail label="Cost per wear" value={calculateCostPerWear(67, 3).toString() + "€"} />
             <Detail label="Category" value="Jacket; Outer" />
             <Detail label="Brand" value="Nike" />
+            <Detail label="Model" value="Air 37" />
             <Detail label="Size" value="37" />
             <Detail label="Fabric" value="Cotton; Nylon" />
             <Detail label="Bought" value={new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })} />

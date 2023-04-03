@@ -1,13 +1,16 @@
 export interface ItemMetadata {
-  id: string;
+  // id?: string;
+  name?: string;
   wears?: number;
-  cost?: number;
   lastWorn?: Date;
+  cost?: number;
+  category?: Array<string>;
+  brand?: string;
+  model?: string;
+  size?: number;
+  fabric?: Array<string>;
   bought?: Date;
-  category: any;
+  boughtFrom?: string;
+  notes?: string;
   savedOutfits?: Array<any>;
-}
-
-export interface IItem extends ItemMetadata {
-  name: string;
 }

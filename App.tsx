@@ -14,16 +14,20 @@ import Outfits from "src/screens/Outfits";
 import Favorites from "src/screens/Favorites";
 import Recent from "src/screens/Recent";
 import UserSettings from "src/screens/UserSettings";
+import NewItem from "src/screens/NewItem";
+import CameraScreen from "src/screens/Camera";
 
 export type RootStackParamList = {
   Root: any;
   Modal: any;
-  New: any;
+  NewOutfit: any;
+  NewItem: any;
   Outfits: any;
   Favorites: any;
   Recent: any;
   UserSettings: any;
   NotFound: undefined;
+  Camera: any;
 };
 
 const Tab = createBottomTabNavigator();
@@ -37,12 +41,14 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="Modal" component={ItemDetails} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="New" component={NewOutfit} options={({ route }) => ({ title: route.params?.title })} />
+        <Stack.Screen name="NewOutfit" component={NewOutfit} options={({ route }) => ({ title: route.params?.title })} />
+        <Stack.Screen name="NewItem" component={NewItem} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Outfits" component={Outfits} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Favorites" component={Favorites} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Recent" component={Recent} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="UserSettings" component={UserSettings} options={({ route }) => ({ title: route.params?.title })} />
       </Stack.Group>
+      <Stack.Screen name="Camera" component={CameraScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

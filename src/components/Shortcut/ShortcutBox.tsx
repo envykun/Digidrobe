@@ -10,7 +10,7 @@ export default function ShortcutBox() {
       <ShortcutItem
         label="New"
         icon={<SimpleLineIcons name="plus" size={24} color="black" />}
-        onPress={() => navigation.navigate("New" as never)}
+        onPress={() => navigation.navigate("NewItem" as never)}
       />
       <ShortcutItem
         label="Outfits"

@@ -1,5 +1,5 @@
 import { layout } from "@Styles/global";
-import { ScrollView, Text, View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, StyleSheet, Dimensions, TouchableOpacity, RefreshControl } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Calendar from "@Components/Calendar/Calendar";
 import ShortcutBox from "@Components/Shortcut/ShortcutBox";
@@ -11,6 +11,7 @@ import WeatherAndLocation from "@Components/WeatherAndLocation/WeatherAndLocatio
 export default function Home() {
   const navigation = useNavigation();
   const [quote, setQuote] = useState<string>("");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchURL = (url: string) => {
@@ -24,7 +25,11 @@ export default function Home() {
   }, []);
 
   return (
-    <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={layout.scrollContainer}
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => console.log("TODO: Refresh weather info")} />}
+    >
       <View style={[styles.topContainer, layout.noHeaderSpacing]}>
         <View style={styles.topBar}>
           <Text style={{ fontSize: 28, marginLeft: 68 }}>D I G I D R O B E</Text>
