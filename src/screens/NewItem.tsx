@@ -1,28 +1,107 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, Platform, TouchableOpacity } from "react-native";
 import { layout } from "@Styles/global";
 import { Item } from "src/classes/Item";
 import DetailInput from "@Components/Inputs/DetailInput";
 import Input from "@Components/Inputs/Input";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
-import { SimpleLineIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
+import BottomSheet from "@Components/Modal/BottomSheet";
+import { useEffect, useState } from "react";
+
+import * as ImagePicker from "expo-image-picker";
 
 export default function NewItem() {
   const newItem = new Item({ name: "" });
-  const navigation = useNavigation();
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+  const [image, setImage] = useState<string | null>(null);
+
+  const closeModal = () => {
+    setIsBottomSheetOpen(false);
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0];
+      setImage(uri);
+      newItem.image = uri;
+    }
+  };
+
+  const takeImage = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0];
+      setImage(uri);
+      newItem.image = uri;
+    }
+  };
 
   return (
     <SafeAreaView>
       <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.image}>
-          {false ? (
-            <Image source={{ uri: "https://picsum.photos/480" }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          {image ? (
+            <View style={{ width: "100%", height: "100%", position: "relative" }}>
+              <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  right: 12,
+                  backgroundColor: "#ebebeb",
+                  borderRadius: 120,
+                  width: 48,
+                  height: 48,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  elevation: 2,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setImage(null);
+                    newItem.image = undefined;
+                  }}
+                >
+                  <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
+                </TouchableOpacity>
+              </View>
+            </View>
           ) : (
             <View style={styles.noImage}>
               <ShortcutItem
                 label="Add Image"
                 icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-                onPress={() => navigation.navigate("Camera" as never)}
+                onPress={() => setIsBottomSheetOpen(true)}
               />
             </View>
           )}
@@ -49,6 +128,28 @@ export default function NewItem() {
             </Text>
           </View>
         </View>
+        <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
+          <View style={styles.noImage}>
+            <ShortcutItem
+              label="Files"
+              icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
+              onPress={() => {
+                closeModal();
+                pickImage();
+              }}
+            />
+          </View>
+          <View style={styles.noImage}>
+            <ShortcutItem
+              label="Camera"
+              icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
+              onPress={() => {
+                closeModal();
+                takeImage();
+              }}
+            />
+          </View>
+        </BottomSheet>
       </ScrollView>
     </SafeAreaView>
   );

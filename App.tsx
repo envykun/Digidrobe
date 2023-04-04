@@ -15,7 +15,6 @@ import Favorites from "src/screens/Favorites";
 import Recent from "src/screens/Recent";
 import UserSettings from "src/screens/UserSettings";
 import NewItem from "src/screens/NewItem";
-import CameraScreen from "src/screens/Camera";
 
 export type RootStackParamList = {
   Root: any;
@@ -27,7 +26,6 @@ export type RootStackParamList = {
   Recent: any;
   UserSettings: any;
   NotFound: undefined;
-  Camera: any;
 };
 
 const Tab = createBottomTabNavigator();
@@ -48,7 +46,6 @@ function RootNavigator() {
         <Stack.Screen name="Recent" component={Recent} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="UserSettings" component={UserSettings} options={({ route }) => ({ title: route.params?.title })} />
       </Stack.Group>
-      <Stack.Screen name="Camera" component={CameraScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

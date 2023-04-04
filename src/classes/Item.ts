@@ -15,6 +15,7 @@ export class Item implements ItemMetadata {
   boughtFrom?: string;
   notes?: string;
   savedOutfits?: Array<any>;
+  image?: string;
 
   constructor({
     name,
@@ -30,6 +31,7 @@ export class Item implements ItemMetadata {
     boughtFrom,
     notes,
     savedOutfits,
+    image,
   }: ItemMetadata) {
     this.id = "id;";
     this.name = name;
@@ -44,6 +46,7 @@ export class Item implements ItemMetadata {
     this.bought = bought;
     this.boughtFrom = boughtFrom;
     this.notes = notes;
+    this.image = image;
   }
 
   public getConstructorKeys(): Array<ConstructorInput> {
@@ -118,5 +121,7 @@ export class Item implements ItemMetadata {
 interface ConstructorInput {
   key: keyof ItemMetadata;
   label: string;
+  placeholder?: string;
+  inputType?: string;
   setter: (value: string) => void;
 }
