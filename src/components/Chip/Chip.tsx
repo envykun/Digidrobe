@@ -10,7 +10,7 @@ export default function Chip({ label, onPress, active = false }: ChipProps) {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={[styles.chip, active && styles.active]}>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={active && styles.label}>{label}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -18,8 +18,8 @@ export default function Chip({ label, onPress, active = false }: ChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    borderRadius: 16,
-    backgroundColor: "grey",
+    borderRadius: 8,
+    backgroundColor: "lightgrey",
     paddingHorizontal: 16,
     paddingVertical: 8,
   },

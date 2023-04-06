@@ -1,29 +1,32 @@
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "App";
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
+import { Item } from "src/classes/Item";
 
 interface CardProps {
-  title: string;
+  item: Item;
 }
 
-export default function Card({ title }: CardProps) {
-  const navigation = useNavigation();
+export default function Card({ item }: CardProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
-    <TouchableOpacity
-      activeOpacity={0.6}
-      style={styles.container}
-      onPress={() => navigation.navigate("Modal" as never, { title: title } as never)}
-    >
+    <TouchableOpacity activeOpacity={0.6} style={styles.container} onPress={() => navigation.navigate("ItemDetails", { item: item })}>
       <>
         <View style={styles.image}>
-          <Image
-            source={{ uri: `https://picsum.photos/480?random=${Math.random()}` }}
-            style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-          />
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          ) : (
+            <Image
+              source={require("src/styles/img/noImg.jpg")}
+              style={{ resizeMode: "cover", width: "100%", height: "100%", marginTop: -40 }}
+            />
+          )}
         </View>
         <View style={styles.textBox}>
-          <Text style={{ fontSize: 18 }}>{title}</Text>
-          <Text>{title}</Text>
-          <Text>Wears 5</Text>
+          <Text style={{ fontSize: 18 }}>{item.name}</Text>
+          <Text>{item.brand}</Text>
+          <Text>{item.wears}</Text>
         </View>
       </>
     </TouchableOpacity>

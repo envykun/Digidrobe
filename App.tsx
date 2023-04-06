@@ -15,10 +15,12 @@ import Favorites from "src/screens/Favorites";
 import Recent from "src/screens/Recent";
 import UserSettings from "src/screens/UserSettings";
 import NewItem from "src/screens/NewItem";
+import { initDatabase } from "src/database/database";
+import { Item } from "src/classes/Item";
 
 export type RootStackParamList = {
   Root: any;
-  Modal: any;
+  ItemDetails: { item: Item };
   NewOutfit: any;
   NewItem: any;
   Outfits: any;
@@ -28,7 +30,16 @@ export type RootStackParamList = {
   NotFound: undefined;
 };
 
-const Tab = createBottomTabNavigator();
+export type BottomTabParamList = {
+  Home: undefined;
+  Wardrobe: {
+    itemID?: string;
+  };
+  Outfitter: undefined;
+  Statistic: undefined;
+};
+
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const tabOptions: BottomTabNavigationOptions = {};
@@ -38,7 +49,7 @@ function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ItemDetails} options={({ route }) => ({ title: route.params?.title })} />
+        <Stack.Screen name="ItemDetails" component={ItemDetails} options={({ route }) => ({ title: route.params?.item.name })} />
         <Stack.Screen name="NewOutfit" component={NewOutfit} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="NewItem" component={NewItem} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Outfits" component={Outfits} options={({ route }) => ({ title: route.params?.title })} />
@@ -52,7 +63,12 @@ function RootNavigator() {
 
 function BottomTabNavigator() {
   return (
-    <Tab.Navigator safeAreaInsets={{ bottom: 8 }}>
+    <Tab.Navigator
+      safeAreaInsets={{ bottom: 8 }}
+      screenOptions={() => ({
+        tabBarActiveTintColor: "#E2C895",
+      })}
+    >
       <Tab.Screen
         name="Home"
         component={Home}
@@ -82,6 +98,7 @@ function BottomTabNavigator() {
 }
 
 export default function App() {
+  initDatabase();
   return (
     <NavigationContainer>
       <RootNavigator />

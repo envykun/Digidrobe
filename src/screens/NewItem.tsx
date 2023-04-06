@@ -6,14 +6,23 @@ import Input from "@Components/Inputs/Input";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@Components/Modal/BottomSheet";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as ImagePicker from "expo-image-picker";
+import { createItem, getDatabase } from "src/database/database";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "App";
+import { randomUUID } from "expo-crypto";
+import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 
 export default function NewItem() {
-  const newItem = new Item({ name: "" });
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
+
+  const db = getDatabase();
 
   const closeModal = () => {
     setIsBottomSheetOpen(false);
@@ -48,8 +57,8 @@ export default function NewItem() {
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
+      newItem.setImage(uri);
       setImage(uri);
-      newItem.image = uri;
     }
   };
 
@@ -60,9 +69,14 @@ export default function NewItem() {
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
+      newItem.setImage(uri);
       setImage(uri);
-      newItem.image = uri;
     }
+  };
+
+  const handleCreate = () => {
+    createItem(db, newItem);
+    navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
   };
 
   return (
@@ -88,8 +102,8 @@ export default function NewItem() {
               >
                 <TouchableOpacity
                   onPress={() => {
+                    newItem.setImage(undefined);
                     setImage(null);
-                    newItem.image = undefined;
                   }}
                 >
                   <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
@@ -118,12 +132,13 @@ export default function NewItem() {
           <View style={styles.details}>
             {newItem.getConstructorKeys().map((prop) => (
               <View key={prop.key} style={{ flex: 1 }}>
-                <DetailInput label={prop.label} inputProps={{ onChange: prop.setter }} />
+                <DetailInput label={prop.label} inputProps={{ onChange: prop.setter, textInputProps: {} }} type={prop.inputType} />
               </View>
             ))}
+            <DateTimePickerInput />
           </View>
           <View style={{ marginVertical: 64, alignItems: "center" }}>
-            <Text style={{ color: "#E2C895" }} onPress={() => console.log("Item Updated", newItem)}>
+            <Text style={{ color: "#E2C895" }} onPress={handleCreate}>
               Save Item
             </Text>
           </View>

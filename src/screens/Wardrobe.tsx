@@ -1,37 +1,65 @@
-import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList } from "react-native";
+import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList, RefreshControl } from "react-native";
 import Chip from "@Components/Chip/Chip";
 import Card from "@Components/Card/Card";
 import FilterBar from "@Components/FilterBar/FilterBar";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Crypto from "expo-crypto";
+import { getCategories, getDatabase, getWardrobeItems } from "src/database/database";
+import { Item } from "src/classes/Item";
+import { useIsFocused } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabParamList } from "App";
 
-const data = [
-  { title: "Nike 1", category: ["Pants", "Jackets"] },
-  { title: "Nike 2", category: ["Skirts", "Jackets"] },
-  { title: "Nike 3", category: ["Pants", "Tops"] },
-  { title: "Adidas 1", category: ["Pants", "Jackets"] },
-  { title: "Adidas 2", category: ["Pants", "Jackets"] },
-  { title: "Adidas 3", category: ["Skirts", "Jackets"] },
-  { title: "Puma 3", category: ["Pants", "Jackets"] },
-];
-
-export default function Wardrobe() {
+export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
-  const categories = [...new Set(data.flatMap((item) => item.category))];
+  const [wardrobe, setWardrobe] = useState<Array<Item>>([]);
+  const [categories, setCategories] = useState<Array<any>>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const db = getDatabase();
+  const flatListRef = useRef<FlatList<Item> | null>();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getWardrobeItems(db, setWardrobe);
+    getCategories(db, setCategories);
+    // db.transaction((tx) =>
+    //   tx.executeSql("SELECT * FROM wardrobe_category", [], (t, res) => console.log("wardrobe_category ----", res.rows._array))
+    // );
+    // db.transaction((tx) => tx.executeSql("SELECT * FROM categories", [], (t, res) => console.log("categories ----", res.rows._array)));
+    // db.transaction((tx) => tx.executeSql("SELECT * FROM fabrics", [], (t, res) => console.log("fabrics ----", res.rows._array)));
+  }, [isFocused]);
+
+  useEffect(() => {
+    const scrollIndex = route.params?.itemID ? Math.floor(wardrobe.findIndex((i) => i.uuid === route.params.itemID) / 2) : -1;
+    scrollIndex !== -1 && flatListRef.current?.scrollToIndex({ animated: true, index: scrollIndex });
+  }, [wardrobe]);
+
   return (
     <SafeAreaView style={styles.container}>
       <FilterBar>
         <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
         {categories.map((item) => (
-          <Chip key={Crypto.randomUUID()} label={item} active={activeFilter === item} onPress={() => setActiveFilter(item)} />
+          <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
         ))}
       </FilterBar>
       <FlatList
-        data={activeFilter ? data.filter((item) => item.category.includes(activeFilter)) : data}
+        ref={(ref) => {
+          flatListRef.current = ref;
+        }}
+        data={activeFilter ? wardrobe.filter((item) => item.category?.includes(activeFilter)) : wardrobe}
         numColumns={2}
-        renderItem={({ item }) => <Card title={item.title} />}
+        renderItem={({ item }) => <Card item={item} />}
         columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
         style={{ height: "100%" }}
+        getItemLayout={(data, index) => ({ length: 240, offset: 240 * index, index })}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              getWardrobeItems(db, setWardrobe);
+            }}
+          />
+        }
         ListEmptyComponent={
           <View>
             <Text>EMPTY</Text>
@@ -45,6 +73,7 @@ export default function Wardrobe() {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
+    rowGap: 8,
   },
   header: {
     fontSize: 32,

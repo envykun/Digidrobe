@@ -1,5 +1,5 @@
 export interface ItemMetadata {
-  // id?: string;
+  uuid: string;
   name?: string;
   wears?: number;
   lastWorn?: Date;
@@ -9,6 +9,7 @@ export interface ItemMetadata {
   model?: string;
   size?: number;
   fabric?: Array<string>;
+  color?: Array<string>;
   bought?: Date;
   boughtFrom?: string;
   notes?: string;

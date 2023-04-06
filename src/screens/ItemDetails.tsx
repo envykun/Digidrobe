@@ -6,6 +6,9 @@ import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
 import { calculateCostPerWear } from "@DigiUtils/helperFunctions";
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
+import { Item } from "src/classes/Item";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "App";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -15,32 +18,45 @@ const chartData: ChartData = {
     },
   ],
 };
-export default function ItemDetails({}) {
+
+type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails">;
+
+export default function ItemDetails({ route }: ItemDetailsProps) {
+  const item = route.params.item;
+  console.log("DAS ITEM LEL", item);
   return (
     <SafeAreaView>
       <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.image}>
-          <Image source={{ uri: "https://picsum.photos/480" }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          ) : (
+            <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          )}
         </View>
         <View style={styles.content}>
           <View style={styles.description}>
-            <Text style={{ fontSize: 24 }}>Adidas Joggers</Text>
+            <Text style={{ fontSize: 24 }}>{item.name}</Text>
             <View style={styles.descriptionInner}>
-              <Text>X times worn</Text>
+              <Text>{item.wears} times worn</Text>
               <Text>Last worn X months ago</Text>
             </View>
           </View>
           <View style={styles.details}>
-            <Detail label="Cost" value="67€" />
-            <Detail label="Cost per wear" value={calculateCostPerWear(67, 3).toString() + "€"} />
-            <Detail label="Category" value="Jacket; Outer" />
-            <Detail label="Brand" value="Nike" />
-            <Detail label="Model" value="Air 37" />
-            <Detail label="Size" value="37" />
-            <Detail label="Fabric" value="Cotton; Nylon" />
+            <Detail label="Cost" value={item.cost} suffix="€" />
+            <Detail
+              label="Cost per wear"
+              value={item.cost && item.wears > 0 ? calculateCostPerWear(item.cost, item.wears) : item.cost}
+              suffix="€"
+            />
+            <Detail label="Category" value={item.getArrayByType("category")} />
+            <Detail label="Brand" value={item.brand} />
+            <Detail label="Model" value={item.model} />
+            <Detail label="Size" value={item.size} />
+            <Detail label="Fabric" value={item.getArrayByType("fabric")} />
             <Detail label="Bought" value={new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })} />
-            <Detail label="Bought from" value="Amazon" />
-            <Detail label="Notes" value="Lorem ipsum dolor sit amet" />
+            <Detail label="Bought from" value={item.boughtFrom} />
+            <Detail label="Notes" value={item.notes} />
           </View>
           <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
             <DigiLineChart chartData={chartData} />

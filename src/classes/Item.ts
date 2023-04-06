@@ -1,9 +1,10 @@
 import { ItemMetadata } from "@Models/Item";
+import { randomUUID } from "expo-crypto";
 
 export class Item implements ItemMetadata {
-  private id: string;
-  name?: string;
-  wears?: number;
+  uuid: string;
+  name: string;
+  wears: number;
   lastWorn?: Date;
   cost?: number;
   category?: Array<string>;
@@ -16,8 +17,10 @@ export class Item implements ItemMetadata {
   notes?: string;
   savedOutfits?: Array<any>;
   image?: string;
+  color?: Array<string>;
 
   constructor({
+    uuid,
     name,
     brand,
     wears = 0,
@@ -30,11 +33,12 @@ export class Item implements ItemMetadata {
     bought,
     boughtFrom,
     notes,
-    savedOutfits,
     image,
+    color,
+    savedOutfits,
   }: ItemMetadata) {
-    this.id = "id;";
-    this.name = name;
+    this.uuid = uuid;
+    this.name = name && name !== "" ? name : this.brand && this.model ? `${this.brand} ${this.model}` : "Untitled";
     this.wears = wears;
     this.lastWorn = lastWorn;
     this.cost = cost;
@@ -47,6 +51,15 @@ export class Item implements ItemMetadata {
     this.boughtFrom = boughtFrom;
     this.notes = notes;
     this.image = image;
+    this.color = color;
+  }
+
+  public setImage(imgURL?: string) {
+    this.image = imgURL;
+  }
+
+  public getImage() {
+    return this.image;
   }
 
   public getConstructorKeys(): Array<ConstructorInput> {
@@ -54,6 +67,7 @@ export class Item implements ItemMetadata {
       {
         key: "cost",
         label: "Cost",
+        inputType: "",
         setter: (value) => {
           this.cost = parseFloat(value);
         },
@@ -62,7 +76,7 @@ export class Item implements ItemMetadata {
         key: "category",
         label: "Categories",
         setter: (value) => {
-          this.category = [value];
+          this.category = value.split(",").map((v) => v.trim());
         },
       },
       {
@@ -90,7 +104,7 @@ export class Item implements ItemMetadata {
         key: "fabric",
         label: "Fabric",
         setter: (value) => {
-          this.fabric = [value];
+          this.fabric = value.split(",").map((v) => v.trim());
         },
       },
       {
@@ -99,6 +113,7 @@ export class Item implements ItemMetadata {
         setter: (value) => {
           this.bought = new Date(value);
         },
+        inputType: "date",
       },
       {
         key: "boughtFrom",
@@ -115,6 +130,35 @@ export class Item implements ItemMetadata {
         },
       },
     ];
+  }
+
+  public getDBParsedItem() {
+    return {
+      uuid: this.uuid,
+      name: this.name,
+      wears: this.wears ?? null,
+      lastWorn: this.lastWorn?.toString() ?? null,
+      cost: this.cost ?? null,
+      brand: this.brand ?? null,
+      model: this.model ?? null,
+      size: this.size ?? null,
+      bought: this.bought?.toDateString() ?? null,
+      boughtFrom: this.boughtFrom ?? null,
+      notes: this.notes ?? null,
+      image: this.image ?? null,
+      category: this.category ?? null,
+      fabric: this.fabric ?? null,
+      color: this.color ?? null,
+    };
+  }
+
+  public getArrayByType(type: "category" | "fabric") {
+    if (type === "category") {
+      return this.category?.join("; ");
+    }
+    if (type === "fabric") {
+      return this.fabric?.join("; ");
+    }
   }
 }
 
