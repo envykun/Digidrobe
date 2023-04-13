@@ -1,0 +1,218 @@
+[
+    {
+        "bought": null,
+        "boughtFrom": "Amazon",
+        "brand": "Adidas",
+        "category": [
+            "Hose",
+            "Jogginghose"
+        ],
+        "color": null,
+        "cost": 25,
+        "fabric": [
+            "Nylon",
+            "Baumwolle"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Max 3",
+        "name": "Adidas Joggers",
+        "notes": null,
+        "size": 44,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c9f",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "Nike",
+        "brand": "Nike",
+        "category": [
+            "Hose"
+        ],
+        "color": null,
+        "cost": 60,
+        "fabric": [
+            "Stoff"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Air Max",
+        "name": "Nike Shorts",
+        "notes": null,
+        "size": 43,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c9a",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "KaDeWe",
+        "brand": "Gucci",
+        "category": [
+            "Handtasche"
+        ],
+        "color": null,
+        "cost": 1337,
+        "fabric": [
+            "Leder"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Pricey",
+        "name": "Gucci Gang",
+        "notes": null,
+        "size": null,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c9b",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "North Face Berlin",
+        "brand": "North Face",
+        "category": [
+            "Regenjacke",
+            "Jacke"
+        ],
+        "color": null,
+        "cost": 225,
+        "fabric": [
+            "Polyester"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Aqua Resist",
+        "name": "NF Regenjacke",
+        "notes": null,
+        "size": 60,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c9c",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "Amazon",
+        "brand": "S.Oliver",
+        "category": [
+            "Socken"
+        ],
+        "color": null,
+        "cost": 25,
+        "fabric": [
+            "Baumwolle"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Füßlinge",
+        "name": "Olli Füßlinge",
+        "notes": null,
+        "size": 44,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c9d",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "Amazon",
+        "brand": "Adidas",
+        "category": [
+            "Hose",
+            "Jogginghose"
+        ],
+        "color": null,
+        "cost": 25,
+        "fabric": [
+            "Nylon",
+            "Baumwolle"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Max 3",
+        "name": "Adidas Joggers 2",
+        "notes": null,
+        "size": 44,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c2f",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "Nike",
+        "brand": "Nike",
+        "category": [
+            "Hose"
+        ],
+        "color": null,
+        "cost": 60,
+        "fabric": [
+            "Stoff"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Air Max",
+        "name": "Nike Shorts 2",
+        "notes": null,
+        "size": 43,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c2a",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "KaDeWe",
+        "brand": "Gucci",
+        "category": [
+            "Handtasche"
+        ],
+        "color": null,
+        "cost": 1337,
+        "fabric": [
+            "Leder"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Pricey",
+        "name": "Gucci Gang 2",
+        "notes": null,
+        "size": null,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c2b",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "North Face Berlin",
+        "brand": "North Face",
+        "category": [
+            "Regenjacke",
+            "Jacke"
+        ],
+        "color": null,
+        "cost": 225,
+        "fabric": [
+            "Polyester"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Aqua Resist",
+        "name": "NF Regenjacke 2",
+        "notes": null,
+        "size": 60,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c2c",
+        "wears": 0
+    },
+    {
+        "bought": null,
+        "boughtFrom": "Amazon",
+        "brand": "S.Oliver",
+        "category": [
+            "Socken"
+        ],
+        "color": null,
+        "cost": 25,
+        "fabric": [
+            "Baumwolle"
+        ],
+        "image": null,
+        "lastWorn": null,
+        "model": "Füßlinge",
+        "name": "Olli Füßlinge 2",
+        "notes": null,
+        "size": 44,
+        "uuid": "0f4ffa2c-9e56-42ba-8222-b7adac961c2d",
+        "wears": 0
+    }
+]

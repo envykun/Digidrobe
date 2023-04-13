@@ -22,6 +22,17 @@ CREATE TABLE IF NOT EXISTS stores(
     label TEXT NOT NULL UNIQUE
 )
 
+CREATE TABLE IF NOT EXISTS outfits(
+    id TEXT NOT NULL PRIMARY KEY,
+    imageURL TEXT
+)
+
+CREATE TABLE IF NOT EXISTS outfit_category_wardrobe(
+    outfitID TEXT NOT NULL REFERENCES outfits(id),
+    categoryID INTEGER NOT NULL REFERENCES categories(id),
+    itemID TEXT NOT NULL REFERENCES wardrobe(uuid),
+    UNIQUE(outfitID,categoryID,itemID)
+)
 
 INSERT INTO categories (label) VALUES ("Schuhe")
 INSERT INTO categories (label) VALUES ("Hose")
@@ -35,13 +46,25 @@ INSERT INTO wardrobe (uuid, name, brand, bought_from) VALUES ("1-1-1-3", "Jogger
 INSERT INTO wardrobe_category (wardrobeID, categoryID) VALUES ((SELECT id from wardrobe WHERE name = "Joggers2"), (SELECT id from categories WHERE label = "Hose"))
 INSERT INTO wardrobe (uuid, label, wears) VALUES (?,"Peter",?)
 
+INSERT INTO outfits (id, imageURL) VALUES ("1-1-1-3", "someImage.url") 
+INSERT INTO outfit_category_wardrobe (outfitID, categoryID, itemID) VALUES ("1-1-1-2", 2, "1-1-1-1") 
+
 -- Select from junction table
 SELECT label FROM wardrobe_category WC 
 INNER JOIN wardrobe W ON W.uuid = WC.wardrobeID 
 INNER JOIN categories C ON C.id = WC.categoryID 
 WHERE W.uuid = "1-1-1-1"
 
+-- Select all outfits resolved
+SELECT * FROM outfit_category_wardrobe OCW
+INNER JOIN outfits O ON O.id = OCW.outfitID
+INNER JOIN wardrobe W ON W.uuid = OCW.itemID
+WHERE OCW.outfitID = "1-1-1-2"
+-- INNER JOIN categories C ON C.id = OCW.categoryID
+
 DROP TABLE categories
+DROP TABLE outfits
+DROP TABLE outfit_category_wardrobe
 DROP TABLE wardrobe
 DROP TABLE wardrobe_category
 

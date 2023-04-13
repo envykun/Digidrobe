@@ -17,6 +17,7 @@ import UserSettings from "src/screens/UserSettings";
 import NewItem from "src/screens/NewItem";
 import { initDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
+import OutfitDetails from "src/screens/OutfitDetails";
 
 export type RootStackParamList = {
   Root: any;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   NewOutfit: any;
   NewItem: any;
   Outfits: any;
+  OutfitDetails: { outfitId?: string };
   Favorites: any;
   Recent: any;
   UserSettings: any;
@@ -53,6 +55,7 @@ function RootNavigator() {
         <Stack.Screen name="NewOutfit" component={NewOutfit} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="NewItem" component={NewItem} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Outfits" component={Outfits} options={({ route }) => ({ title: route.params?.title })} />
+        <Stack.Screen name="OutfitDetails" component={OutfitDetails} options={({ route }) => ({ title: route.params?.outfitId })} />
         <Stack.Screen name="Favorites" component={Favorites} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="Recent" component={Recent} options={({ route }) => ({ title: route.params?.title })} />
         <Stack.Screen name="UserSettings" component={UserSettings} options={({ route }) => ({ title: route.params?.title })} />

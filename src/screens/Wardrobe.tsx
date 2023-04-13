@@ -9,11 +9,12 @@ import { Item } from "src/classes/Item";
 import { useIsFocused } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList } from "App";
+import { Category } from "@Models/Category";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
   const [wardrobe, setWardrobe] = useState<Array<Item>>([]);
-  const [categories, setCategories] = useState<Array<any>>([]);
+  const [categories, setCategories] = useState<Array<Category>>([]);
   const [refreshing, setRefreshing] = useState(false);
   const db = getDatabase();
   const flatListRef = useRef<FlatList<Item> | null>();

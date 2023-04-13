@@ -25,7 +25,7 @@ export default function DateTimePickerInput() {
     showMode("date");
     setShow(true);
   };
-  console.log("PICKED DATE", date);
+  console.log("PICKED DATE", date.toISOString());
   return (
     <View style={{ height: 40, justifyContent: "center" }}>
       {/* <Button onPress={showDatePicker} title="Pick Date" /> */}
@@ -34,7 +34,9 @@ export default function DateTimePickerInput() {
           {date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
         </Text>
       </TouchableOpacity>
-      {show && <DateTimePicker testID="dateTimePicker" value={date} mode={mode} is24Hour={true} onChange={onChange} />}
+      {show && (
+        <DateTimePicker testID="dateTimePicker" value={date} mode={mode} is24Hour={true} onChange={onChange} accentColor="#E2C895" />
+      )}
     </View>
   );
 }

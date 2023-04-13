@@ -2,6 +2,8 @@ import * as SQLite from "expo-sqlite";
 import { TableNames, tableDefinitionQuery } from "./database.definitions";
 import { ItemMetadata } from "@Models/Item";
 import { Item } from "src/classes/Item";
+import { Category } from "@Models/Category";
+import TestData from "./TestData.json";
 
 export const initDatabase = () => {
   const db = SQLite.openDatabase("digidrobe.db");
@@ -211,7 +213,7 @@ export const getFromJunctionTableResolved = async (
   });
 };
 
-export const getCategories = (db: SQLite.WebSQLDatabase, setCategories: React.Dispatch<React.SetStateAction<any>>) => {
+export const getCategories = (db: SQLite.WebSQLDatabase, setCategories: React.Dispatch<React.SetStateAction<Array<Category>>>) => {
   // return new Promise<Array<any>>((resolve, reject) =>
   db.transaction((tx) =>
     tx.executeSql(
@@ -236,4 +238,34 @@ export const deleteDatabase = (db: SQLite.WebSQLDatabase) => {
 
 export const wipeDatabase = (db: SQLite.WebSQLDatabase) => {
   db.transaction((tx) => tableDefinitionQuery.forEach((table) => tx.executeSql(`DELETE FROM ${table.name}`)));
+};
+
+// Add Testdata
+export const initializeTestData = (db: SQLite.WebSQLDatabase) => {
+  TestData.forEach(async (i) => {
+    console.log("ITEM", i);
+    const item = new Item({
+      uuid: i.uuid,
+      bought: i.bought ?? undefined,
+      boughtFrom: i.boughtFrom,
+      brand: i.brand,
+      category: i.category,
+      color: i.color ?? undefined,
+      cost: i.cost,
+      fabric: i.fabric,
+      image: i.image ?? undefined,
+      lastWorn: i.lastWorn ?? undefined,
+      model: i.model,
+      name: i.name,
+      notes: i.notes ?? undefined,
+      size: i.size ?? undefined,
+      wears: i.wears,
+    });
+    await createItem(db, item);
+  });
+};
+
+export const wipeOutfits = (db: SQLite.WebSQLDatabase) => {
+  db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFITS}`));
+  db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFIT_CATEGORY_WARDROBE}`));
 };

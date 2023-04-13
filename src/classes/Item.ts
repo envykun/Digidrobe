@@ -1,5 +1,7 @@
+import { InputType } from "@Components/Inputs/DetailInput";
 import { ItemMetadata } from "@Models/Item";
 import { randomUUID } from "expo-crypto";
+import { KeyboardTypeOptions } from "react-native";
 
 export class Item implements ItemMetadata {
   uuid: string;
@@ -67,17 +69,22 @@ export class Item implements ItemMetadata {
       {
         key: "cost",
         label: "Cost",
-        inputType: "",
+        inputType: "default",
         setter: (value) => {
+          if (!value) return;
           this.cost = parseFloat(value);
         },
+        keyboardType: "number-pad",
       },
       {
         key: "category",
         label: "Categories",
         setter: (value) => {
-          this.category = value.split(",").map((v) => v.trim());
+          if (!value) return;
+          this.category ? this.category.push(value) : (this.category = [value]);
         },
+        inputType: "multi-select",
+        data: ["Hiose", "jacke", "ehsel"],
       },
       {
         key: "brand",
@@ -97,13 +104,16 @@ export class Item implements ItemMetadata {
         key: "size",
         label: "Size",
         setter: (value) => {
+          if (!value) return;
           this.size = parseFloat(value);
         },
+        keyboardType: "number-pad",
       },
       {
         key: "fabric",
         label: "Fabric",
         setter: (value) => {
+          if (!value) return;
           this.fabric = value.split(",").map((v) => v.trim());
         },
       },
@@ -111,6 +121,7 @@ export class Item implements ItemMetadata {
         key: "bought",
         label: "Bought",
         setter: (value) => {
+          if (!value) return;
           this.bought = new Date(value);
         },
         inputType: "date",
@@ -166,6 +177,8 @@ interface ConstructorInput {
   key: keyof ItemMetadata;
   label: string;
   placeholder?: string;
-  inputType?: string;
-  setter: (value: string) => void;
+  inputType?: InputType;
+  data?: Array<string>;
+  setter: (value?: string) => void;
+  keyboardType?: KeyboardTypeOptions;
 }

@@ -13,6 +13,8 @@ module.exports = function (api) {
             "@Models": "./src/models",
             "@DigiUtils": "./src/utils",
             "@Hooks": "./src/hooks",
+            "@Classes": "./src/classes",
+            "@Database": "./src/database",
           },
           extensions: [".ts", ".tsx"],
         },

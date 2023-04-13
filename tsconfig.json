@@ -26,10 +26,15 @@
       ],
       "@DigiUtils/*": [
         "src/utils/*"
-      ]
-      ,
+      ],
       "@Hooks/*": [
         "src/hooks/*"
+      ],
+      "@Classes/*": [
+        "src/classes/*"
+      ],
+      "@Database/*": [
+        "src/database/*"
       ]
     }
   },
