@@ -7,14 +7,14 @@ export class Item implements ItemMetadata {
   uuid: string;
   name: string;
   wears: number;
-  lastWorn?: Date;
+  lastWorn?: string;
   cost?: number;
   category?: Array<string>;
   brand?: string;
   model?: string;
   size?: number;
   fabric?: Array<string>;
-  bought?: Date;
+  bought?: string;
   boughtFrom?: string;
   notes?: string;
   savedOutfits?: Array<any>;
@@ -84,7 +84,6 @@ export class Item implements ItemMetadata {
           this.category ? this.category.push(value) : (this.category = [value]);
         },
         inputType: "multi-select",
-        data: ["Hiose", "jacke", "ehsel"],
       },
       {
         key: "brand",
@@ -122,7 +121,7 @@ export class Item implements ItemMetadata {
         label: "Bought",
         setter: (value) => {
           if (!value) return;
-          this.bought = new Date(value);
+          this.bought = value;
         },
         inputType: "date",
       },
@@ -148,12 +147,12 @@ export class Item implements ItemMetadata {
       uuid: this.uuid,
       name: this.name,
       wears: this.wears ?? null,
-      lastWorn: this.lastWorn?.toString() ?? null,
+      lastWorn: this.lastWorn ?? null,
       cost: this.cost ?? null,
       brand: this.brand ?? null,
       model: this.model ?? null,
       size: this.size ?? null,
-      bought: this.bought?.toDateString() ?? null,
+      bought: this.bought ?? null,
       boughtFrom: this.boughtFrom ?? null,
       notes: this.notes ?? null,
       image: this.image ?? null,
@@ -178,7 +177,7 @@ interface ConstructorInput {
   label: string;
   placeholder?: string;
   inputType?: InputType;
-  data?: Array<string>;
+  // data?: Array<string>;
   setter: (value?: string) => void;
   keyboardType?: KeyboardTypeOptions;
 }

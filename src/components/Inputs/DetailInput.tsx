@@ -40,10 +40,15 @@ export default function DetailInput({ label, inputProps, type = "default", botto
     setSearchQuery(undefined);
   };
 
+  const handleDateChange = (value?: Date) => {
+    console.log("VALUE", value);
+    inputProps && inputProps.onChange && inputProps.onChange(value?.toISOString());
+  };
+
   const renderInput = (inputType?: string) => {
     switch (inputType) {
       case "date":
-        return <DateTimePickerInput />;
+        return <DateTimePickerInput onChange={handleDateChange} />;
       case "multi-select":
         return (
           <MultiSelectWithChips

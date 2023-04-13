@@ -1,9 +1,10 @@
 import * as SQLite from "expo-sqlite";
 import { TableNames, tableDefinitionQuery } from "./database.definitions";
-import { ItemMetadata } from "@Models/Item";
+import { ItemDataResponse, ItemMetadata } from "@Models/Item";
 import { Item } from "src/classes/Item";
 import { Category } from "@Models/Category";
 import TestData from "./TestData.json";
+import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 
 export const initDatabase = () => {
   const db = SQLite.openDatabase("digidrobe.db");
@@ -67,26 +68,25 @@ export const getWardrobeItems = (db: SQLite.WebSQLDatabase, setWardrobe: React.D
       [],
       async (txObj, resultSet) => {
         const wardrobe = await Promise.all(
-          resultSet.rows._array.map(
-            async (item) =>
-              new Item({
-                uuid: item.uuid,
-                name: item.name,
-                wears: item.wears,
-                lastWorn: item.last_worn?.toString(),
-                cost: item.cost,
-                brand: await getValueById(db, item.brand, TableNames.BRANDS),
-                model: item.model,
-                size: item.size,
-                bought: item.bought?.toDateString(),
-                boughtFrom: await getValueById(db, item.bought_from, TableNames.BOUGHT_FROM),
-                notes: item.notes,
-                image: item.imageURL ?? undefined,
-                category: (await getFromJunctionTableResolved(db, item.uuid, "categories")) ?? undefined,
-                fabric: (await getFromJunctionTableResolved(db, item.uuid, "fabrics")) ?? undefined,
-                color: (await getFromJunctionTableResolved(db, item.uuid, "colors")) ?? undefined,
-              })
-          )
+          resultSet.rows._array.map(async (item: ItemDataResponse) => {
+            return new Item({
+              uuid: item.uuid,
+              name: item.name,
+              wears: item.wears,
+              lastWorn: item.last_worn ?? undefined,
+              cost: item.cost ?? undefined,
+              brand: await getValueById(db, item.brand, TableNames.BRANDS),
+              model: item.model ?? undefined,
+              size: item.size ?? undefined,
+              bought: item.bought_date ?? undefined,
+              boughtFrom: await getValueById(db, item.bought_from, TableNames.BOUGHT_FROM),
+              notes: item.notes ?? undefined,
+              image: item.imageURL ?? undefined,
+              category: (await getFromJunctionTableResolved(db, item.uuid, "categories")) ?? undefined,
+              fabric: (await getFromJunctionTableResolved(db, item.uuid, "fabrics")) ?? undefined,
+              color: (await getFromJunctionTableResolved(db, item.uuid, "colors")) ?? undefined,
+            });
+          })
         );
         setWardrobe(wardrobe.sort((a, b) => a.name.localeCompare(b.name)));
       },
@@ -154,13 +154,13 @@ export const addToJunctionTable = async (
   );
 };
 
-export const getValueById = async (db: SQLite.WebSQLDatabase, id: number, table: string) => {
-  return new Promise<string>((resolve, reject) =>
+export const getValueById = async (db: SQLite.WebSQLDatabase, id: number | null, table: string) => {
+  return new Promise<string | undefined>((resolve, reject) =>
     db.transaction((tx) => {
       tx.executeSql(
         `SELECT label from ${table} WHERE id = ${id}`,
         undefined,
-        (_txCb, res) => resolve(res.rows._array[0]?.label ?? null),
+        (_txCb, res) => resolve(res.rows._array[0]?.label ?? undefined),
         (_txCb, error) => {
           console.log("error", error);
           reject(error);

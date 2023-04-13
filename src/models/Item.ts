@@ -2,7 +2,7 @@ export interface ItemMetadata {
   uuid: string;
   name?: string;
   wears?: number;
-  lastWorn?: Date;
+  lastWorn?: string;
   cost?: number;
   category?: Array<string>;
   brand?: string;
@@ -10,9 +10,24 @@ export interface ItemMetadata {
   size?: number;
   fabric?: Array<string>;
   color?: Array<string>;
-  bought?: Date;
+  bought?: string;
   boughtFrom?: string;
   notes?: string;
   savedOutfits?: Array<any>;
   image?: string;
+}
+
+export interface ItemDataResponse {
+  bought_date: string | null;
+  bought_from: number | null;
+  brand: number | null;
+  cost: number | null;
+  imageURL: string | null;
+  last_worn: string | null;
+  model: string | null;
+  name: string;
+  notes: string | null;
+  size: number | null;
+  uuid: string;
+  wears: number;
 }

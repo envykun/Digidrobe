@@ -15,7 +15,7 @@ export default function MultiSelectWithChips({ selectedValues, onChipPress, onBu
       {selectedValues?.map((value) => (
         <Chip key={value} label={value} onPress={() => onChipPress(value)} showCloseIcon={true} />
       ))}
-      <DigiButton title={buttonLabel ?? "Add"} onPress={onButtonPress} />
+      <DigiButton title={buttonLabel ?? "Add"} onPress={onButtonPress} variant="text" />
     </View>
   );
 }

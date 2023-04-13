@@ -4,7 +4,7 @@ import Detail from "@Components/Detail/Detail";
 import { LineChart } from "react-native-chart-kit";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
-import { calculateCostPerWear } from "@DigiUtils/helperFunctions";
+import { calculateCostPerWear, formatTimeAgo } from "@DigiUtils/helperFunctions";
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import { Item } from "src/classes/Item";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -38,8 +38,8 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
           <View style={styles.description}>
             <Text style={{ fontSize: 24 }}>{item.name}</Text>
             <View style={styles.descriptionInner}>
-              <Text>{item.wears} times worn</Text>
-              <Text>Last worn X months ago</Text>
+              <Text>{item.wears} times worn.</Text>
+              <Text>Last worn: {formatTimeAgo(item.lastWorn)}</Text>
             </View>
           </View>
           <View style={styles.details}>
@@ -54,7 +54,10 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
             <Detail label="Model" value={item.model} />
             <Detail label="Size" value={item.size} />
             <Detail label="Fabric" value={item.getArrayByType("fabric")} />
-            <Detail label="Bought" value={new Date().toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })} />
+            <Detail
+              label="Bought"
+              value={item.bought && new Date(item.bought).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
+            />
             <Detail label="Bought from" value={item.boughtFrom} />
             <Detail label="Notes" value={item.notes} />
           </View>

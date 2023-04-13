@@ -90,6 +90,7 @@ export default function NewItem() {
   };
 
   const handleCreate = () => {
+    console.log("NEW ITEM TO CREATE", newItem);
     createItem(db, newItem);
     navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
   };
