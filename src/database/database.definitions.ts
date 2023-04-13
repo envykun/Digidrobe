@@ -13,6 +13,9 @@ export enum TableNames {
   WARDROBE_CATEGORY = "wardrobe_category",
   WARDROBE_COLOR = "wardrobe_color",
   WARDROBE_FABRIC = "wardrobe_fabric",
+  OUTFITS = "outfits",
+  OUTFIT_CATEGORY_WARDROBE = "outfit_category_wardrobe",
+  PLANNED_OUTFITS = "planned_outfits",
 }
 
 export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
@@ -30,7 +33,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
     query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES categories(id)",
   },
   {
-    name: "brands",
+    name: TableNames.BRANDS,
     query: "id INTEGER NOT NULL PRIMARY KEY, label TEXT NOT NULL UNIQUE",
   },
   {
@@ -42,7 +45,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
     query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES fabrics(id)",
   },
   {
-    name: "stores",
+    name: TableNames.BOUGHT_FROM,
     query: "id INTEGER NOT NULL PRIMARY KEY, label TEXT NOT NULL UNIQUE",
   },
   {
@@ -54,7 +57,16 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
     query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES colors(id)",
   },
   {
-    name: "saved_outfits",
-    query: "id INTEGER NOT NULL PRIMARY KEY, label TEXT NOT NULL UNIQUE",
+    name: TableNames.OUTFITS,
+    query: "uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, imageURL TEXT",
   },
+  {
+    name: TableNames.OUTFIT_CATEGORY_WARDROBE,
+    query:
+      "outfitID TEXT NOT NULL REFERENCES outfits(uuid), categoryID INTEGER NOT NULL REFERENCES categories(id), itemID TEXT NOT NULL REFERENCES wardrobe(uuid), UNIQUE(outfitID, categoryID, itemID)",
+  },
+  // {
+  //   name: TableNames.PLANNED_OUTFITS,
+  //   query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL",
+  // },
 ];

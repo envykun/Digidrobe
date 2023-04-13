@@ -1,18 +1,20 @@
+import { InputType } from "@Components/Inputs/DetailInput";
 import { ItemMetadata } from "@Models/Item";
 import { randomUUID } from "expo-crypto";
+import { KeyboardTypeOptions } from "react-native";
 
 export class Item implements ItemMetadata {
   uuid: string;
   name: string;
   wears: number;
-  lastWorn?: Date;
+  lastWorn?: string;
   cost?: number;
   category?: Array<string>;
   brand?: string;
   model?: string;
   size?: number;
   fabric?: Array<string>;
-  bought?: Date;
+  bought?: string;
   boughtFrom?: string;
   notes?: string;
   savedOutfits?: Array<any>;
@@ -67,17 +69,21 @@ export class Item implements ItemMetadata {
       {
         key: "cost",
         label: "Cost",
-        inputType: "",
+        inputType: "default",
         setter: (value) => {
+          if (!value) return;
           this.cost = parseFloat(value);
         },
+        keyboardType: "number-pad",
       },
       {
         key: "category",
         label: "Categories",
         setter: (value) => {
-          this.category = value.split(",").map((v) => v.trim());
+          if (!value) return;
+          this.category ? this.category.push(value) : (this.category = [value]);
         },
+        inputType: "multi-select",
       },
       {
         key: "brand",
@@ -97,13 +103,16 @@ export class Item implements ItemMetadata {
         key: "size",
         label: "Size",
         setter: (value) => {
+          if (!value) return;
           this.size = parseFloat(value);
         },
+        keyboardType: "number-pad",
       },
       {
         key: "fabric",
         label: "Fabric",
         setter: (value) => {
+          if (!value) return;
           this.fabric = value.split(",").map((v) => v.trim());
         },
       },
@@ -111,7 +120,8 @@ export class Item implements ItemMetadata {
         key: "bought",
         label: "Bought",
         setter: (value) => {
-          this.bought = new Date(value);
+          if (!value) return;
+          this.bought = value;
         },
         inputType: "date",
       },
@@ -137,12 +147,12 @@ export class Item implements ItemMetadata {
       uuid: this.uuid,
       name: this.name,
       wears: this.wears ?? null,
-      lastWorn: this.lastWorn?.toString() ?? null,
+      lastWorn: this.lastWorn ?? null,
       cost: this.cost ?? null,
       brand: this.brand ?? null,
       model: this.model ?? null,
       size: this.size ?? null,
-      bought: this.bought?.toDateString() ?? null,
+      bought: this.bought ?? null,
       boughtFrom: this.boughtFrom ?? null,
       notes: this.notes ?? null,
       image: this.image ?? null,
@@ -166,6 +176,8 @@ interface ConstructorInput {
   key: keyof ItemMetadata;
   label: string;
   placeholder?: string;
-  inputType?: string;
-  setter: (value: string) => void;
+  inputType?: InputType;
+  // data?: Array<string>;
+  setter: (value?: string) => void;
+  keyboardType?: KeyboardTypeOptions;
 }
