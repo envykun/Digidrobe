@@ -11,8 +11,8 @@ export default function Input({ placeholder, textInputProps, onChange }: InputPr
   const [text, setText] = useState<string>("");
 
   const handleChange = (text: string) => {
-    setText(text.trim());
-    onChange && onChange(text.trim());
+    setText(text);
+    onChange && onChange(text);
   };
 
   return (

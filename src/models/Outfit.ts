@@ -14,5 +14,7 @@ export interface OutfitOverview {
   uuid: string;
   imageURL?: string;
   name?: string;
-  itemImageURLs?: Array<string>;
+  itemImageURLs?: Array<ItemImagePreview>;
 }
+
+export type ItemImagePreview = { name: string; imageURL: string | null };

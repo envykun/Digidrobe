@@ -7,11 +7,19 @@ import { SimpleLineIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import WeatherAndLocation from "@Components/WeatherAndLocation/WeatherAndLocation";
+import { OutfitOverview } from "@Models/Outfit";
+import { getPlannedOutfitByDate } from "@Database/outfits";
+import { getDatabase } from "@Database/database";
+import PlannedOutfit from "@Components/Box/PlannedOutfit";
+import DigiButton from "@Components/Button/DigiButton";
 
 export default function Home() {
   const navigation = useNavigation();
   const [quote, setQuote] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
+  const [plannedOutfit, setPlannedOutfit] = useState<Array<OutfitOverview>>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const db = getDatabase();
 
   useEffect(() => {
     const fetchURL = (url: string) => {
@@ -23,6 +31,10 @@ export default function Home() {
 
     fetchURL("https://zenquotes.io/api/today");
   }, []);
+
+  useEffect(() => {
+    getPlannedOutfitByDate(db, selectedDate, setPlannedOutfit);
+  }, [selectedDate]);
 
   return (
     <ScrollView
@@ -47,10 +59,17 @@ export default function Home() {
         <ShortcutBox />
       </LinearGradient>
       <View style={{ alignItems: "center", paddingVertical: 16, gap: 16 }}>
-        <Calendar />
-        <View style={styles.plannedOutfitBox}>
-          <Text>No Outfits planned.</Text>
-        </View>
+        <Calendar onChange={setSelectedDate} />
+        {plannedOutfit.length > 0 ? (
+          plannedOutfit.map((outfit) => (
+            <PlannedOutfit key={outfit.uuid} label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.itemImageURLs} />
+          ))
+        ) : (
+          <View style={styles.plannedOutfitBox}>
+            <Text>You have no outfits planned.</Text>
+            <DigiButton title="Plan now" variant="text" onPress={() => console.log("TODO: navigate to plan outfit")} />
+          </View>
+        )}
         <View style={styles.plannedOutfitBox}>
           <Text>Maybe some other Stuff?</Text>
         </View>

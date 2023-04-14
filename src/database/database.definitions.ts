@@ -65,8 +65,8 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
     query:
       "outfitID TEXT NOT NULL REFERENCES outfits(uuid), categoryID INTEGER NOT NULL REFERENCES categories(id), itemID TEXT NOT NULL REFERENCES wardrobe(uuid), UNIQUE(outfitID, categoryID, itemID)",
   },
-  // {
-  //   name: TableNames.PLANNED_OUTFITS,
-  //   query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL",
-  // },
+  {
+    name: TableNames.PLANNED_OUTFITS,
+    query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL, UNIQUE(outfitID, date)",
+  },
 ];

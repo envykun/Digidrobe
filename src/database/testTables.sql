@@ -34,6 +34,12 @@ CREATE TABLE IF NOT EXISTS outfit_category_wardrobe(
     UNIQUE(outfitID,categoryID,itemID)
 )
 
+CREATE TABLE IF NOT EXISTS planned_outfit(
+    outfitID TEXT NOT NULL REFERENCES outfits(id),
+    date TEXT NOT NULL,
+    UNIQUE(outfitID, date)
+)
+
 INSERT INTO categories (label) VALUES ("Schuhe")
 INSERT INTO categories (label) VALUES ("Hose")
 INSERT INTO categories (label) VALUES ("Hemd")
@@ -48,6 +54,8 @@ INSERT INTO wardrobe (uuid, label, wears) VALUES (?,"Peter",?)
 
 INSERT INTO outfits (id, imageURL) VALUES ("1-1-1-3", "someImage.url") 
 INSERT INTO outfit_category_wardrobe (outfitID, categoryID, itemID) VALUES ("1-1-1-2", 2, "1-1-1-1") 
+
+INSERT INTO planned_outfit (outfitID, date) VALUES ("1-1-1-3", "2023-05-22T18:35:16.179Z")
 
 -- Select from junction table
 SELECT label FROM wardrobe_category WC 
@@ -69,3 +77,8 @@ DROP TABLE wardrobe
 DROP TABLE wardrobe_category
 
 DELETE FROM categories WHERE label = "Hose"
+
+
+SELECT * FROM planned_outfit PO
+INNER JOIN outfits O ON O.id = PO.outfitID
+WHERE date LIKE '2023-05-20%'

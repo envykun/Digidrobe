@@ -81,7 +81,7 @@ export class Item implements ItemMetadata {
         label: "Categories",
         setter: (value) => {
           if (!value) return;
-          this.category ? this.category.push(value) : (this.category = [value]);
+          this.category ? this.category.push(value.trim()) : (this.category = [value.trim()]);
         },
         inputType: "multi-select",
       },
@@ -89,14 +89,14 @@ export class Item implements ItemMetadata {
         key: "brand",
         label: "Brand",
         setter: (value) => {
-          this.brand = value;
+          this.brand = value?.trim();
         },
       },
       {
         key: "model",
         label: "Model",
         setter: (value) => {
-          this.model = value;
+          this.model = value?.trim();
         },
       },
       {
@@ -129,14 +129,14 @@ export class Item implements ItemMetadata {
         key: "boughtFrom",
         label: "Bought from",
         setter: (value) => {
-          this.boughtFrom = value;
+          this.boughtFrom = value?.trim();
         },
       },
       {
         key: "notes",
         label: "Notes",
         setter: (value) => {
-          this.notes = value;
+          this.notes = value?.trim();
         },
       },
     ];
@@ -145,7 +145,7 @@ export class Item implements ItemMetadata {
   public getDBParsedItem() {
     return {
       uuid: this.uuid,
-      name: this.name,
+      name: this.name.trim(),
       wears: this.wears ?? null,
       lastWorn: this.lastWorn ?? null,
       cost: this.cost ?? null,

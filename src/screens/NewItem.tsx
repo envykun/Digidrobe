@@ -199,7 +199,7 @@ export default function NewItem() {
                   <View
                     style={{
                       position: "absolute",
-                      bottom: 12,
+                      bottom: 42,
                       right: 12,
                       backgroundColor: "#ebebeb",
                       borderRadius: 120,
@@ -222,11 +222,13 @@ export default function NewItem() {
                 </View>
               ) : (
                 <View style={styles.noImage}>
-                  <ShortcutItem
-                    label="Add Image"
-                    icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-                    onPress={() => setIsBottomSheetOpen(true)}
-                  />
+                  <View style={{ height: 80 }}>
+                    <ShortcutItem
+                      label="Add Image"
+                      icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
+                      onPress={() => setIsBottomSheetOpen(true)}
+                    />
+                  </View>
                 </View>
               )}
             </View>
@@ -262,7 +264,7 @@ export default function NewItem() {
         }
       />
       <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
-        <View style={styles.noImage}>
+        <View style={styles.sheetButton}>
           <ShortcutItem
             label="Files"
             icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
@@ -272,7 +274,7 @@ export default function NewItem() {
             }}
           />
         </View>
-        <View style={styles.noImage}>
+        <View style={styles.sheetButton}>
           <ShortcutItem
             label="Camera"
             icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
@@ -289,13 +291,17 @@ export default function NewItem() {
 
 const styles = StyleSheet.create({
   image: {
-    height: 320,
+    height: 360,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
   },
   noImage: {
-    height: 80,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#e9e9e9",
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
     marginBottom: 32,
@@ -304,20 +310,28 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   description: {
+    backgroundColor: "white",
     marginVertical: 32,
+    marginTop: -32,
     paddingHorizontal: 8,
+    paddingTop: 24,
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
     columnGap: 16,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
-  descriptionInner: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: 8,
+  sheetButton: {
+    height: 80,
   },
-  details: {
-    flexDirection: "column",
-    padding: 8,
-  },
+  // descriptionInner: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   paddingTop: 8,
+  // },
+  // details: {
+  //   flexDirection: "column",
+  //   padding: 8,
+  // },
 });

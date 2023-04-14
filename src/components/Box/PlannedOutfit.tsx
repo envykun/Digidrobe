@@ -1,10 +1,12 @@
+import { ItemImagePreview } from "@Models/Outfit";
+import { Colors } from "@Styles/colors";
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, TouchableOpacity, FlatList } from "react-native";
 
 interface PlannedOutfitProps {
   label?: string;
   outfitImage?: string;
-  itemImages?: Array<string>;
+  itemImages?: Array<ItemImagePreview>;
 }
 
 export default function PlannedOutfit({ label, outfitImage, itemImages }: PlannedOutfitProps) {
@@ -13,7 +15,7 @@ export default function PlannedOutfit({ label, outfitImage, itemImages }: Planne
     return (
       <TouchableOpacity onPress={() => navigation.navigate("OutfitDetails" as never)} style={styles.plannedOutfitBox}>
         <ImageBackground source={require("src/styles/img/noImg.jpg")} resizeMode="cover" style={{ flex: 1, width: "100%", height: "100%" }}>
-          <Text style={{ fontSize: 18, marginLeft: 8, marginTop: 4 }}>{label}</Text>
+          <Text style={styles.textBox}>{label}</Text>
         </ImageBackground>
       </TouchableOpacity>
     );
@@ -22,9 +24,32 @@ export default function PlannedOutfit({ label, outfitImage, itemImages }: Planne
   if (!itemImages) {
     return (
       <TouchableOpacity onPress={() => navigation.navigate("OutfitDetails" as never)} style={styles.plannedOutfitBox}>
-        <ImageBackground source={{ uri: outfitImage }} resizeMode="cover" style={{ flex: 1, width: "100%", height: "100%" }}>
-          <Text style={{ fontSize: 18, marginLeft: 8, marginTop: 4 }}>{label}</Text>
+        <ImageBackground source={{ uri: outfitImage }} resizeMode="cover" style={styles.outfitImageContainer}>
+          <Text style={styles.textBox}>{label}</Text>
         </ImageBackground>
+      </TouchableOpacity>
+    );
+  }
+
+  if (!outfitImage) {
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate("OutfitDetails" as never)} style={styles.plannedOutfitBox}>
+        <View style={styles.itemContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.textBox}>{label}</Text>
+          </View>
+          {itemImages.map((item, index) => (
+            <View key={index} style={[styles.itemImageContainer, styles.itemImageWidth3]}>
+              {item.imageURL ? (
+                <Image source={{ uri: item.imageURL }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+              ) : (
+                <View style={styles.noImg}>
+                  <Text>{item.name}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
       </TouchableOpacity>
     );
   }
@@ -32,24 +57,21 @@ export default function PlannedOutfit({ label, outfitImage, itemImages }: Planne
   return (
     <TouchableOpacity onPress={() => navigation.navigate("OutfitDetails" as never)} style={styles.plannedOutfitBox}>
       {outfitImage && (
-        <View style={{ flex: 1, height: "100%" }}>
-          <View style={styles.textContainer}>
-            <Text style={{ fontSize: 18, marginLeft: 8, marginTop: 4 }}>{label}</Text>
-          </View>
-          <View style={styles.outfitImageContainer}>
-            <Image source={{ uri: outfitImage }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-          </View>
-        </View>
+        <ImageBackground source={{ uri: outfitImage }} resizeMode="cover" style={styles.outfitImageContainer}>
+          <Text style={styles.textBox}>{label}</Text>
+        </ImageBackground>
       )}
       {itemImages && (
         <View style={styles.itemContainer}>
-          {itemImages.map((itemImg, index) => (
-            <View key={index} style={styles.itemImageContainer}>
-              <Image
-                source={{ uri: itemImg }}
-                style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-                onError={(error) => console.log("Failed loading image", error)}
-              />
+          {itemImages.map((item, index) => (
+            <View key={index} style={[styles.itemImageContainer, styles.itemImageWidth2]}>
+              {item.imageURL ? (
+                <Image source={{ uri: item.imageURL }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+              ) : (
+                <View style={styles.noImg}>
+                  <Text>{item.name}</Text>
+                </View>
+              )}
             </View>
           ))}
         </View>
@@ -77,25 +99,51 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "aqua",
     height: "100%",
+    borderRadius: 6,
+    overflow: "hidden",
   },
   itemContainer: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "#00cf6f",
+    // backgroundColor: "#00cf6f",
     height: "100%",
     flexWrap: "wrap",
     alignItems: "center",
     gap: 4,
+    overflow: "hidden",
+    // justifyContent: "center",
   },
   itemImageContainer: {
-    width: "48.8%",
-    backgroundColor: "pink",
     aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
   },
+  itemImageWidth2: {
+    width: "48.8%",
+  },
+  itemImageWidth3: {
+    width: "32.5%",
+  },
   textContainer: {
     width: "100%",
+  },
+  textBox: {
+    fontSize: 18,
+    margin: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    backgroundColor: "#ffffff88",
+    alignSelf: "flex-start",
+    borderRadius: 4,
+  },
+  noImg: {
+    backgroundColor: Colors.primary,
+    // flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 8,
   },
 });

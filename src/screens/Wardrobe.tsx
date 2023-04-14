@@ -50,7 +50,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         data={activeFilter ? wardrobe.filter((item) => item.category?.includes(activeFilter)) : wardrobe}
         numColumns={2}
         renderItem={({ item }) => <Card item={item} />}
-        columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+        columnWrapperStyle={{ marginBottom: 8, paddingHorizontal: 16 }}
         style={{ height: "100%" }}
         getItemLayout={(data, index) => ({ length: 240, offset: 240 * index, index })}
         refreshControl={
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     rowGap: 8,
+    backgroundColor: "white",
   },
   header: {
     fontSize: 32,

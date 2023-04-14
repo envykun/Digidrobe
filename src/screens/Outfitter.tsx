@@ -24,13 +24,13 @@ const fakeOutfits: Array<string> = [
 ];
 
 interface ListHeaderComponentProps {
-  title?: string;
+  onChange?: (value?: string) => void;
 }
-const ListHeaderComponent = ({ title }: ListHeaderComponentProps) => {
+const ListHeaderComponent = ({ onChange }: ListHeaderComponentProps) => {
   const navigation = useNavigation();
   return (
     <View>
-      <Input placeholder="Search outfit..." />
+      <Input placeholder="Search outfit..." onChange={onChange} />
       <Button title="Create Outfit" onPress={() => navigation.navigate("NewOutfit" as never)} />
     </View>
   );
@@ -39,6 +39,7 @@ const ListHeaderComponent = ({ title }: ListHeaderComponentProps) => {
 export default function Outfitter() {
   const isFocused = useIsFocused();
   const db = getDatabase();
+  const [searchQuery, setSearchQuery] = useState<string | undefined>();
   const [outfits, setOutfits] = useState<Array<string>>([]);
   const [outfits2, setOutfits2] = useState<Array<OutfitOverview>>([]);
 
@@ -56,11 +57,11 @@ export default function Outfitter() {
   return (
     <SafeAreaView>
       <FlatList
-        data={outfits2}
+        data={searchQuery ? outfits2.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits2}
         renderItem={({ item }) => <PlannedOutfit label={item.name} outfitImage={item.imageURL} itemImages={item.itemImageURLs} />}
         contentContainerStyle={{ rowGap: 8, padding: 8 }}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={<ListHeaderComponent />}
+        ListHeaderComponent={<ListHeaderComponent onChange={setSearchQuery} />}
       />
     </SafeAreaView>
   );

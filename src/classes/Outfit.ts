@@ -9,6 +9,7 @@ export class Outfit {
   imageURL?: string;
   name?: string;
   refresh?: () => void;
+  planned?: Date;
 
   constructor({ uuid, refresh, imageURL, name, categories }: IOutfit) {
     this.uuid = uuid;
@@ -102,5 +103,13 @@ export class Outfit {
       .flatMap((c) => Array.from(c.items.values()).flatMap((i) => i.getImage()))
       .filter((url): url is string => !!url);
     return imageUrls.length > 0 ? imageUrls : undefined;
+  }
+
+  public setPlannedDate(date?: Date) {
+    this.planned = date;
+  }
+
+  public getPlannedDate() {
+    return this.planned;
   }
 }

@@ -193,7 +193,7 @@ export default function NewOutfit() {
       <DetailInput label="Name" inputProps={{ onChange: (value) => (newOutfit.name = value) }} />
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text>Planned for:</Text>
-        <DateTimePickerInput />
+        <DateTimePickerInput onChange={(value) => newOutfit.setPlannedDate(value)} />
       </View>
       <View>
         {!newOutfit.hasCategories() ? (

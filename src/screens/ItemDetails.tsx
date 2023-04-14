@@ -1,12 +1,10 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, Dimensions } from "react-native";
+import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView } from "react-native";
 import { layout } from "@Styles/global";
 import Detail from "@Components/Detail/Detail";
-import { LineChart } from "react-native-chart-kit";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
 import { calculateCostPerWear, formatTimeAgo } from "@DigiUtils/helperFunctions";
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
-import { Item } from "src/classes/Item";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 
@@ -85,14 +83,19 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   content: {
+    backgroundColor: "white",
+    marginTop: -32,
     marginBottom: 32,
     height: "100%",
+    paddingTop: 8,
     gap: 8,
     elevation: 3,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
   description: {
-    paddingHorizontal: 16,
-    marginVertical: 8,
+    paddingHorizontal: 24,
+    marginVertical: 16,
   },
   descriptionInner: {
     flexDirection: "row",

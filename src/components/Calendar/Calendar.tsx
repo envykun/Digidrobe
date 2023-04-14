@@ -5,12 +5,21 @@ import { useState } from "react";
 import PagerView from "react-native-pager-view";
 import { addDays, compareAsc, eachDayOfInterval, subDays } from "date-fns";
 
-export default function Calendar() {
+interface CalendarProps {
+  onChange?: (date: Date) => void;
+}
+
+export default function Calendar({ onChange }: CalendarProps) {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const currentMonthYear = currentDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
   const [selectedDate, setSelectedDate] = useState<Date>(currentDate);
   const [position, setPosition] = useState<number>(2);
+
+  const handleDateSelect = (day: Date) => {
+    setSelectedDate(day);
+    onChange && onChange(day);
+  };
 
   const dates = eachDayOfInterval({
     start: subDays(currentDate, 11),
@@ -39,7 +48,7 @@ export default function Calendar() {
               current={comparedDate === 0}
               selected={compareAsc(selectedDate, day) === 0}
               past={comparedDate === 1}
-              onPress={() => setSelectedDate(day)}
+              onPress={() => handleDateSelect(day)}
             />
           );
         })}
