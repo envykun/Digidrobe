@@ -1,14 +1,15 @@
 import * as SQLite from "expo-sqlite";
-import { TableNames, tableDefinitionQuery } from "./database.definitions";
+import { TableNames, initBaseData, tableDefinitionQuery } from "./database.definitions";
 import { ItemDataResponse, ItemMetadata } from "@Models/Item";
 import { Item } from "src/classes/Item";
 import { Category } from "@Models/Category";
 import TestData from "./TestData.json";
 import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 
-export const initDatabase = () => {
+export const initDatabase = async () => {
   const db = SQLite.openDatabase("digidrobe.db");
   tableDefinitionQuery.forEach(async (definition) => await createTable(db, definition.name, definition.query));
+  await createMultipleValues(db, initBaseData.baseCategories, TableNames.CATEGORIES);
   return db;
 };
 

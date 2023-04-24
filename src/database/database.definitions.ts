@@ -70,3 +70,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
     query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL, UNIQUE(outfitID, date)",
   },
 ];
+
+export const initBaseData = {
+  baseCategories: ["Head", "UpperBody", "LowerBody", "Feet", "Accessoirs", "NoCategory"],
+};

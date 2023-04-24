@@ -2,7 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { Outfit } from "@Classes/Outfit";
 import { TableNames } from "./database.definitions";
 import { OutfitCategoryProp } from "@Components/Box/OutfitCategory";
-import { ItemImagePreview, OutfitOverview } from "@Models/Outfit";
+import { ItemImagePreview, OutfitDatabaseData, OutfitOverview } from "@Models/Outfit";
 
 // CREATE
 export const createOutfit = (db: SQLite.WebSQLDatabase, outfit: Outfit) => {
@@ -51,11 +51,37 @@ export const getOutfits = (db: SQLite.WebSQLDatabase, setOutfits: React.Dispatch
   );
 };
 
+export const getOutfitsAsync = (db: SQLite.WebSQLDatabase) => {
+  return new Promise<OutfitOverview[]>((resolve, reject) => {
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT * FROM outfits`, [], async (t, res) => {
+          const outfits = await Promise.all(
+            res.rows._array.map(async (outfit) => {
+              const outfitOverview: OutfitOverview = {
+                uuid: outfit.uuid,
+                name: outfit.name,
+                imageURL: outfit.imageURL,
+                itemImageURLs: await getOutfitItemURLs(db, outfit.uuid),
+              };
+              return outfitOverview;
+            })
+          );
+          resolve(outfits);
+        }),
+      (error) => {
+        reject("Error fetching outfits:" + error);
+        return true;
+      }
+    );
+  });
+};
+
 export const getOutfitItemURLs = async (db: SQLite.WebSQLDatabase, outfitId: string) => {
   return new Promise<Array<ItemImagePreview> | undefined>((resolve, reject) => {
     db.transaction((tx) =>
       tx.executeSql(
-        `SELECT W.imageURL, w.name FROM ${TableNames.OUTFIT_CATEGORY_WARDROBE} OCW
+        `SELECT W.uuid, W.imageURL, W.name FROM ${TableNames.OUTFIT_CATEGORY_WARDROBE} OCW
         INNER JOIN ${TableNames.OUTFITS} O ON O.uuid = OCW.outfitID
         INNER JOIN ${TableNames.WARDROBE} W ON W.uuid = OCW.itemID
         WHERE OCW.outfitID = '${outfitId}'
@@ -64,9 +90,10 @@ export const getOutfitItemURLs = async (db: SQLite.WebSQLDatabase, outfitId: str
         (t, res) => {
           // const imageURLs = res.rows._array.map((i) => i.imageURL).filter((url): url is string => !!url);
           const items: Array<ItemImagePreview> = res.rows._array.map((i: ItemImagePreview) => {
-            return { name: i.name, imageURL: i.imageURL };
+            return { uuid: i.uuid, name: i.name, imageURL: i.imageURL };
           });
           console.log("IMGURLS", items);
+          console.log("#########BOII", res.rows._array);
           resolve(items.length > 0 ? items : undefined);
         },
         (t, error) => {
@@ -84,7 +111,7 @@ export const updateOutfit = (db: SQLite.WebSQLDatabase) => {};
 // DELETE
 export const deleteOutfit = (db: SQLite.WebSQLDatabase) => {};
 
-/**
+/*
  * [
  *  {categoryID: "1-1-1", itemIDs: ["id-1", "id-2", "id-3"]},
  *  {categoryID: "1-1-2", itemIDs: ["id-1", "id-2", "id-3"]},
@@ -95,9 +122,10 @@ export const deleteOutfit = (db: SQLite.WebSQLDatabase) => {};
 
 const addToOutfitJunctionTable = (db: SQLite.WebSQLDatabase, outfitID: string, data: Array<OutfitDatabaseData>) => {
   const values = data
-    .flatMap((category) => category.itemIDs.map((itemID) => `('${outfitID}', ${category.categoryID}, '${itemID}')`))
+    .flatMap((c) =>
+      c.itemIDs.map((itemID) => `('${outfitID}', (SELECT id from ${TableNames.CATEGORIES} WHERE label = '${c.category}'), '${itemID}')`)
+    )
     .join(",");
-  console.log("VALUES", values);
   db.transaction((tx) => {
     tx.executeSql(
       `INSERT OR IGNORE INTO ${TableNames.OUTFIT_CATEGORY_WARDROBE} (outfitID, categoryID, itemID) VALUES ${values}`,
@@ -110,11 +138,6 @@ const addToOutfitJunctionTable = (db: SQLite.WebSQLDatabase, outfitID: string, d
     );
   });
 };
-
-interface OutfitDatabaseData {
-  categoryID: string;
-  itemIDs: Array<string>;
-}
 
 // ######## PLANNED OUTFITS ########
 export const addToPlannedOutfits = (db: SQLite.WebSQLDatabase, outfitID: string, date: Date) => {

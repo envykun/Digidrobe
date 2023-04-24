@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl } from "react-native";
 import { layout } from "@Styles/global";
 import Detail from "@Components/Detail/Detail";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
@@ -7,6 +7,10 @@ import { calculateCostPerWear, formatTimeAgo } from "@DigiUtils/helperFunctions"
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
+import { getDatabase } from "@Database/database";
+import { getOutfitsAsync } from "@Database/outfits";
+import { OutfitOverview } from "@Models/Outfit";
+import { useGet } from "@Hooks/useGet";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -21,10 +25,30 @@ type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails"
 
 export default function ItemDetails({ route }: ItemDetailsProps) {
   const item = route.params.item;
-  console.log("DAS ITEM LEL", item);
+  const db = getDatabase();
+  const { data: savedOutfits, isLoading, error, refetch } = useGet<OutfitOverview[]>(getOutfitsAsync(db));
+
+  if (isLoading)
+    return (
+      <View>
+        <Text>Loading</Text>
+      </View>
+    );
+
+  if (error)
+    return (
+      <View>
+        <Text>Loading</Text>
+      </View>
+    );
+
   return (
     <SafeAreaView>
-      <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={layout.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
+      >
         <View style={styles.image}>
           {item.image ? (
             <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
@@ -64,9 +88,11 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
           </View>
           <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits (12)</Text>
           <View style={{ alignItems: "center", gap: 8 }}>
-            {[...new Array(6)].map((x, y) => (
-              <PlannedOutfit key={y} />
-            ))}
+            {savedOutfits
+              ?.filter((outfit) => outfit.itemImageURLs?.some((i) => item.uuid === i.uuid))
+              .map((o) => (
+                <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} />
+              ))}
           </View>
           <View style={{ marginVertical: 64, alignItems: "center" }}>
             <Text style={{ color: "red" }}>Delete item</Text>

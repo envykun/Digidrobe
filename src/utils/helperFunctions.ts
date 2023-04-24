@@ -97,3 +97,47 @@ export const formatTimeAgo = (lastWorn?: string) => {
   let date = new Date(lastWorn);
   return formatDistanceToNow(date, { addSuffix: true });
 };
+
+type CategoryIDs = {
+  1: string;
+  2: string;
+  3: string;
+  4: string;
+  5: string;
+  6: string;
+};
+
+interface ICategoryTranslation {
+  en: CategoryIDs;
+  de: CategoryIDs;
+}
+
+const categoryTranslation: ICategoryTranslation = {
+  en: {
+    1: "Headpiece",
+    2: "Upper body",
+    3: "Lower body",
+    4: "Footwear",
+    5: "Accessories",
+    6: "No category",
+  },
+  de: {
+    1: "Kopfbedeckung",
+    2: "Oberkörper",
+    3: "Unterkörper",
+    4: "Fußbekleidung",
+    5: "Accessoires",
+    6: "Keine Kategory",
+  },
+};
+
+export const mapPredefinedCategories = (id: keyof CategoryIDs, locale: "en" | "de") => {
+  switch (locale) {
+    case "de":
+      return categoryTranslation.de[id];
+    case "en":
+      return categoryTranslation.en[id];
+    default:
+      return;
+  }
+};

@@ -1,14 +1,14 @@
+import { Item } from "@Classes/Item";
 import { OutfitCategoryProp } from "@Components/Box/OutfitCategory";
+import { OutfitMap } from "src/screens/NewOutfit";
 
 export interface IOutfit {
   uuid: string;
   refresh?: () => void;
   imageURL?: string;
   name?: string;
-  categories?: Map<string, OutfitCategoryProp>;
+  items?: OutfitMap;
 }
-
-export interface OutfitDbResponse {}
 
 export interface OutfitOverview {
   uuid: string;
@@ -17,4 +17,16 @@ export interface OutfitOverview {
   itemImageURLs?: Array<ItemImagePreview>;
 }
 
-export type ItemImagePreview = { name: string; imageURL: string | null };
+export type ItemImagePreview = { uuid: string; name: string; imageURL: string | null };
+
+export interface OutfitDatabaseData {
+  category: string;
+  itemIDs: Array<string>;
+}
+
+export interface PreparedForDatabaseOutfit {
+  uuid: string;
+  name: string;
+  imageURL: string | null;
+  data: Array<OutfitDatabaseData>;
+}

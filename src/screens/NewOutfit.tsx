@@ -20,6 +20,11 @@ import DetailInput from "@Components/Inputs/DetailInput";
 import * as ImagePicker from "expo-image-picker";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
 import BottomSheetItem from "@Components/Modal/BottomSheetItem";
+import { Colors } from "@Styles/colors";
+import OutfitItemPicker from "@Components/OutfitItemPicker/OutfitItemPicker";
+
+export type OutfitMap = Map<OutfitCategoryType, Array<Item>>;
+export type OutfitCategoryType = "Head" | "UpperBody" | "LowerBody" | "Feet" | "Accessoirs" | "NoCategory";
 
 export default function NewOutfit() {
   const navigation = useNavigation();
@@ -33,37 +38,40 @@ export default function NewOutfit() {
   const [wardrobe, setWardrobe] = useState<Array<Item>>([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [isBottomSheetOpen2, setIsBottomSheetOpen2] = useState<boolean>(false);
-  const [currentCategory, setCurrentCategory] = useState<Category | undefined>();
+  const [currentCategory, setCurrentCategory] = useState<OutfitCategoryType>("NoCategory");
   const db = getDatabase();
   const isFocused = useIsFocused();
   const [counter, setCounter] = useState(0);
   const [image, setImage] = useState<string | null>(null);
+
+  // const [selectedItems, setSelectedItems] = useState<OutfitMap>(new Map());
+  // const selectedItems: OutfitMap = new Map();
 
   useEffect(() => {
     getWardrobeItems(db, setWardrobe);
     getCategories(db, setDbCategories);
   }, [isFocused]);
 
-  const handleOpenBottomSheet = (category?: Category) => {
-    setCurrentCategory(category);
-    setIsBottomSheetOpen(true);
-  };
+  // const handleOpenBottomSheet = (category?: Category) => {
+  //   setCurrentCategory(category);
+  //   setIsBottomSheetOpen(true);
+  // };
 
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
-    setCurrentCategory(undefined);
+    setCurrentCategory("NoCategory");
   };
 
-  const handleAddCategory = (category: Category) => {
-    setIsBottomSheetOpen(false);
-    newOutfit.addCategory(category);
-  };
+  // const handleAddCategory = (category: Category) => {
+  //   setIsBottomSheetOpen(false);
+  //   newOutfit.addCategory(category);
+  // };
 
-  const handleAddItemToCategory = (item: Item) => {
-    setIsBottomSheetOpen(false);
-    currentCategory && newOutfit.addItemToCategory(currentCategory.id, item);
-    setCurrentCategory(undefined);
-  };
+  // const handleAddItemToCategory = (item: Item) => {
+  //   setIsBottomSheetOpen(false);
+  //   currentCategory && newOutfit.addItemToCategory(currentCategory.id, item);
+  //   setCurrentCategory(undefined);
+  // };
 
   const handleCreateOutfit = () => {
     createOutfit(db, newOutfit);
@@ -72,6 +80,19 @@ export default function NewOutfit() {
 
   const closeModal = () => {
     setIsBottomSheetOpen2(false);
+  };
+
+  const handleOpenBottomSheet = (category: OutfitCategoryType) => {
+    setCurrentCategory(category);
+    setIsBottomSheetOpen(true);
+    console.log("Category", category);
+  };
+
+  const handleAddItemToOutfit = (item: Item) => {
+    console.log("SETTING", currentCategory, item.name);
+    newOutfit.addItem(currentCategory, item);
+    setIsBottomSheetOpen(false);
+    refresh();
   };
 
   useEffect(() => {
@@ -122,6 +143,31 @@ export default function NewOutfit() {
 
   return (
     <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+      <OutfitItemPicker outfit={newOutfit} onPress={handleOpenBottomSheet} />
+
+      <View style={styles.content}>
+        <DetailInput label="Name" inputProps={{ onChange: (value) => (newOutfit.name = value) }} />
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Text>Plan for:</Text>
+          <DateTimePickerInput onChange={(value) => newOutfit.setPlannedDate(value)} />
+        </View>
+        <View>
+          {newOutfit.getAllItems().map((item) => (
+            <View key={item.uuid}>
+              <Text>{item.name}</Text>
+            </View>
+          ))}
+        </View>
+        <View>
+          {!newOutfit.hasCategories() ? (
+            <Text>No Statistics.</Text>
+          ) : (
+            newOutfit.getOutfitStatistic().map((stat, index) => <Detail key={index} {...stat} />)
+          )}
+        </View>
+
+        <DigiButton title="Create Outfit" onPress={() => handleCreateOutfit()} />
+      </View>
       <View style={styles.image}>
         {image ? (
           <View style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -160,49 +206,6 @@ export default function NewOutfit() {
           </View>
         )}
       </View>
-      {newOutfit.getCategories().map((category, index) => (
-        <OutfitCategory key={index} {...category} addItem={() => handleOpenBottomSheet(category.category)} outfit={newOutfit} />
-      ))}
-      <View style={styles.addButtonContainer}>
-        <TouchableOpacity onPress={() => handleOpenBottomSheet()}>
-          <SimpleLineIcons name="plus" size={42} color="black" />
-        </TouchableOpacity>
-      </View>
-      <BottomSheet title="Select a category..." isOpen={isBottomSheetOpen} closeModal={handleCloseBottomSheet}>
-        {!currentCategory ? (
-          <FlatList
-            data={dbCategories.filter((c) => !newOutfit.getCategoryIds().includes(c.id))}
-            renderItem={({ item }) => <BottomSheetItem label={item.label} onPress={() => handleAddCategory(item)} />}
-            ListEmptyComponent={<Text>No Categories left.</Text>}
-          />
-        ) : (
-          <FlatList
-            data={wardrobe
-              .filter((item) => item.category?.includes(currentCategory.label))
-              .filter((i) => !newOutfit.getItemIdsByCategory(currentCategory.id).includes(i.uuid))}
-            numColumns={2}
-            showsVerticalScrollIndicator={false}
-            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
-            renderItem={({ item }) => (
-              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToCategory(item)} />
-            )}
-            ListEmptyComponent={<Text>No Items in this category left.</Text>}
-          />
-        )}
-      </BottomSheet>
-      <DetailInput label="Name" inputProps={{ onChange: (value) => (newOutfit.name = value) }} />
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text>Planned for:</Text>
-        <DateTimePickerInput onChange={(value) => newOutfit.setPlannedDate(value)} />
-      </View>
-      <View>
-        {!newOutfit.hasCategories() ? (
-          <Text>No Statistics.</Text>
-        ) : (
-          newOutfit.getOutfitStatistic().map((stat, index) => <Detail key={index} {...stat} />)
-        )}
-      </View>
-      <DigiButton title="Create Outfit" onPress={() => handleCreateOutfit()} />
       <BottomSheet isOpen={isBottomSheetOpen2} closeModal={closeModal} title="Choose your source...">
         <View style={styles.noImage}>
           <ShortcutItem
@@ -225,14 +228,56 @@ export default function NewOutfit() {
           />
         </View>
       </BottomSheet>
+      <BottomSheet title="Select a category..." isOpen={isBottomSheetOpen} closeModal={handleCloseBottomSheet}>
+        {/* {!currentCategory ? (
+          <FlatList
+            data={dbCategories.filter((c) => !newOutfit.getCategoryIds().includes(c.id))}
+            renderItem={({ item }) => <BottomSheetItem label={item.label} onPress={() => console.log(item)} />}
+            ListEmptyComponent={<Text>No Categories left.</Text>}
+          />
+        ) : (
+          <FlatList
+            data={wardrobe.filter((item) => item.category?.includes(currentCategory))}
+            // .filter((i) => !newOutfit.getItemIdsByCategory(currentCategory.id).includes(i.uuid))}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+            renderItem={({ item }) => (
+              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => console.log(item)} />
+            )}
+            ListEmptyComponent={<Text>No Items in this category left.</Text>}
+          />
+        )} */}
+        {currentCategory === "NoCategory" ? (
+          <FlatList
+            data={wardrobe}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+            renderItem={({ item }) => (
+              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
+            )}
+            ListEmptyComponent={<Text>No Items in this category.</Text>}
+          />
+        ) : (
+          <FlatList
+            data={wardrobe.filter((item) => item.category?.includes(currentCategory))}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+            renderItem={({ item }) => (
+              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
+            )}
+            ListEmptyComponent={<Text>No Items in this category.</Text>}
+          />
+        )}
+      </BottomSheet>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
-    rowGap: 8,
     minHeight: "100%",
   },
   addButtonContainer: {
@@ -244,9 +289,23 @@ const styles = StyleSheet.create({
     height: 80,
   },
   image: {
-    height: 320,
+    height: 480,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
+    padding: 32,
+    position: "relative",
+    paddingBottom: 128,
+    backgroundColor: "#f1f1f1",
+  },
+
+  content: {
+    rowGap: 8,
+    marginTop: -32,
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    backgroundColor: "white",
   },
 });

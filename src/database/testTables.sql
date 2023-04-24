@@ -67,7 +67,7 @@ WHERE W.uuid = "1-1-1-1"
 SELECT * FROM outfit_category_wardrobe OCW
 INNER JOIN outfits O ON O.id = OCW.outfitID
 INNER JOIN wardrobe W ON W.uuid = OCW.itemID
-WHERE OCW.outfitID = "1-1-1-2"
+WHERE OCW.itemID = "1-1-1-2"
 -- INNER JOIN categories C ON C.id = OCW.categoryID
 
 DROP TABLE categories
