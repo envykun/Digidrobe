@@ -29,4 +29,4 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 - [ ] Weather icon mappings
 - [ ] Home screen -> Additional informations
 - [ ] Statistics screen
-- [ ] Snackbar component for user feedback
+- [x] Snackbar component for user feedback

@@ -35,6 +35,12 @@
       ],
       "@Database/*": [
         "src/database/*"
+      ],
+      "@Context/*": [
+        "src/context/*"
+      ],
+      "@Screens/*": [
+        "src/screens/*"
       ]
     }
   },

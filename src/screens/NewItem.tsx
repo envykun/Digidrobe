@@ -5,7 +5,7 @@ import DetailInput from "@Components/Inputs/DetailInput";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@Components/Modal/BottomSheet";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 
 import * as ImagePicker from "expo-image-picker";
 import { createItem, getCategories, getDatabase } from "src/database/database";
@@ -16,6 +16,7 @@ import { randomUUID } from "expo-crypto";
 import { Category } from "@Models/Category";
 import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
+import SnackbarContext from "@Context/SnackbarContext";
 
 export default function NewItem() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -23,6 +24,7 @@ export default function NewItem() {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
   const [categories, setCategories] = useState<Array<Category>>([]);
+  const snack = useContext(SnackbarContext);
 
   const db = getDatabase();
 
@@ -91,7 +93,11 @@ export default function NewItem() {
 
   const handleCreate = () => {
     console.log("NEW ITEM TO CREATE", newItem);
-    createItem(db, newItem);
+    createItem(db, newItem).then(() => {
+      if (!snack) return;
+      snack.setIsOpen(true);
+      snack.setMessage("Item successfully created.");
+    });
     navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
   };
 

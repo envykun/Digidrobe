@@ -2,22 +2,24 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "./src/screens/Home";
-import Wardrobe from "./src/screens/Wardrobe";
+import Home from "@Screens/Home";
+import Wardrobe from "@Screens/Wardrobe";
 import { AntDesign } from "@expo/vector-icons";
-import Statistic from "./src/screens/Statistic";
-import Outfitter from "./src/screens/Outfitter";
+import Statistic from "@Screens/Statistic";
+import Outfitter from "@Screens/Outfitter";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ItemDetails from "./src/screens/ItemDetails";
-import NewOutfit from "src/screens/NewOutfit";
-import Outfits from "src/screens/Outfits";
-import Favorites from "src/screens/Favorites";
-import Recent from "src/screens/Recent";
-import UserSettings from "src/screens/UserSettings";
-import NewItem from "src/screens/NewItem";
-import { initDatabase } from "src/database/database";
-import { Item } from "src/classes/Item";
-import OutfitDetails from "src/screens/OutfitDetails";
+import ItemDetails from "@Screens/ItemDetails";
+import NewOutfit from "@Screens/NewOutfit";
+import Outfits from "@Screens/Outfits";
+import Favorites from "@Screens/Favorites";
+import Recent from "@Screens/Recent";
+import UserSettings from "@Screens/UserSettings";
+import NewItem from "@Screens/NewItem";
+import { initDatabase } from "@Database/database";
+import { Item } from "@Classes/Item";
+import OutfitDetails from "@Screens/OutfitDetails";
+import { SnackbarContextProvider } from "@Context/SnackbarContext";
+import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
 
 export type RootStackParamList = {
   Root: any;
@@ -103,17 +105,20 @@ function BottomTabNavigator() {
 export default function App() {
   initDatabase();
   return (
-    <NavigationContainer>
-      <RootNavigator />
-    </NavigationContainer>
+    <SnackbarContextProvider>
+      <View style={styles.container}>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+        <SnackbarWrapper />
+      </View>
+    </SnackbarContextProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    width: "100%",
+    height: "100%",
   },
 });

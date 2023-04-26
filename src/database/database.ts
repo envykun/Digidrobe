@@ -36,30 +36,32 @@ export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   const brand = dbParsedItem.brand ? await createValueInTable(db, dbParsedItem.brand, TableNames.BRANDS) : null;
   const bought_from = dbParsedItem.boughtFrom ? await createValueInTable(db, dbParsedItem.boughtFrom, TableNames.BOUGHT_FROM) : null;
 
-  db.transaction((tx) => {
-    tx.executeSql(
-      `INSERT INTO ${TableNames.WARDROBE} (uuid, name, wears, last_worn, cost, brand, model, size, bought_date, bought_from, notes, imageURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-      [
-        dbParsedItem.uuid,
-        dbParsedItem.name,
-        dbParsedItem.wears,
-        dbParsedItem.lastWorn,
-        dbParsedItem.cost,
-        brand,
-        dbParsedItem.model,
-        dbParsedItem.size,
-        dbParsedItem.bought,
-        bought_from,
-        dbParsedItem.notes,
-        dbParsedItem.image,
-      ],
-      (txObj, resultSet) => console.log("Success", resultSet),
-      (txObj, error) => {
-        console.log("Error", txObj, error);
-        return false;
-      }
-    );
-  });
+  return new Promise<number | undefined>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        `INSERT INTO ${TableNames.WARDROBE} (uuid, name, wears, last_worn, cost, brand, model, size, bought_date, bought_from, notes, imageURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+        [
+          dbParsedItem.uuid,
+          dbParsedItem.name,
+          dbParsedItem.wears,
+          dbParsedItem.lastWorn,
+          dbParsedItem.cost,
+          brand,
+          dbParsedItem.model,
+          dbParsedItem.size,
+          dbParsedItem.bought,
+          bought_from,
+          dbParsedItem.notes,
+          dbParsedItem.image,
+        ],
+        (_, res) => resolve(res.insertId),
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    })
+  );
 };
 
 export const getWardrobeItems = (db: SQLite.WebSQLDatabase, setWardrobe: React.Dispatch<React.SetStateAction<Item[]>>) => {
