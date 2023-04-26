@@ -15,6 +15,8 @@ module.exports = function (api) {
             "@Hooks": "./src/hooks",
             "@Classes": "./src/classes",
             "@Database": "./src/database",
+            "@Context": "./src/context",
+            "@Screens": "./src/screens",
           },
           extensions: [".ts", ".tsx"],
         },

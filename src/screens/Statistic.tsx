@@ -1,3 +1,5 @@
+import DigiButton from "@Components/Button/DigiButton";
+import Snackbar from "@Components/Snackbar/Snackbar";
 import WorkInProgress from "@Components/WIP";
 import { useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
@@ -18,6 +20,8 @@ export default function Statistic() {
 
     { label: "Finland", value: "finland" },
   ]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen2, setIsOpen2] = useState(false);
 
   return (
     <View
@@ -26,6 +30,7 @@ export default function Statistic() {
         justifyContent: "center",
         paddingHorizontal: 15,
         width: "100%",
+        height: "100%",
       }}
     >
       <DropDownPicker
@@ -66,6 +71,14 @@ export default function Statistic() {
           setValue2(item);
         }}
       />
+      <DigiButton title="Open Snackbar" onPress={() => setIsOpen(!isOpen)} />
+      <Snackbar
+        message="Hello this is Dog."
+        visible={isOpen}
+        closeCallback={() => setIsOpen(false)}
+        action={{ text: "UNDO", onPress: () => console.log("UNDO") }}
+      />
+      <DigiButton title="Premade Snack" onPress={() => setIsOpen2(!isOpen2)} />
     </View>
   );
 }
