@@ -1,4 +1,14 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, Platform, TouchableOpacity, FlatList } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { layout } from "@Styles/global";
 import { Item } from "src/classes/Item";
 import DetailInput from "@Components/Inputs/DetailInput";
@@ -8,7 +18,7 @@ import BottomSheet from "@Components/Modal/BottomSheet";
 import { useEffect, useRef, useState, useContext } from "react";
 
 import * as ImagePicker from "expo-image-picker";
-import { createItem, getCategories, getDatabase } from "src/database/database";
+import { getCategories, getDatabase } from "src/database/database";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
@@ -17,29 +27,27 @@ import { Category } from "@Models/Category";
 import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";
+import { createItem } from "@Database/item";
+import { useGet } from "@Hooks/useGet";
 
 export default function NewItem() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Array<Category>>([]);
-  const snack = useContext(SnackbarContext);
-
   const db = getDatabase();
+  const { data: categories, isLoading, error } = useGet(getCategories(db));
+  const snack = useContext(SnackbarContext);
 
   const closeModal = () => {
     setIsBottomSheetOpen(false);
   };
 
-  useEffect(() => {
-    getCategories(db, setCategories);
-  }, []);
-
   const mapData = (key?: keyof ItemMetadata) => {
     switch (key) {
       case "category":
-        return categories.map((c) => c.label);
+        return categories?.map((c) => c.label);
       default:
         return undefined;
     }
@@ -48,7 +56,8 @@ export default function NewItem() {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
         }
@@ -98,7 +107,10 @@ export default function NewItem() {
       snack.setIsOpen(true);
       snack.setMessage("Item successfully created.");
     });
-    navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
+    navigation.navigate("Root", {
+      screen: "Wardrobe",
+      params: { itemID: newItem.uuid },
+    });
   };
 
   // return (
@@ -200,8 +212,21 @@ export default function NewItem() {
           <>
             <View style={styles.image}>
               {image ? (
-                <View style={{ width: "100%", height: "100%", position: "relative" }}>
-                  <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+                <View
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      resizeMode: "cover",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
                   <View
                     style={{
                       position: "absolute",
@@ -222,7 +247,11 @@ export default function NewItem() {
                         setImage(null);
                       }}
                     >
-                      <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
+                      <Ionicons
+                        name="ios-trash-bin"
+                        size={32}
+                        color="#ce0000"
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -231,7 +260,13 @@ export default function NewItem() {
                   <View style={{ height: 80 }}>
                     <ShortcutItem
                       label="Add Image"
-                      icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
+                      icon={
+                        <SimpleLineIcons
+                          name="plus"
+                          size={48}
+                          color="#E2C895"
+                        />
+                      }
                       onPress={() => setIsBottomSheetOpen(true)}
                     />
                   </View>
@@ -254,7 +289,10 @@ export default function NewItem() {
           <View style={{ flex: 1 }}>
             <DetailInput
               label={prop.label}
-              inputProps={{ onChange: prop.setter, textInputProps: { keyboardType: prop.keyboardType } }}
+              inputProps={{
+                onChange: prop.setter,
+                textInputProps: { keyboardType: prop.keyboardType },
+              }}
               type={prop.inputType}
               bottomSheetData={mapData(prop.key)}
             />
@@ -269,7 +307,11 @@ export default function NewItem() {
           </View>
         }
       />
-      <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
+      <BottomSheet
+        isOpen={isBottomSheetOpen}
+        closeModal={closeModal}
+        title="Choose your source..."
+      >
         <View style={styles.sheetButton}>
           <ShortcutItem
             label="Files"
