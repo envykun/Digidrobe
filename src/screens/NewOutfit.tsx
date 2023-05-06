@@ -1,20 +1,6 @@
-import WorkInProgress from "@Components/WIP";
-import { layout } from "@Styles/global";
-import {
-  Image,
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Platform,
-} from "react-native";
+import { Image, ScrollView, Text, View, StyleSheet, TouchableOpacity, FlatList, Platform } from "react-native";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
-import OutfitCategory, {
-  OutfitCategoryProp,
-} from "@Components/Box/OutfitCategory";
 import BottomSheet from "@Components/Modal/BottomSheet";
 import { getCategories, getDatabase } from "src/database/database";
 import { Category } from "@Models/Category";
@@ -25,55 +11,33 @@ import { randomUUID } from "expo-crypto";
 import BottomSheetCard from "@Components/Modal/BottomSheetCard";
 import Detail from "@Components/Detail/Detail";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
-import DigiButton from "@Components/Button/DigiButton";
 import { createOutfit } from "@Database/outfits";
 import DetailInput from "@Components/Inputs/DetailInput";
 import * as ImagePicker from "expo-image-picker";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
-import BottomSheetItem from "@Components/Modal/BottomSheetItem";
-import { Colors } from "@Styles/colors";
 import OutfitItemPicker from "@Components/OutfitItemPicker/OutfitItemPicker";
 import { useGet } from "@Hooks/useGet";
 import { getWardrobeItems } from "@Database/item";
+import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 
 export type OutfitMap = Map<OutfitCategoryType, Array<Item>>;
-export type OutfitCategoryType =
-  | "Head"
-  | "UpperBody"
-  | "LowerBody"
-  | "Feet"
-  | "Accessoirs"
-  | "NoCategory";
+export type OutfitCategoryType = "Head" | "UpperBody" | "LowerBody" | "Feet" | "Accessoirs" | "NoCategory";
 
 export default function NewOutfit() {
   const navigation = useNavigation();
   const refresh = () => {
-    console.log("REFRESHING");
     setCounter((c) => c + 1);
   };
 
-  const newOutfit = useRef<Outfit>(
-    new Outfit({ uuid: randomUUID(), refresh: refresh })
-  ).current;
+  const newOutfit = useRef<Outfit>(new Outfit({ uuid: randomUUID(), refresh: refresh })).current;
   const [dbCategories, setDbCategories] = useState<Array<Category>>([]);
   const [wardrobe2, setWardrobe] = useState<Array<Item>>([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [isBottomSheetOpen2, setIsBottomSheetOpen2] = useState<boolean>(false);
-  const [currentCategory, setCurrentCategory] =
-    useState<OutfitCategoryType>("NoCategory");
+  const [currentCategory, setCurrentCategory] = useState<OutfitCategoryType>("NoCategory");
   const db = getDatabase();
-  const {
-    data: wardrobe,
-    isLoading: loadingWardrobe,
-    error: wardrobeError,
-    refetch: refetchWardrobe,
-  } = useGet(getWardrobeItems(db));
-  const {
-    data: categories,
-    isLoading: loadingCategories,
-    error: categoriesError,
-    refetch: refetchCategories,
-  } = useGet(getCategories(db));
+  const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
+  const { data: categories, isLoading: loadingCategories, error: categoriesError, refetch: refetchCategories } = useGet(getCategories(db));
   const isFocused = useIsFocused();
   const [counter, setCounter] = useState(0);
   const [image, setImage] = useState<string | null>(null);
@@ -83,26 +47,20 @@ export default function NewOutfit() {
 
   useEffect(() => {}, [isFocused]);
 
-  // const handleOpenBottomSheet = (category?: Category) => {
-  //   setCurrentCategory(category);
-  //   setIsBottomSheetOpen(true);
-  // };
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ tintColor }: any) => (
+        <TouchableOpacity onPress={handleCreateOutfit}>
+          <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
     setCurrentCategory("NoCategory");
   };
-
-  // const handleAddCategory = (category: Category) => {
-  //   setIsBottomSheetOpen(false);
-  //   newOutfit.addCategory(category);
-  // };
-
-  // const handleAddItemToCategory = (item: Item) => {
-  //   setIsBottomSheetOpen(false);
-  //   currentCategory && newOutfit.addItemToCategory(currentCategory.id, item);
-  //   setCurrentCategory(undefined);
-  // };
 
   const handleCreateOutfit = () => {
     createOutfit(db, newOutfit);
@@ -116,11 +74,9 @@ export default function NewOutfit() {
   const handleOpenBottomSheet = (category: OutfitCategoryType) => {
     setCurrentCategory(category);
     setIsBottomSheetOpen(true);
-    console.log("Category", category);
   };
 
   const handleAddItemToOutfit = (item: Item) => {
-    console.log("SETTING", currentCategory, item.name);
     newOutfit.addItem(currentCategory, item);
     setIsBottomSheetOpen(false);
     refresh();
@@ -129,8 +85,7 @@ export default function NewOutfit() {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
         }
@@ -174,18 +129,10 @@ export default function NewOutfit() {
   };
 
   return (
-    <ScrollView
-      style={layout.scrollContainer}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.container}
-    >
+    <ScrollContainer disableRefresh>
       <OutfitItemPicker outfit={newOutfit} onPress={handleOpenBottomSheet} />
-
       <View style={styles.content}>
-        <DetailInput
-          label="Name"
-          inputProps={{ onChange: (value) => (newOutfit.name = value) }}
-        />
+        <DetailInput label="Name" inputProps={{ onChange: (value) => (newOutfit.name = value) }} />
         <View
           style={{
             flexDirection: "row",
@@ -194,9 +141,7 @@ export default function NewOutfit() {
           }}
         >
           <Text>Plan for:</Text>
-          <DateTimePickerInput
-            onChange={(value) => newOutfit.setPlannedDate(value)}
-          />
+          <DateTimePickerInput onChange={(value) => newOutfit.setPlannedDate(value)} />
         </View>
         <View>
           {newOutfit.getAllItems().map((item) => (
@@ -209,24 +154,14 @@ export default function NewOutfit() {
           {!newOutfit.hasCategories() ? (
             <Text>No Statistics.</Text>
           ) : (
-            newOutfit
-              .getOutfitStatistic()
-              .map((stat, index) => <Detail key={index} {...stat} />)
+            newOutfit.getOutfitStatistic().map((stat, index) => <Detail key={index} {...stat} />)
           )}
         </View>
-
-        <DigiButton
-          title="Create Outfit"
-          onPress={() => handleCreateOutfit()}
-        />
       </View>
       <View style={styles.image}>
         {image ? (
           <View style={{ width: "100%", height: "100%", position: "relative" }}>
-            <Image
-              source={{ uri: image }}
-              style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-            />
+            <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
             <View
               style={{
                 position: "absolute",
@@ -261,11 +196,7 @@ export default function NewOutfit() {
           </View>
         )}
       </View>
-      <BottomSheet
-        isOpen={isBottomSheetOpen2}
-        closeModal={closeModal}
-        title="Choose your source..."
-      >
+      <BottomSheet isOpen={isBottomSheetOpen2} closeModal={closeModal} title="Choose your source...">
         <View style={styles.noImage}>
           <ShortcutItem
             label="Files"
@@ -287,30 +218,7 @@ export default function NewOutfit() {
           />
         </View>
       </BottomSheet>
-      <BottomSheet
-        title="Select a category..."
-        isOpen={isBottomSheetOpen}
-        closeModal={handleCloseBottomSheet}
-      >
-        {/* {!currentCategory ? (
-          <FlatList
-            data={dbCategories.filter((c) => !newOutfit.getCategoryIds().includes(c.id))}
-            renderItem={({ item }) => <BottomSheetItem label={item.label} onPress={() => console.log(item)} />}
-            ListEmptyComponent={<Text>No Categories left.</Text>}
-          />
-        ) : (
-          <FlatList
-            data={wardrobe.filter((item) => item.category?.includes(currentCategory))}
-            // .filter((i) => !newOutfit.getItemIdsByCategory(currentCategory.id).includes(i.uuid))}
-            numColumns={2}
-            showsVerticalScrollIndicator={false}
-            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
-            renderItem={({ item }) => (
-              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => console.log(item)} />
-            )}
-            ListEmptyComponent={<Text>No Items in this category left.</Text>}
-          />
-        )} */}
+      <BottomSheet title="Select a category..." isOpen={isBottomSheetOpen} closeModal={handleCloseBottomSheet}>
         {currentCategory === "NoCategory" ? (
           <FlatList
             data={wardrobe}
@@ -322,20 +230,13 @@ export default function NewOutfit() {
               paddingHorizontal: 8,
             }}
             renderItem={({ item }) => (
-              <BottomSheetCard
-                twoColumn
-                label={item.name}
-                imageURL={item.getImage()}
-                onPress={() => handleAddItemToOutfit(item)}
-              />
+              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
             )}
             ListEmptyComponent={<Text>No Items in this category.</Text>}
           />
         ) : (
           <FlatList
-            data={wardrobe?.filter((item) =>
-              item.category?.includes(currentCategory)
-            )}
+            data={wardrobe?.filter((item) => item.category?.includes(currentCategory))}
             numColumns={2}
             showsVerticalScrollIndicator={false}
             columnWrapperStyle={{
@@ -344,18 +245,13 @@ export default function NewOutfit() {
               paddingHorizontal: 8,
             }}
             renderItem={({ item }) => (
-              <BottomSheetCard
-                twoColumn
-                label={item.name}
-                imageURL={item.getImage()}
-                onPress={() => handleAddItemToOutfit(item)}
-              />
+              <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
             )}
             ListEmptyComponent={<Text>No Items in this category.</Text>}
           />
         )}
       </BottomSheet>
-    </ScrollView>
+    </ScrollContainer>
   );
 }
 

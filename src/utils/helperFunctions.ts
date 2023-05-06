@@ -1,4 +1,6 @@
+import { NavigationProp } from "@react-navigation/native";
 import { formatRelative, formatDistanceToNow } from "date-fns";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 export const calculateCostPerWear = (cost: number, wear: number) => {
   return (cost / wear).toFixed(2);
@@ -140,4 +142,22 @@ export const mapPredefinedCategories = (id: keyof CategoryIDs, locale: "en" | "d
     default:
       return;
   }
+};
+
+export interface IHeaderOnScrollTransition {
+  event: NativeSyntheticEvent<NativeScrollEvent>;
+  navigation: NavigationProp<ReactNavigation.RootParamList>;
+  headerHeight: number;
+  headerBackgroundColor?: string;
+}
+
+export const headerOnScrollTransition = ({ event, navigation, headerHeight, headerBackgroundColor }: IHeaderOnScrollTransition) => {
+  const headerOpacity = Math.min(Math.max(event.nativeEvent.contentOffset.y, 0) / headerHeight, 1.0) ?? 0.0;
+  navigation.setOptions({
+    headerStyle: {
+      elevation: headerOpacity,
+      backgroundColor: headerBackgroundColor ? `rgba(${headerBackgroundColor},${headerOpacity})` : `rgba(255,255,255,${headerOpacity})`,
+    },
+    headerShadowVisible: headerOpacity == 1 ? true : false,
+  });
 };

@@ -1,6 +1,5 @@
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import Chip from "@Components/Chip/Chip";
-import FAB from "@Components/FAB/FAB";
 import FilterBar from "@Components/FilterBar/FilterBar";
 import Input from "@Components/Inputs/Input";
 import { getDatabase } from "@Database/database";
@@ -8,8 +7,10 @@ import { getOutfitsAsync } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, View, Text, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const fakeOutfits: Array<string> = [
   "Outfit 1",
@@ -51,23 +52,39 @@ export default function Outfitter() {
   const { data: outfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
 
+  const toggleAdditionalFilter = () => {
+    setAdditionalFilterOpen((v) => !v);
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: ({ tintColor, pressOpacity }: any) => (
+        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+          <Ionicons name="ios-filter" size={24} color={tintColor} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   useEffect(() => {
     refetch();
   }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <FilterBar
-        showAdditionalFilter={true}
-        isOpen={additionalFilterOpen}
-        onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
-        additionalChildren={<ListHeaderComponent onChange={setSearchQuery} />}
-      >
-        <Chip label="All" active={true} />
-        {fakeOutfits.map((item) => (
-          <Chip key={item} label={item} />
-        ))}
-      </FilterBar>
+      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
+        <FilterBar
+          showAdditionalFilter={true}
+          isOpen={additionalFilterOpen}
+          onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
+          additionalChildren={<ListHeaderComponent onChange={setSearchQuery} />}
+        >
+          <Chip label="All" active={true} />
+          {fakeOutfits.map((item) => (
+            <Chip key={item} label={item} />
+          ))}
+        </FilterBar>
+      </LinearGradient>
       <FlatList
         data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
         renderItem={({ item }) => <PlannedOutfit label={item.name} outfitImage={item.imageURL} itemImages={item.itemImageURLs} />}
@@ -75,7 +92,6 @@ export default function Outfitter() {
         showsVerticalScrollIndicator={false}
         style={{ height: "100%" }}
       />
-      <FAB onPress={() => navigation.navigate("NewOutfit" as never)} />
     </SafeAreaView>
   );
 }
