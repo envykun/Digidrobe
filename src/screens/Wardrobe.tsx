@@ -1,15 +1,16 @@
-import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList, RefreshControl } from "react-native";
+import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import Chip from "@Components/Chip/Chip";
 import Card from "@Components/Card/Card";
 import FilterBar from "@Components/FilterBar/FilterBar";
 import { useEffect, useRef, useState } from "react";
-import * as Crypto from "expo-crypto";
 import { getCategories, getDatabase, getWardrobeItems } from "src/database/database";
 import { Item } from "src/classes/Item";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList } from "App";
 import { Category } from "@Models/Category";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
@@ -19,6 +20,22 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
   const db = getDatabase();
   const flatListRef = useRef<FlatList<Item> | null>();
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
+  const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+
+  const toggleAdditionalFilter = () => {
+    setAdditionalFilterOpen((v) => !v);
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: ({ tintColor, pressOpacity }: any) => (
+        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+          <Ionicons name="ios-filter" size={24} color={tintColor} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     getWardrobeItems(db, setWardrobe);
@@ -37,12 +54,14 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
 
   return (
     <SafeAreaView style={styles.container}>
-      <FilterBar>
-        <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
-        {categories.map((item) => (
-          <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
-        ))}
-      </FilterBar>
+      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
+        <FilterBar showAdditionalFilter isOpen={additionalFilterOpen}>
+          <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
+          {categories.map((item) => (
+            <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
+          ))}
+        </FilterBar>
+      </LinearGradient>
       <FlatList
         ref={(ref) => {
           flatListRef.current = ref;

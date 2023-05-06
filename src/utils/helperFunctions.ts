@@ -133,10 +133,7 @@ const categoryTranslation: ICategoryTranslation = {
   },
 };
 
-export const mapPredefinedCategories = (
-  id: keyof CategoryIDs,
-  locale: "en" | "de"
-) => {
+export const mapPredefinedCategories = (id: keyof CategoryIDs, locale: "en" | "de") => {
   switch (locale) {
     case "de":
       return categoryTranslation.de[id];
@@ -147,22 +144,20 @@ export const mapPredefinedCategories = (
   }
 };
 
-export const headerOnScrollTransition = (
-  event: NativeSyntheticEvent<NativeScrollEvent>,
-  navigation: NavigationProp<ReactNavigation.RootParamList>,
-  headerHeight: number
-) => {
-  const headerOpacity =
-    Math.min(
-      Math.max(event.nativeEvent.contentOffset.y, 0) / headerHeight,
-      1.0
-    ) ?? 0.0;
+export interface IHeaderOnScrollTransition {
+  event: NativeSyntheticEvent<NativeScrollEvent>;
+  navigation: NavigationProp<ReactNavigation.RootParamList>;
+  headerHeight: number;
+  headerBackgroundColor?: string;
+}
+
+export const headerOnScrollTransition = ({ event, navigation, headerHeight, headerBackgroundColor }: IHeaderOnScrollTransition) => {
+  const headerOpacity = Math.min(Math.max(event.nativeEvent.contentOffset.y, 0) / headerHeight, 1.0) ?? 0.0;
   navigation.setOptions({
     headerStyle: {
       elevation: headerOpacity,
-      backgroundColor: `rgba(255,255,255,${headerOpacity})`,
+      backgroundColor: headerBackgroundColor ? `rgba(${headerBackgroundColor},${headerOpacity})` : `rgba(255,255,255,${headerOpacity})`,
     },
-    headerTintColor: headerOpacity == 0 ? "white" : "black",
     headerShadowVisible: headerOpacity == 1 ? true : false,
   });
 };

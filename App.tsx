@@ -1,19 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import {
-  BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
+import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@Screens/Home";
 import Wardrobe from "@Screens/Wardrobe";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import Statistic from "@Screens/Statistic";
 import Outfitter from "@Screens/Outfitter";
-import {
-  NativeStackNavigationOptions,
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
+import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
 import ItemDetails from "@Screens/ItemDetails";
 import NewOutfit from "@Screens/NewOutfit";
 import Outfits from "@Screens/Outfits";
@@ -26,6 +20,7 @@ import { Item } from "@Classes/Item";
 import OutfitDetails from "@Screens/OutfitDetails";
 import { SnackbarContextProvider } from "@Context/SnackbarContext";
 import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
+import { Colors } from "@Styles/colors";
 
 export type RootStackParamList = {
   Root: any;
@@ -79,12 +74,8 @@ function RootNavigator() {
             ...headerOptions,
             title: route.params?.item.name,
             headerRight: ({ tintColor }) => (
-              <TouchableOpacity onPress={() => console.log("Create")}>
-                <Ionicons
-                  name="ios-create-outline"
-                  size={24}
-                  color={tintColor}
-                />
+              <TouchableOpacity onPress={() => console.log("Edit")}>
+                <Ionicons name="ios-create-outline" size={24} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -94,14 +85,10 @@ function RootNavigator() {
           component={NewOutfit}
           options={({ route }) => ({
             ...headerOptions,
-            title: route.params?.title,
+            title: "Create new Outfit",
             headerRight: ({ tintColor }) => (
-              <TouchableOpacity onPress={() => console.log("Create")}>
-                <Ionicons
-                  name="ios-checkmark-circle-outline"
-                  size={32}
-                  color={tintColor}
-                />
+              <TouchableOpacity>
+                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -113,12 +100,8 @@ function RootNavigator() {
             ...headerOptions,
             title: route.params?.title,
             headerRight: ({ tintColor }) => (
-              <TouchableOpacity onPress={() => console.log("Create")}>
-                <Ionicons
-                  name="ios-checkmark-circle-outline"
-                  size={32}
-                  color={tintColor}
-                />
+              <TouchableOpacity onPress={() => console.log("Create Item")}>
+                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -180,68 +163,63 @@ function BottomTabNavigator() {
       <Tab.Screen
         name="Home"
         component={Home}
-        options={{
+        options={({ navigation }) => ({
           ...tabOptions,
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="home" size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTitle: "D I G I D R O B E",
+          headerBackgroundContainerStyle: { backgroundColor: Colors.primary },
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("UserSettings")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <SimpleLineIcons name="user" size={24} color={tintColor} />
+            </TouchableOpacity>
           ),
-          headerShown: false,
-        }}
+        })}
       />
       <Tab.Screen
         name="Wardrobe"
         component={Wardrobe}
-        options={{
+        options={({ navigation }) => ({
           ...tabOptions,
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="skin" size={size} color={color} />
-          ),
-          headerRight: ({ tintColor, pressOpacity }) => (
-            <TouchableOpacity
-              onPress={() => console.log("Create")}
-              activeOpacity={pressOpacity}
-              style={{ marginRight: 16 }}
-            >
-              <Ionicons
-                name="ios-add-circle-outline"
-                size={32}
-                color={tintColor}
-              />
+          tabBarIcon: ({ color, size }) => <AntDesign name="skin" size={size} color={color} />,
+          headerStyle: { backgroundColor: Colors.primary },
+          headerLeft: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+              <Ionicons name="ios-filter" size={24} color={tintColor} />
             </TouchableOpacity>
           ),
-        }}
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewItem")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Outfitter"
         component={Outfitter}
-        options={{
+        options={({ navigation }) => ({
           ...tabOptions,
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="home" size={size} color={color} />
-          ),
-          headerRight: ({ tintColor, pressOpacity }) => (
-            <TouchableOpacity
-              onPress={() => console.log("Create")}
-              activeOpacity={pressOpacity}
-              style={{ marginRight: 16 }}
-            >
-              <Ionicons
-                name="ios-add-circle-outline"
-                size={32}
-                color={tintColor}
-              />
+          tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
+          headerStyle: { backgroundColor: Colors.primary },
+          headerLeft: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+              <Ionicons name="ios-filter" size={24} color={tintColor} />
             </TouchableOpacity>
           ),
-        }}
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Statistic"
         component={Statistic}
         options={{
           ...tabOptions,
-          tabBarIcon: ({ focused, color, size }) => (
-            <AntDesign name="barschart" size={size} color={color} />
-          ),
+          tabBarIcon: ({ focused, color, size }) => <AntDesign name="barschart" size={size} color={color} />,
         }}
       />
     </Tab.Navigator>

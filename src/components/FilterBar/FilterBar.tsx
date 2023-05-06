@@ -20,11 +20,11 @@ export default function FilterBar({
   return (
     <>
       <View style={styles.container}>
-        {showAdditionalFilter && (
+        {/* {showAdditionalFilter && (
           <TouchableOpacity style={[styles.additionalFilter, isOpen && styles.active]} onPress={onPress}>
             <Ionicons name="ios-filter" size={24} color="black" />
           </TouchableOpacity>
-        )}
+        )} */}
         <ScrollView horizontal contentContainerStyle={styles.filterBar}>
           {children}
         </ScrollView>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "red",
+    // backgroundColor: Colors.primary,
   },
   additionalFilter: {
     marginLeft: 8,
