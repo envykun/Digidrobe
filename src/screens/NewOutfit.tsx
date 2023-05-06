@@ -2,7 +2,7 @@ import { Image, ScrollView, Text, View, StyleSheet, TouchableOpacity, FlatList, 
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import BottomSheet from "@Components/Modal/BottomSheet";
-import { getCategories, getDatabase, getWardrobeItems } from "src/database/database";
+import { getCategories, getDatabase } from "src/database/database";
 import { Category } from "@Models/Category";
 import { Item } from "src/classes/Item";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -16,6 +16,8 @@ import DetailInput from "@Components/Inputs/DetailInput";
 import * as ImagePicker from "expo-image-picker";
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
 import OutfitItemPicker from "@Components/OutfitItemPicker/OutfitItemPicker";
+import { useGet } from "@Hooks/useGet";
+import { getWardrobeItems } from "@Database/item";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 
 export type OutfitMap = Map<OutfitCategoryType, Array<Item>>;
@@ -29,19 +31,21 @@ export default function NewOutfit() {
 
   const newOutfit = useRef<Outfit>(new Outfit({ uuid: randomUUID(), refresh: refresh })).current;
   const [dbCategories, setDbCategories] = useState<Array<Category>>([]);
-  const [wardrobe, setWardrobe] = useState<Array<Item>>([]);
+  const [wardrobe2, setWardrobe] = useState<Array<Item>>([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [isBottomSheetOpen2, setIsBottomSheetOpen2] = useState<boolean>(false);
   const [currentCategory, setCurrentCategory] = useState<OutfitCategoryType>("NoCategory");
   const db = getDatabase();
+  const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
+  const { data: categories, isLoading: loadingCategories, error: categoriesError, refetch: refetchCategories } = useGet(getCategories(db));
   const isFocused = useIsFocused();
   const [counter, setCounter] = useState(0);
   const [image, setImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    getWardrobeItems(db, setWardrobe);
-    getCategories(db, setDbCategories);
-  }, [isFocused]);
+  // const [selectedItems, setSelectedItems] = useState<OutfitMap>(new Map());
+  // const selectedItems: OutfitMap = new Map();
+
+  useEffect(() => {}, [isFocused]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -129,7 +133,13 @@ export default function NewOutfit() {
       <OutfitItemPicker outfit={newOutfit} onPress={handleOpenBottomSheet} />
       <View style={styles.content}>
         <DetailInput label="Name" inputProps={{ onChange: (value) => (newOutfit.name = value) }} />
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Text>Plan for:</Text>
           <DateTimePickerInput onChange={(value) => newOutfit.setPlannedDate(value)} />
         </View>
@@ -214,7 +224,11 @@ export default function NewOutfit() {
             data={wardrobe}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+            columnWrapperStyle={{
+              gap: 8,
+              marginBottom: 8,
+              paddingHorizontal: 8,
+            }}
             renderItem={({ item }) => (
               <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
             )}
@@ -222,10 +236,14 @@ export default function NewOutfit() {
           />
         ) : (
           <FlatList
-            data={wardrobe.filter((item) => item.category?.includes(currentCategory))}
+            data={wardrobe?.filter((item) => item.category?.includes(currentCategory))}
             numColumns={2}
             showsVerticalScrollIndicator={false}
-            columnWrapperStyle={{ gap: 8, marginBottom: 8, paddingHorizontal: 8 }}
+            columnWrapperStyle={{
+              gap: 8,
+              marginBottom: 8,
+              paddingHorizontal: 8,
+            }}
             renderItem={({ item }) => (
               <BottomSheetCard twoColumn label={item.name} imageURL={item.getImage()} onPress={() => handleAddItemToOutfit(item)} />
             )}

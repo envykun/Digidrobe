@@ -2,22 +2,23 @@ import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList,
 import Chip from "@Components/Chip/Chip";
 import Card from "@Components/Card/Card";
 import FilterBar from "@Components/FilterBar/FilterBar";
-import { useEffect, useRef, useState } from "react";
-import { getCategories, getDatabase, getWardrobeItems } from "src/database/database";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getCategories, getDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList } from "App";
-import { Category } from "@Models/Category";
-import { LinearGradient } from "expo-linear-gradient";
+import { useGet } from "@Hooks/useGet";
 import { Ionicons } from "@expo/vector-icons";
+import { getWardrobeItems } from "@Database/item";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
-  const [wardrobe, setWardrobe] = useState<Array<Item>>([]);
-  const [categories, setCategories] = useState<Array<Category>>([]);
   const [refreshing, setRefreshing] = useState(false);
   const db = getDatabase();
+  const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
+  const { data: categories, isLoading: loadingCategories, error: categoriesError, refetch: refetchCategories } = useGet(getCategories(db));
   const flatListRef = useRef<FlatList<Item> | null>();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -37,19 +38,19 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
     });
   }, [navigation]);
 
-  useEffect(() => {
-    getWardrobeItems(db, setWardrobe);
-    getCategories(db, setCategories);
-    // db.transaction((tx) =>
-    //   tx.executeSql("SELECT * FROM wardrobe_category", [], (t, res) => console.log("wardrobe_category ----", res.rows._array))
-    // );
-    db.transaction((tx) => tx.executeSql("SELECT * FROM categories", [], (t, res) => console.log("categories ----", res.rows._array)));
-    // db.transaction((tx) => tx.executeSql("SELECT * FROM fabrics", [], (t, res) => console.log("fabrics ----", res.rows._array)));
-  }, [isFocused]);
+  const handleRefetch = useCallback(() => {
+    refetchWardrobe();
+    refetchCategories();
+  }, [refetchCategories, refetchWardrobe]);
 
   useEffect(() => {
+    if (!wardrobe) return;
     const scrollIndex = route.params?.itemID ? Math.floor(wardrobe.findIndex((i) => i.uuid === route.params.itemID) / 2) : -1;
-    scrollIndex !== -1 && flatListRef.current?.scrollToIndex({ animated: true, index: scrollIndex });
+    scrollIndex !== -1 &&
+      flatListRef.current?.scrollToIndex({
+        animated: true,
+        index: scrollIndex,
+      });
   }, [wardrobe]);
 
   return (
@@ -57,7 +58,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
       <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
         <FilterBar showAdditionalFilter isOpen={additionalFilterOpen}>
           <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
-          {categories.map((item) => (
+          {categories?.map((item) => (
             <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
           ))}
         </FilterBar>
@@ -66,20 +67,17 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         ref={(ref) => {
           flatListRef.current = ref;
         }}
-        data={activeFilter ? wardrobe.filter((item) => item.category?.includes(activeFilter)) : wardrobe}
+        data={activeFilter ? wardrobe?.filter((item) => item.category?.includes(activeFilter)) : wardrobe}
         numColumns={2}
         renderItem={({ item }) => <Card item={item} />}
         columnWrapperStyle={{ marginBottom: 8, paddingHorizontal: 16 }}
         style={{ height: "100%" }}
-        getItemLayout={(data, index) => ({ length: 240, offset: 240 * index, index })}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              getWardrobeItems(db, setWardrobe);
-            }}
-          />
-        }
+        getItemLayout={(data, index) => ({
+          length: 240,
+          offset: 240 * index,
+          index,
+        })}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />}
         ListEmptyComponent={
           <View>
             <Text>EMPTY</Text>

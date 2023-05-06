@@ -15,6 +15,7 @@ export interface ItemMetadata {
   notes?: string;
   savedOutfits?: Array<any>;
   image?: string;
+  favorite?: number;
 }
 
 export interface ItemDataResponse {
@@ -30,4 +31,5 @@ export interface ItemDataResponse {
   size: number | null;
   uuid: string;
   wears: number;
+  favorite: number;
 }

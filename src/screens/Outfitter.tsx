@@ -3,7 +3,8 @@ import Chip from "@Components/Chip/Chip";
 import FilterBar from "@Components/FilterBar/FilterBar";
 import Input from "@Components/Inputs/Input";
 import { getDatabase } from "@Database/database";
-import { getOutfits } from "@Database/outfits";
+import { getOutfitsAsync } from "@Database/outfits";
+import { useGet } from "@Hooks/useGet";
 import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -48,8 +49,7 @@ export default function Outfitter() {
   const navigation = useNavigation();
   const db = getDatabase();
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
-  const [outfits, setOutfits] = useState<Array<string>>([]);
-  const [outfits2, setOutfits2] = useState<Array<OutfitOverview>>([]);
+  const { data: outfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
 
   const toggleAdditionalFilter = () => {
@@ -67,16 +67,9 @@ export default function Outfitter() {
   }, [navigation]);
 
   useEffect(() => {
-    db.transaction((tx) =>
-      tx.executeSql("SELECT * FROM outfit_category_wardrobe", [], (t, res) => setOutfits(res.rows._array.map((i) => JSON.stringify(i))))
-    );
-    // db.transaction((tx) =>
-    //   tx.executeSql("SELECT * FROM outfits", [], (t, res) => setOutfits2(res.rows._array.map((i) => JSON.stringify(i))))
-    // );
-    getOutfits(db, setOutfits2);
-    // db.transaction((tx) => tx.executeSql("SELECT * FROM categories", [], (t, res) => console.log("categories ----", res.rows._array)));
-    // db.transaction((tx) => tx.executeSql("SELECT * FROM fabrics", [], (t, res) => console.log("fabrics ----", res.rows._array)));
+    refetch();
   }, [isFocused]);
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
@@ -93,7 +86,7 @@ export default function Outfitter() {
         </FilterBar>
       </LinearGradient>
       <FlatList
-        data={searchQuery ? outfits2.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits2}
+        data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
         renderItem={({ item }) => <PlannedOutfit label={item.name} outfitImage={item.imageURL} itemImages={item.itemImageURLs} />}
         contentContainerStyle={{ rowGap: 8, padding: 8 }}
         showsVerticalScrollIndicator={false}

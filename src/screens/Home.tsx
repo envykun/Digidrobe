@@ -10,15 +10,16 @@ import { getPlannedOutfitByDate } from "@Database/outfits";
 import { getDatabase } from "@Database/database";
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import DigiButton from "@Components/Button/DigiButton";
+import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { ColorsRGB } from "@Styles/colors";
 
 export default function Home() {
   const [quote, setQuote] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
-  const [plannedOutfit, setPlannedOutfit] = useState<Array<OutfitOverview>>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const db = getDatabase();
+  const { data: plannedOutfit, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
 
   useEffect(() => {
     const fetchURL = (url: string) => {
@@ -32,7 +33,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getPlannedOutfitByDate(db, selectedDate, setPlannedOutfit);
+    // TODO: Fix this refetch for selected date.
+    refetch();
   }, [selectedDate]);
 
   return (
@@ -49,7 +51,8 @@ export default function Home() {
       </LinearGradient>
       <View style={{ alignItems: "center", paddingVertical: 16, gap: 16 }}>
         <Calendar onChange={setSelectedDate} />
-        {plannedOutfit.length > 0 ? (
+        {isLoading && <Text>Loading...</Text>}
+        {plannedOutfit && plannedOutfit.length > 0 ? (
           plannedOutfit.map((outfit) => (
             <PlannedOutfit key={outfit.uuid} label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.itemImageURLs} />
           ))

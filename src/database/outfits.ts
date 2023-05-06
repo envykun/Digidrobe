@@ -27,30 +27,6 @@ export const createOutfit = (db: SQLite.WebSQLDatabase, outfit: Outfit) => {
 };
 
 // READ
-export const getOutfits = (db: SQLite.WebSQLDatabase, setOutfits: React.Dispatch<React.SetStateAction<OutfitOverview[]>>) => {
-  db.transaction(
-    (tx) =>
-      tx.executeSql(`SELECT * FROM outfits`, [], async (t, res) => {
-        const outfits = await Promise.all(
-          res.rows._array.map(async (outfit) => {
-            const outfitOverview: OutfitOverview = {
-              uuid: outfit.uuid,
-              name: outfit.name,
-              imageURL: outfit.imageURL,
-              itemImageURLs: await getOutfitItemURLs(db, outfit.uuid),
-            };
-            return outfitOverview;
-          })
-        );
-        setOutfits(outfits);
-      }),
-    (error) => {
-      console.log("Error getting outfits: ", error);
-      return true;
-    }
-  );
-};
-
 export const getOutfitsAsync = (db: SQLite.WebSQLDatabase) => {
   return new Promise<OutfitOverview[]>((resolve, reject) => {
     db.transaction(
@@ -111,15 +87,6 @@ export const updateOutfit = (db: SQLite.WebSQLDatabase) => {};
 // DELETE
 export const deleteOutfit = (db: SQLite.WebSQLDatabase) => {};
 
-/*
- * [
- *  {categoryID: "1-1-1", itemIDs: ["id-1", "id-2", "id-3"]},
- *  {categoryID: "1-1-2", itemIDs: ["id-1", "id-2", "id-3"]},
- *  {categoryID: "1-1-3", itemIDs: ["id-1", "id-2", "id-3"]},
- * ]
- *
- */
-
 const addToOutfitJunctionTable = (db: SQLite.WebSQLDatabase, outfitID: string, data: Array<OutfitDatabaseData>) => {
   const values = data
     .flatMap((c) =>
@@ -154,35 +121,33 @@ export const addToPlannedOutfits = (db: SQLite.WebSQLDatabase, outfitID: string,
   });
 };
 
-export const getPlannedOutfitByDate = (
-  db: SQLite.WebSQLDatabase,
-  date: Date,
-  setOutfits: React.Dispatch<React.SetStateAction<OutfitOverview[]>>
-) => {
+export const getPlannedOutfitByDate = (db: SQLite.WebSQLDatabase, date: Date) => {
   const parsedDate = date.toISOString().split("T")[0] + "%";
-  db.transaction(
-    (tx) =>
-      tx.executeSql(
-        `SELECT * FROM ${TableNames.PLANNED_OUTFITS} PO INNER JOIN ${TableNames.OUTFITS} O ON O.uuid = PO.outfitID WHERE date LIKE '${parsedDate}'`,
-        [],
-        async (t, res) => {
-          const outfits = await Promise.all(
-            res.rows._array.map(async (outfit) => {
-              const outfitOverview: OutfitOverview = {
-                uuid: outfit.uuid,
-                name: outfit.name,
-                imageURL: outfit.imageURL,
-                itemImageURLs: await getOutfitItemURLs(db, outfit.uuid),
-              };
-              return outfitOverview;
-            })
-          );
-          setOutfits(outfits);
-        }
-      ),
-    (error) => {
-      console.log("Error getting outfits: ", error);
-      return true;
-    }
+  return new Promise<OutfitOverview[]>((resolve, reject) =>
+    db.transaction(
+      (tx) =>
+        tx.executeSql(
+          `SELECT * FROM ${TableNames.PLANNED_OUTFITS} PO INNER JOIN ${TableNames.OUTFITS} O ON O.uuid = PO.outfitID WHERE date LIKE '${parsedDate}'`,
+          [],
+          async (t, res) => {
+            const outfits = await Promise.all(
+              res.rows._array.map(async (outfit) => {
+                const outfitOverview: OutfitOverview = {
+                  uuid: outfit.uuid,
+                  name: outfit.name,
+                  imageURL: outfit.imageURL,
+                  itemImageURLs: await getOutfitItemURLs(db, outfit.uuid),
+                };
+                return outfitOverview;
+              })
+            );
+            resolve(outfits);
+          }
+        ),
+      (error) => {
+        reject(error);
+        return true;
+      }
+    )
   );
 };

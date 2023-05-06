@@ -8,7 +8,7 @@ import BottomSheet from "@Components/Modal/BottomSheet";
 import { useEffect, useRef, useState, useContext } from "react";
 
 import * as ImagePicker from "expo-image-picker";
-import { createItem, getCategories, getDatabase } from "src/database/database";
+import { getCategories, getDatabase } from "src/database/database";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
@@ -17,6 +17,8 @@ import { Category } from "@Models/Category";
 import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";
+import { createItem } from "@Database/item";
+import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 
 export default function NewItem() {
@@ -24,10 +26,9 @@ export default function NewItem() {
   const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Array<Category>>([]);
-  const snack = useContext(SnackbarContext);
-
   const db = getDatabase();
+  const { data: categories, isLoading, error } = useGet(getCategories(db));
+  const snack = useContext(SnackbarContext);
 
   const closeModal = () => {
     setIsBottomSheetOpen(false);
@@ -43,14 +44,10 @@ export default function NewItem() {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    getCategories(db, setCategories);
-  }, []);
-
   const mapData = (key?: keyof ItemMetadata) => {
     switch (key) {
       case "category":
-        return categories.map((c) => c.label);
+        return categories?.map((c) => c.label);
       default:
         return undefined;
     }
@@ -109,7 +106,10 @@ export default function NewItem() {
       snack.setIsOpen(true);
       snack.setMessage("Item successfully created.");
     });
-    navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
+    navigation.navigate("Root", {
+      screen: "Wardrobe",
+      params: { itemID: newItem.uuid },
+    });
   };
 
   return (
