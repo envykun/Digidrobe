@@ -13,24 +13,14 @@ import DigiButton from "@Components/Button/DigiButton";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { ColorsRGB } from "@Styles/colors";
+import { useGetQuote } from "@Hooks/useGetQuote";
 
 export default function Home() {
-  const [quote, setQuote] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const db = getDatabase();
   const { data: plannedOutfit, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
-
-  useEffect(() => {
-    const fetchURL = (url: string) => {
-      fetch(url)
-        .then((res) => res.json())
-        .then((data) => setQuote(data[0].q + " - " + data[0].a))
-        .catch((err) => console.log("An error occured.", err));
-    };
-
-    fetchURL("https://zenquotes.io/api/today");
-  }, []);
+  const { quote, isLoading: isLoadingQuote } = useGetQuote("https://zenquotes.io/api/today");
 
   useEffect(() => {
     // TODO: Fix this refetch for selected date.

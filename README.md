@@ -6,20 +6,20 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 
 ### Open TODOS:
 
-- [ ] Header Component
+- [x] Header Component
 - [ ] Edit Item
 - [ ] Delete Item
 - [ ] Outfit Details
 - [ ] Create Outfit -> Styling, UX (change how the category selection works)
 - [ ] Edit Outfit
 - [ ] Delete Outfit
-- [ ] Favorite Items -> Shortcut
+- [x] Favorite Items -> Shortcut
 - [ ] Saved Outfits -> Shortcut
 - [ ] Recent Worn Outfits
 - [ ] Worn logic (Count update, last worn update)
 - [ ] Plan outfit (How to plan a saved/created outfit)
 - [ ] Item Detail -> Saved Outfits
-- [ ] Item Detail -> Statics chart
+- [ ] Item Detail -> Statistics chart
 - [ ] Filterbar / Search -> Wardrobe, Outfitter
 - [ ] General styling
 - [ ] Error handling
