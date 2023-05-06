@@ -1,10 +1,12 @@
 import { View, StyleSheet, Dimensions } from "react-native";
 import ShortcutItem from "./ShortcutItem";
-import { SimpleLineIcons } from "@expo/vector-icons";
+import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "App";
 
 export default function ShortcutBox() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={styles.shortcutBox}>
       <ShortcutItem
@@ -13,14 +15,14 @@ export default function ShortcutBox() {
         onPress={() => navigation.navigate("NewItem" as never)}
       />
       <ShortcutItem
-        label="Outfits"
-        icon={<SimpleLineIcons name="badge" size={24} color="black" />}
-        onPress={() => navigation.navigate("Outfits" as never)}
-      />
-      <ShortcutItem
         label="Favorites"
         icon={<SimpleLineIcons name="heart" size={24} color="black" />}
-        onPress={() => navigation.navigate("Favorites" as never)}
+        onPress={() => navigation.navigate("Root", { screen: "Wardrobe", params: { favoriteFilter: true } })}
+      />
+      <ShortcutItem
+        label="Outfits"
+        icon={<Ionicons name="bookmark-outline" size={24} color="black" />}
+        onPress={() => navigation.navigate("Root", { screen: "Outfitter", params: {} })}
       />
       <ShortcutItem
         label="Recent"

@@ -81,4 +81,19 @@ export const getWardrobeItems = (db: SQLite.WebSQLDatabase) => {
   });
 };
 
-export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, itemID: string) => {};
+export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
+  const query = `UPDATE ${TableNames.WARDROBE} SET favorite = ${item.favorite} WHERE uuid = '${item.uuid}'`;
+  return new Promise<number | undefined>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        query,
+        [],
+        (_, res) => resolve(res.insertId),
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    })
+  );
+};

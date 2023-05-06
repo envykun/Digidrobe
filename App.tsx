@@ -39,6 +39,7 @@ export type BottomTabParamList = {
   Home: undefined;
   Wardrobe: {
     itemID?: string;
+    favoriteFilter?: boolean;
   };
   Outfitter: undefined;
   Statistic: undefined;

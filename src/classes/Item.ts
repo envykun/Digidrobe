@@ -174,6 +174,16 @@ export class Item implements ItemMetadata {
       return this.fabric?.join("; ");
     }
   }
+
+  public isFavorite(): boolean {
+    return this.favorite === 1 ? true : false;
+  }
+
+  public toggleFavorite(updateDatabase: () => void): number {
+    this.favorite = this.isFavorite() ? 0 : 1;
+    updateDatabase();
+    return this.favorite;
+  }
 }
 
 interface ConstructorInput {
