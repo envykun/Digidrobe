@@ -20,6 +20,7 @@ export class Item implements ItemMetadata {
   savedOutfits?: Array<any>;
   image?: string;
   color?: Array<string>;
+  favorite?: number;
 
   constructor({
     uuid,
@@ -38,6 +39,7 @@ export class Item implements ItemMetadata {
     image,
     color,
     savedOutfits,
+    favorite,
   }: ItemMetadata) {
     this.uuid = uuid;
     this.name = name && name !== "" ? name : this.brand && this.model ? `${this.brand} ${this.model}` : "Untitled";
@@ -54,6 +56,7 @@ export class Item implements ItemMetadata {
     this.notes = notes;
     this.image = image;
     this.color = color;
+    this.favorite = favorite;
   }
 
   public setImage(imgURL?: string) {
@@ -159,6 +162,7 @@ export class Item implements ItemMetadata {
       category: this.category ?? null,
       fabric: this.fabric ?? null,
       color: this.color ?? null,
+      favorite: this.favorite ?? 0,
     };
   }
 
