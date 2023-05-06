@@ -1,13 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@Screens/Home";
 import Wardrobe from "@Screens/Wardrobe";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import Statistic from "@Screens/Statistic";
 import Outfitter from "@Screens/Outfitter";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
 import ItemDetails from "@Screens/ItemDetails";
 import NewOutfit from "@Screens/NewOutfit";
 import Outfits from "@Screens/Outfits";
@@ -20,6 +20,7 @@ import { Item } from "@Classes/Item";
 import OutfitDetails from "@Screens/OutfitDetails";
 import { SnackbarContextProvider } from "@Context/SnackbarContext";
 import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
+import { Colors } from "@Styles/colors";
 
 export type RootStackParamList = {
   Root: any;
@@ -47,20 +48,104 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const tabOptions: BottomTabNavigationOptions = {};
+const headerOptions: NativeStackNavigationOptions = {
+  headerTitleAlign: "center",
+};
 
 function RootNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="ItemDetails" component={ItemDetails} options={({ route }) => ({ title: route.params?.item.name })} />
-        <Stack.Screen name="NewOutfit" component={NewOutfit} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="NewItem" component={NewItem} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="Outfits" component={Outfits} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="OutfitDetails" component={OutfitDetails} options={({ route }) => ({ title: route.params?.outfitId })} />
-        <Stack.Screen name="Favorites" component={Favorites} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="Recent" component={Recent} options={({ route }) => ({ title: route.params?.title })} />
-        <Stack.Screen name="UserSettings" component={UserSettings} options={({ route }) => ({ title: route.params?.title })} />
+      <Stack.Screen
+        name="Root"
+        component={BottomTabNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+        }}
+      >
+        <Stack.Screen
+          name="ItemDetails"
+          component={ItemDetails}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.item.name,
+            headerRight: ({ tintColor }) => (
+              <TouchableOpacity onPress={() => console.log("Edit")}>
+                <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="NewOutfit"
+          component={NewOutfit}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: "Create new Outfit",
+            headerRight: ({ tintColor }) => (
+              <TouchableOpacity>
+                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="NewItem"
+          component={NewItem}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
+            headerRight: ({ tintColor }) => (
+              <TouchableOpacity onPress={() => console.log("Create Item")}>
+                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="Outfits"
+          component={Outfits}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
+          name="OutfitDetails"
+          component={OutfitDetails}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.outfitId,
+          })}
+        />
+        <Stack.Screen
+          name="Favorites"
+          component={Favorites}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
+          name="Recent"
+          component={Recent}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
+          name="UserSettings"
+          component={UserSettings}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
+          })}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -72,31 +157,70 @@ function BottomTabNavigator() {
       safeAreaInsets={{ bottom: 8 }}
       screenOptions={() => ({
         tabBarActiveTintColor: "#E2C895",
+        headerTitleAlign: "center",
       })}
     >
       <Tab.Screen
         name="Home"
         component={Home}
-        options={{
+        options={({ navigation }) => ({
           ...tabOptions,
           tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
-          headerShown: false,
-        }}
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTitle: "D I G I D R O B E",
+          headerBackgroundContainerStyle: { backgroundColor: Colors.primary },
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("UserSettings")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <SimpleLineIcons name="user" size={24} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Wardrobe"
         component={Wardrobe}
-        options={{ ...tabOptions, tabBarIcon: ({ color, size }) => <AntDesign name="skin" size={size} color={color} /> }}
+        options={({ navigation }) => ({
+          ...tabOptions,
+          tabBarIcon: ({ color, size }) => <AntDesign name="skin" size={size} color={color} />,
+          headerStyle: { backgroundColor: Colors.primary },
+          headerLeft: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+              <Ionicons name="ios-filter" size={24} color={tintColor} />
+            </TouchableOpacity>
+          ),
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewItem")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Outfitter"
         component={Outfitter}
-        options={{ ...tabOptions, tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} /> }}
+        options={({ navigation }) => ({
+          ...tabOptions,
+          tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
+          headerStyle: { backgroundColor: Colors.primary },
+          headerLeft: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+              <Ionicons name="ios-filter" size={24} color={tintColor} />
+            </TouchableOpacity>
+          ),
+          headerRight: ({ tintColor, pressOpacity }) => (
+            <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
+              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Statistic"
         component={Statistic}
-        options={{ ...tabOptions, tabBarIcon: ({ focused, color, size }) => <AntDesign name="barschart" size={size} color={color} /> }}
+        options={{
+          ...tabOptions,
+          tabBarIcon: ({ focused, color, size }) => <AntDesign name="barschart" size={size} color={color} />,
+        }}
       />
     </Tab.Navigator>
   );

@@ -10,8 +10,8 @@ export interface OutfitItemPickerProps {
 
 export default function OutfitItemPicker({ outfit, onPress }: OutfitItemPickerProps) {
   const { width, height } = Dimensions.get("window");
-  const containerHeight = height * 0.6;
-  const paddingTop = 32;
+  const containerHeight = height * 0.8;
+  const paddingTop = 128;
   const paddingBottom = 128;
   const relHeight = containerHeight - paddingBottom - paddingTop;
   // TODO: Calculate positions

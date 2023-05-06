@@ -17,6 +17,7 @@ import { Category } from "@Models/Category";
 import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";
+import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 
 export default function NewItem() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -31,6 +32,16 @@ export default function NewItem() {
   const closeModal = () => {
     setIsBottomSheetOpen(false);
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ tintColor }: any) => (
+        <TouchableOpacity onPress={handleCreate}>
+          <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     getCategories(db, setCategories);
@@ -101,174 +112,87 @@ export default function NewItem() {
     navigation.navigate("Root", { screen: "Wardrobe", params: { itemID: newItem.uuid } });
   };
 
-  // return (
-  //   <SafeAreaView>
-  //     <ScrollView style={layout.scrollContainer} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
-  //       <View style={styles.image}>
-  //         {image ? (
-  //           <View style={{ width: "100%", height: "100%", position: "relative" }}>
-  //             <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-  //             <View
-  //               style={{
-  //                 position: "absolute",
-  //                 bottom: 12,
-  //                 right: 12,
-  //                 backgroundColor: "#ebebeb",
-  //                 borderRadius: 120,
-  //                 width: 48,
-  //                 height: 48,
-  //                 justifyContent: "center",
-  //                 alignItems: "center",
-  //                 elevation: 2,
-  //               }}
-  //             >
-  //               <TouchableOpacity
-  //                 onPress={() => {
-  //                   newItem.setImage(undefined);
-  //                   setImage(null);
-  //                 }}
-  //               >
-  //                 <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
-  //               </TouchableOpacity>
-  //             </View>
-  //           </View>
-  //         ) : (
-  //           <View style={styles.noImage}>
-  //             <ShortcutItem
-  //               label="Add Image"
-  //               icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-  //               onPress={() => setIsBottomSheetOpen(true)}
-  //             />
-  //           </View>
-  //         )}
-  //       </View>
-  //       <View style={styles.content}>
-  //         <View style={styles.description}>
-  //           <Text style={{ fontSize: 24 }}>Name</Text>
-  //           <Input
-  //             onChange={(text) => {
-  //               newItem.name = text;
-  //             }}
-  //           />
-  //         </View>
-  //         <View style={styles.details}>
-  //           {newItem.getConstructorKeys().map((prop) => (
-  //             <View key={prop.key} style={{ flex: 1 }}>
-  //               <DetailInput label={prop.label} inputProps={{ onChange: prop.setter, textInputProps: {} }} type={prop.inputType} />
-  //             </View>
-  //           ))}
-  //         </View>
-  //         <View style={{ marginVertical: 64, alignItems: "center" }}>
-  //           <Text style={{ color: "#E2C895" }} onPress={handleCreate}>
-  //             Save Item
-  //           </Text>
-  //         </View>
-  //       </View>
-  //       <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
-  //         <View style={styles.noImage}>
-  //           <ShortcutItem
-  //             label="Files"
-  //             icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
-  //             onPress={() => {
-  //               closeModal();
-  //               pickImage();
-  //             }}
-  //           />
-  //         </View>
-  //         <View style={styles.noImage}>
-  //           <ShortcutItem
-  //             label="Camera"
-  //             icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
-  //             onPress={() => {
-  //               closeModal();
-  //               takeImage();
-  //             }}
-  //           />
-  //         </View>
-  //       </BottomSheet>
-  //     </ScrollView>
-  //   </SafeAreaView>
-  // );
-
   return (
     <SafeAreaView>
-      <FlatList
-        removeClippedSubviews={false}
-        style={layout.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <>
-            <View style={styles.image}>
-              {image ? (
-                <View style={{ width: "100%", height: "100%", position: "relative" }}>
-                  <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-                  <View
-                    style={{
-                      position: "absolute",
-                      bottom: 42,
-                      right: 12,
-                      backgroundColor: "#ebebeb",
-                      borderRadius: 120,
-                      width: 48,
-                      height: 48,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      elevation: 2,
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => {
-                        newItem.setImage(undefined);
-                        setImage(null);
+      <ScrollContainer hideTitle disableRefresh>
+        <FlatList
+          removeClippedSubviews={false}
+          style={layout.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <>
+              <View style={styles.image}>
+                {image ? (
+                  <View style={{ width: "100%", height: "100%", position: "relative" }}>
+                    <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+                    <View
+                      style={{
+                        position: "absolute",
+                        bottom: 42,
+                        right: 12,
+                        backgroundColor: "#ebebeb",
+                        borderRadius: 120,
+                        width: 48,
+                        height: 48,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        elevation: 2,
                       }}
                     >
-                      <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          newItem.setImage(undefined);
+                          setImage(null);
+                        }}
+                      >
+                        <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              ) : (
-                <View style={styles.noImage}>
-                  <View style={{ height: 80 }}>
-                    <ShortcutItem
-                      label="Add Image"
-                      icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-                      onPress={() => setIsBottomSheetOpen(true)}
-                    />
+                ) : (
+                  <View style={styles.noImage}>
+                    <View style={{ height: 80 }}>
+                      <ShortcutItem
+                        label="Add Image"
+                        icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
+                        onPress={() => setIsBottomSheetOpen(true)}
+                      />
+                    </View>
                   </View>
-                </View>
-              )}
-            </View>
-            <View style={styles.description}>
-              <Text style={{ fontSize: 24 }}>Name</Text>
-              <Input
-                onChange={(text) => {
-                  if (!text) return;
-                  newItem.name = text;
-                }}
+                )}
+              </View>
+              <View style={styles.description}>
+                <Text style={{ fontSize: 24 }}>Name</Text>
+                <Input
+                  onChange={(text) => {
+                    if (!text) return;
+                    newItem.name = text;
+                  }}
+                />
+              </View>
+            </>
+          }
+          data={newItem.getConstructorKeys()}
+          renderItem={({ item: prop }) => (
+            <View style={{ flex: 1 }}>
+              <DetailInput
+                label={prop.label}
+                inputProps={{ onChange: prop.setter, textInputProps: { keyboardType: prop.keyboardType } }}
+                type={prop.inputType}
+                bottomSheetData={mapData(prop.key)}
               />
             </View>
-          </>
-        }
-        data={newItem.getConstructorKeys()}
-        renderItem={({ item: prop }) => (
-          <View style={{ flex: 1 }}>
-            <DetailInput
-              label={prop.label}
-              inputProps={{ onChange: prop.setter, textInputProps: { keyboardType: prop.keyboardType } }}
-              type={prop.inputType}
-              bottomSheetData={mapData(prop.key)}
-            />
-          </View>
-        )}
-        keyExtractor={(item) => item.key}
-        ListFooterComponent={
-          <View style={{ marginVertical: 64, alignItems: "center" }}>
-            <Text style={{ color: "#E2C895" }} onPress={handleCreate}>
-              Save Item
-            </Text>
-          </View>
-        }
-      />
+          )}
+          keyExtractor={(item) => item.key}
+          ListFooterComponent={
+            <View style={{ marginVertical: 64, alignItems: "center" }}>
+              <Text style={{ color: "#E2C895" }} onPress={handleCreate}>
+                Save Item
+              </Text>
+            </View>
+          }
+        />
+      </ScrollContainer>
       <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
         <View style={styles.sheetButton}>
           <ShortcutItem
