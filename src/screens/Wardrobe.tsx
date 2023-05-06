@@ -5,23 +5,24 @@ import FilterBar from "@Components/FilterBar/FilterBar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCategories, getDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BottomTabParamList } from "App";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabParamList, RootStackParamList } from "App";
 import { useGet } from "@Hooks/useGet";
 import { Ionicons } from "@expo/vector-icons";
-import { getWardrobeItems } from "@Database/item";
+import { getWardrobeItems, setItemAsFavorite } from "@Database/item";
 import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@Styles/colors";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
+  const db = getDatabase();
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
   const [refreshing, setRefreshing] = useState(false);
-  const db = getDatabase();
   const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
   const { data: categories, isLoading: loadingCategories, error: categoriesError, refetch: refetchCategories } = useGet(getCategories(db));
   const flatListRef = useRef<FlatList<Item> | null>();
-  const isFocused = useIsFocused();
-  const navigation = useNavigation();
+  // const isFocused = useIsFocused();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
 
   const toggleAdditionalFilter = () => {
@@ -53,9 +54,17 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
       });
   }, [wardrobe]);
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        navigation.setParams({ itemID: undefined, favoriteFilter: false });
+      };
+    }, [route])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
+      <LinearGradient colors={[Colors.primary, "transparent"]} style={{ alignItems: "center" }}>
         <FilterBar showAdditionalFilter isOpen={additionalFilterOpen}>
           <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
           {categories?.map((item) => (
@@ -67,9 +76,23 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         ref={(ref) => {
           flatListRef.current = ref;
         }}
-        data={activeFilter ? wardrobe?.filter((item) => item.category?.includes(activeFilter)) : wardrobe}
+        data={
+          activeFilter
+            ? wardrobe
+                ?.filter((item) => (route.params.favoriteFilter ? item.isFavorite() : item))
+                .filter((item) => item.category?.includes(activeFilter))
+            : wardrobe?.filter((item) => (route.params.favoriteFilter ? item.isFavorite() : item))
+        }
         numColumns={2}
-        renderItem={({ item }) => <Card item={item} />}
+        renderItem={({ item }) => (
+          <Card
+            item={item}
+            markAsFavoriteCallback={() => {
+              item.toggleFavorite(() => setItemAsFavorite(db, item));
+              handleRefetch();
+            }}
+          />
+        )}
         columnWrapperStyle={{ marginBottom: 8, paddingHorizontal: 16 }}
         style={{ height: "100%" }}
         getItemLayout={(data, index) => ({

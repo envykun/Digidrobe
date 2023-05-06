@@ -4,13 +4,13 @@ import { RootStackParamList } from "App";
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Item } from "src/classes/Item";
 import { Ionicons } from "@expo/vector-icons";
-import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 
 interface CardProps {
   item: Item;
+  markAsFavoriteCallback?: () => void;
 }
 
-export default function Card({ item }: CardProps) {
+export default function Card({ item, markAsFavoriteCallback }: CardProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <TouchableHighlight
@@ -31,8 +31,8 @@ export default function Card({ item }: CardProps) {
           <Text style={{ fontSize: 18 }}>{item.name}</Text>
           <Text style={{ fontStyle: "italic" }}>{item.brand}</Text>
         </View>
-        <TouchableOpacity onPress={() => console.log("TODO: Mark as favorite.")} style={styles.favorite}>
-          <Ionicons name="heart-outline" size={28} color="black" />
+        <TouchableOpacity onPress={markAsFavoriteCallback} style={styles.favorite}>
+          <Ionicons name={item.isFavorite() ? "heart" : "heart-outline"} size={28} color={item.isFavorite() ? "red" : "black"} />
         </TouchableOpacity>
       </>
     </TouchableHighlight>
