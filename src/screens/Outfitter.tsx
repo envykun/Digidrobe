@@ -9,7 +9,7 @@ import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const fakeOutfits: Array<string> = [
@@ -51,6 +51,7 @@ export default function Outfitter() {
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
   const { data: outfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const toggleAdditionalFilter = () => {
     setAdditionalFilterOpen((v) => !v);
@@ -66,9 +67,9 @@ export default function Outfitter() {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    refetch();
-  }, [isFocused]);
+  // useEffect(() => {
+  //   refetch();
+  // }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,6 +92,7 @@ export default function Outfitter() {
         contentContainerStyle={{ rowGap: 8, padding: 8 }}
         showsVerticalScrollIndicator={false}
         style={{ height: "100%" }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}
       />
     </SafeAreaView>
   );

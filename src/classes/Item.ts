@@ -1,4 +1,5 @@
 import { InputType } from "@Components/Inputs/DetailInput";
+import { setItemAsFavorite } from "@Database/item";
 import { ItemMetadata } from "@Models/Item";
 import { randomUUID } from "expo-crypto";
 import { KeyboardTypeOptions } from "react-native";
@@ -21,6 +22,7 @@ export class Item implements ItemMetadata {
   image?: string;
   color?: Array<string>;
   favorite?: number;
+  refresh?: () => void;
 
   constructor({
     uuid,
@@ -179,10 +181,8 @@ export class Item implements ItemMetadata {
     return this.favorite === 1 ? true : false;
   }
 
-  public toggleFavorite(updateDatabase: () => void): number {
+  public toggleFavorite() {
     this.favorite = this.isFavorite() ? 0 : 1;
-    updateDatabase();
-    return this.favorite;
   }
 }
 

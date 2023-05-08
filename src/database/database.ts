@@ -4,7 +4,7 @@ import { Item } from "src/classes/Item";
 import { Category } from "@Models/Category";
 import TestData from "./TestData.json";
 import { createItem } from "./item";
-import { createMultipleValues } from "./gererics";
+import { createMultipleValues } from "./generics";
 
 export const initDatabase = async () => {
   const db = SQLite.openDatabase("digidrobe.db");

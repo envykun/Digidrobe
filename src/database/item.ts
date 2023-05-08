@@ -2,7 +2,7 @@ import { Item } from "@Classes/Item";
 import * as SQLite from "expo-sqlite";
 import { TableNames } from "./database.definitions";
 import { ItemDataResponse } from "@Models/Item";
-import { createMultipleValues, createValueInTable, getValueById, getFromJunctionTableResolved } from "./gererics";
+import { createMultipleValues, createValueInTable, getValueById, getFromJunctionTableResolved } from "./generics";
 
 export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   const dbParsedItem = item.getDBParsedItem();
@@ -44,7 +44,7 @@ export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   );
 };
 
-export const getWardrobeItems = (db: SQLite.WebSQLDatabase) => {
+export const getWardrobeItems = async (db: SQLite.WebSQLDatabase) => {
   return new Promise<Item[]>((resolve, reject) => {
     db.transaction(
       (tx) =>
@@ -97,3 +97,5 @@ export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
     })
   );
 };
+
+export const updateWearCount = (db: SQLite.WebSQLDatabase, item: Item) => {};

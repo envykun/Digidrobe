@@ -68,8 +68,6 @@ export const getOutfitItemURLs = async (db: SQLite.WebSQLDatabase, outfitId: str
           const items: Array<ItemImagePreview> = res.rows._array.map((i: ItemImagePreview) => {
             return { uuid: i.uuid, name: i.name, imageURL: i.imageURL };
           });
-          console.log("IMGURLS", items);
-          console.log("#########BOII", res.rows._array);
           resolve(items.length > 0 ? items : undefined);
         },
         (t, error) => {

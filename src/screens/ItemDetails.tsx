@@ -1,5 +1,4 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl } from "react-native";
-import { layout } from "@Styles/global";
+import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import Detail from "@Components/Detail/Detail";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
@@ -9,12 +8,10 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { getDatabase } from "@Database/database";
 import { getOutfitsAsync } from "@Database/outfits";
-import { OutfitOverview } from "@Models/Outfit";
 import { useGet } from "@Hooks/useGet";
-import { useNavigation } from "@react-navigation/native";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { headerOnScrollTransition } from "@DigiUtils/helperFunctions";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
+import { Ionicons } from "@expo/vector-icons";
+import { setItemAsFavorite } from "@Database/item";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -31,6 +28,12 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
   const item = route.params.item;
   const db = getDatabase();
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
+
+  const handleFavoritePress = () => {
+    item.toggleFavorite();
+    setItemAsFavorite(db, item);
+    refetch();
+  };
 
   if (isLoading)
     return (
@@ -57,7 +60,12 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
       </View>
       <View style={styles.content}>
         <View style={styles.description}>
-          <Text style={{ fontSize: 24 }}>{item.name}</Text>
+          <View style={styles.descriptionInner}>
+            <Text style={{ fontSize: 24 }}>{item.name}</Text>
+            <TouchableOpacity onPress={handleFavoritePress} style={[]}>
+              <Ionicons name={item.isFavorite() ? "heart" : "heart-outline"} size={28} color={item.isFavorite() ? "red" : "black"} />
+            </TouchableOpacity>
+          </View>
           <View style={styles.descriptionInner}>
             <Text>{item.wears} times worn.</Text>
             <Text>Last worn: {formatTimeAgo(item.lastWorn)}</Text>

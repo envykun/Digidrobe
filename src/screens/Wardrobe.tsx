@@ -2,7 +2,7 @@ import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList,
 import Chip from "@Components/Chip/Chip";
 import Card from "@Components/Card/Card";
 import FilterBar from "@Components/FilterBar/FilterBar";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { getCategories, getDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
@@ -21,9 +21,10 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
   const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
   const { data: categories, isLoading: loadingCategories, error: categoriesError, refetch: refetchCategories } = useGet(getCategories(db));
   const flatListRef = useRef<FlatList<Item> | null>();
-  // const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+  const refresh = useReducer((x) => x + 1, 0)[1];
 
   const toggleAdditionalFilter = () => {
     setAdditionalFilterOpen((v) => !v);
@@ -39,27 +40,35 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
     });
   }, [navigation]);
 
-  const handleRefetch = useCallback(() => {
+  const handleRefetch = () => {
     refetchWardrobe();
     refetchCategories();
-  }, [refetchCategories, refetchWardrobe]);
+  };
+
+  useEffect(() => {
+    isFocused && handleRefetch();
+  }, [isFocused]);
 
   useEffect(() => {
     if (!wardrobe) return;
-    const scrollIndex = route.params?.itemID ? Math.floor(wardrobe.findIndex((i) => i.uuid === route.params.itemID) / 2) : -1;
-    scrollIndex !== -1 &&
-      flatListRef.current?.scrollToIndex({
-        animated: true,
-        index: scrollIndex,
-      });
-  }, [wardrobe]);
+    if (!route.params?.itemID) return;
+    const itemID = route.params.itemID;
+    const scrollIndex = Math.floor(wardrobe.findIndex((i) => i.uuid === itemID) / 2);
+    if (scrollIndex === -1) return;
+    flatListRef.current?.scrollToIndex({
+      animated: true,
+      index: scrollIndex,
+    });
+    navigation.setParams({ itemID: undefined });
+  }, [wardrobe, route]);
 
   useFocusEffect(
     useCallback(() => {
       return () => {
-        navigation.setParams({ itemID: undefined, favoriteFilter: false });
+        navigation.setParams({ favoriteFilter: false });
+        flatListRef.current?.scrollToOffset({ animated: false, offset: 0 });
       };
-    }, [route])
+    }, [navigation, flatListRef.current])
   );
 
   return (
@@ -79,17 +88,18 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         data={
           activeFilter
             ? wardrobe
-                ?.filter((item) => (route.params.favoriteFilter ? item.isFavorite() : item))
+                ?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
                 .filter((item) => item.category?.includes(activeFilter))
-            : wardrobe?.filter((item) => (route.params.favoriteFilter ? item.isFavorite() : item))
+            : wardrobe?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
         }
         numColumns={2}
         renderItem={({ item }) => (
           <Card
             item={item}
             markAsFavoriteCallback={() => {
-              item.toggleFavorite(() => setItemAsFavorite(db, item));
-              handleRefetch();
+              item.toggleFavorite();
+              setItemAsFavorite(db, item);
+              refresh();
             }}
           />
         )}
@@ -102,8 +112,8 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         })}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />}
         ListEmptyComponent={
-          <View>
-            <Text>EMPTY</Text>
+          <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+            <Text style={{ fontSize: 16 }}>No clothing.</Text>
           </View>
         }
       />

@@ -1,22 +1,30 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useGet = <T,>(dbFetch: Promise<T>) => {
   const [data, setData] = useState<T | undefined>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
 
-  const refetch = useCallback(() => {
+  const fetchData = async () => {
     setIsLoading(true);
     setError(null);
     dbFetch
-      .then((res) => setData(res))
+      .then((res) => {
+        setData(res);
+      })
       .catch((err) => setError(err))
-      .finally(() => setIsLoading(false));
-  }, []);
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const refetch = () => {
+    fetchData();
+  };
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    fetchData();
+  }, []);
 
   return { data, isLoading, error, refetch };
 };
