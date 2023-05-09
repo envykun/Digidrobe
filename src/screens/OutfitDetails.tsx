@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { View, StyleSheet, Image, Text, TouchableOpacity, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 
 type OutfitDetailsProps = NativeStackScreenProps<RootStackParamList, "OutfitDetails">;
 
@@ -48,13 +49,15 @@ export default function OutfitDetails({ route }: OutfitDetailsProps) {
             <Text>Last worn: -</Text>
           </View>
         </View>
+        <View style={styles.buttonsContainer}>
+          <DateTimePickerInput text="Plan" />
+          <DateTimePickerInput text="Add Wear" />
+        </View>
         <View style={styles.details}>
-          <Detail label="Cost" value={1337} suffix="€" />
-          <Detail label="Cost" value={1337} suffix="€" />
-          <Detail label="Cost" value={1337} suffix="€" />
-          <Detail label="Cost" value={1337} suffix="€" />
-          <Detail label="Cost" value={1337} suffix="€" />
-          <Detail label="Cost" value={1337} suffix="€" />
+          <Detail label="Total Cost" value={1337} suffix="€" />
+          <Detail label="Items" value={7} />
+          <Detail label="Colors" value={"Beige, Grün"} />
+          <Detail label="Tags" value={"Sommer, luftig"} />
         </View>
         <View style={styles.details}>
           {outfit.itemImageURLs?.map((item) => (
@@ -96,5 +99,10 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 8,
     rowGap: 8,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 16,
   },
 });
