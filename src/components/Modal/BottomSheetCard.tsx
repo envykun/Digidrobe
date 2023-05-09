@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, StyleSheet, Image, Text } from "react-native";
-import { BottomSheetItem } from "./BottomSheet.interface";
+import { BottomSheetItemProps } from "./BottomSheet.interface";
 
-export default function BottomSheetCard({ label, onPress, imageURL, twoColumn = false }: BottomSheetItem) {
+export default function BottomSheetCard({ label, onPress, imageURL, twoColumn = false }: BottomSheetItemProps) {
   return (
     <TouchableOpacity activeOpacity={0.6} style={twoColumn ? styles.twoColumnContainer : styles.bottomSheetCardContainer} onPress={onPress}>
       <View style={styles.image}>

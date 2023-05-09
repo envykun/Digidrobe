@@ -193,6 +193,10 @@ export default function NewOutfit() {
               icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
               onPress={() => setIsBottomSheetOpen2(true)}
             />
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+              <Ionicons name="information-circle" color={"grey"} size={24} />
+              <Text>Ziehe dein geplantes Outfit an und mache ein Foto.</Text>
+            </View>
           </View>
         )}
       </View>

@@ -1,7 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import { Outfit } from "@Classes/Outfit";
 import { TableNames } from "./database.definitions";
-import { OutfitCategoryProp } from "@Components/Box/OutfitCategory";
 import { ItemImagePreview, OutfitDatabaseData, OutfitOverview } from "@Models/Outfit";
 
 // CREATE
@@ -10,8 +9,8 @@ export const createOutfit = (db: SQLite.WebSQLDatabase, outfit: Outfit) => {
 
   db.transaction((tx) => {
     tx.executeSql(
-      `INSERT INTO ${TableNames.OUTFITS} (uuid, name, imageURL) VALUES (?,?,?)`,
-      [preparedOutfit.uuid, preparedOutfit.name, preparedOutfit.imageURL],
+      `INSERT INTO ${TableNames.OUTFITS} (uuid, name, imageURL, bookmarked) VALUES (?,?,?,?)`,
+      [preparedOutfit.uuid, preparedOutfit.name, preparedOutfit.imageURL, preparedOutfit.bookmarked],
       (txObj, resultSet) => console.log("Success", resultSet),
       (txObj, error) => {
         console.log("Error", txObj, error);

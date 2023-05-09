@@ -8,17 +8,18 @@ import { useGet } from "@Hooks/useGet";
 import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import SnackbarContext from "@Context/SnackbarContext";
 
-const fakeOutfits: Array<string> = [
-  "Outfit 1",
-  "Outfit 2",
-  "Outfit 3",
-  "Outfit 4",
-  "Outfit 5",
-  "Outfit 6",
+const fakeTags: Array<string> = [
+  "Sommer",
+  "Winter",
+  "Leicht Bekleidet",
+  "Modisch",
+  "Datenight",
+  "Schick",
   "Outfit 7",
   "Outfit 8",
   "Outfit 9",
@@ -48,6 +49,7 @@ export default function Outfitter() {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const db = getDatabase();
+  const snack = useContext(SnackbarContext);
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
   const { data: outfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
@@ -67,9 +69,18 @@ export default function Outfitter() {
     });
   }, [navigation]);
 
-  // useEffect(() => {
-  //   refetch();
-  // }, [isFocused]);
+  useEffect(() => {
+    refetch();
+  }, [isFocused]);
+
+  const handlePlanOutfit = (date?: Date, outfitName?: string) => {
+    // TODO: Add to planned list
+    if (!snack || !date || !outfitName) return;
+    snack.setIsOpen(true);
+    snack.setMessage(
+      `Planned '${outfitName}' for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}.`
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,18 +92,31 @@ export default function Outfitter() {
           additionalChildren={<ListHeaderComponent onChange={setSearchQuery} />}
         >
           <Chip label="All" active={true} />
-          {fakeOutfits.map((item) => (
+          {fakeTags.map((item) => (
             <Chip key={item} label={item} />
           ))}
         </FilterBar>
       </LinearGradient>
       <FlatList
         data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
-        renderItem={({ item }) => <PlannedOutfit label={item.name} outfitImage={item.imageURL} itemImages={item.itemImageURLs} />}
-        contentContainerStyle={{ rowGap: 8, padding: 8 }}
+        renderItem={({ item }) => (
+          <PlannedOutfit
+            label={item.name}
+            outfitImage={item.imageURL}
+            itemImages={item.itemImageURLs}
+            outfit={item}
+            planOutfitCallback={(date) => handlePlanOutfit(date, item.name)}
+          />
+        )}
+        contentContainerStyle={{ rowGap: 16, padding: 8 }}
         showsVerticalScrollIndicator={false}
         style={{ height: "100%" }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}
+        ListEmptyComponent={
+          <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+            <Text style={{ fontSize: 16 }}>{isLoading ? "Loading..." : "No clothing."}</Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );

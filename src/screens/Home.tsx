@@ -44,7 +44,13 @@ export default function Home() {
         {isLoading && <Text>Loading...</Text>}
         {plannedOutfit && plannedOutfit.length > 0 ? (
           plannedOutfit.map((outfit) => (
-            <PlannedOutfit key={outfit.uuid} label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.itemImageURLs} />
+            <PlannedOutfit
+              key={outfit.uuid}
+              label={outfit.name}
+              outfitImage={outfit.imageURL}
+              itemImages={outfit.itemImageURLs}
+              outfit={outfit}
+            />
           ))
         ) : (
           <View style={styles.plannedOutfitBox}>

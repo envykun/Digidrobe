@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "@Screens/Home";
 import Wardrobe from "@Screens/Wardrobe";
-import { AntDesign, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, SimpleLineIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Statistic from "@Screens/Statistic";
 import Outfitter from "@Screens/Outfitter";
 import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -21,6 +21,7 @@ import OutfitDetails from "@Screens/OutfitDetails";
 import { SnackbarContextProvider } from "@Context/SnackbarContext";
 import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
 import { Colors } from "@Styles/colors";
+import { OutfitOverview } from "@Models/Outfit";
 
 export type RootStackParamList = {
   Root: any;
@@ -28,7 +29,7 @@ export type RootStackParamList = {
   NewOutfit: any;
   NewItem: any;
   Outfits: any;
-  OutfitDetails: { outfitId?: string };
+  OutfitDetails: { outfit: OutfitOverview };
   Favorites: any;
   Recent: any;
   UserSettings: any;
@@ -120,7 +121,12 @@ function RootNavigator() {
           component={OutfitDetails}
           options={({ route }) => ({
             ...headerOptions,
-            title: route.params?.outfitId,
+            title: route.params?.outfit.name,
+            headerRight: ({ tintColor }) => (
+              <TouchableOpacity onPress={() => console.log("Edit")}>
+                <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+              </TouchableOpacity>
+            ),
           })}
         />
         <Stack.Screen
@@ -182,7 +188,7 @@ function BottomTabNavigator() {
         component={Wardrobe}
         options={({ navigation }) => ({
           ...tabOptions,
-          tabBarIcon: ({ color, size }) => <AntDesign name="skin" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="wardrobe-outline" size={size} color={color} />,
           headerStyle: { backgroundColor: Colors.primary },
           headerLeft: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
@@ -201,7 +207,7 @@ function BottomTabNavigator() {
         component={Outfitter}
         options={({ navigation }) => ({
           ...tabOptions,
-          tabBarIcon: ({ color, size }) => <AntDesign name="home" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <AntDesign name="skin" size={size} color={color} />,
           headerStyle: { backgroundColor: Colors.primary },
           headerLeft: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>

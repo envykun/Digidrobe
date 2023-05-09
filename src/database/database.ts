@@ -77,3 +77,7 @@ export const wipeOutfits = (db: SQLite.WebSQLDatabase) => {
   db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFITS}`));
   db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFIT_CATEGORY_WARDROBE}`));
 };
+
+export const dropOutfits = (db: SQLite.WebSQLDatabase) => {
+  db.transaction((tx) => tx.executeSql(`DROP TABLE IF EXISTS ${TableNames.OUTFITS}`));
+};

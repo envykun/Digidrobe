@@ -1,5 +1,3 @@
-import { OutfitCategoryProp } from "@Components/Box/OutfitCategory";
-import { Category } from "@Models/Category";
 import { IOutfit, PreparedForDatabaseOutfit } from "@Models/Outfit";
 import { Item } from "./Item";
 import { OutfitCategoryType, OutfitMap } from "src/screens/NewOutfit";
@@ -11,13 +9,15 @@ export class Outfit {
   name?: string;
   refresh?: () => void;
   planned?: Date;
+  bookmarked?: boolean;
 
-  constructor({ uuid, refresh, imageURL, name, items }: IOutfit) {
+  constructor({ uuid, refresh, imageURL, name, items, bookmarked }: IOutfit) {
     this.uuid = uuid;
     this.refresh = refresh;
     this.imageURL = imageURL;
     this.name = name;
     this.items = items ?? new Map();
+    this.bookmarked = bookmarked ?? false;
   }
 
   public addItem(category: OutfitCategoryType, item: Item) {
@@ -65,6 +65,7 @@ export class Outfit {
       name: this.name ?? "Default Name",
       imageURL: this.imageURL ?? null,
       data: Array.from(this.items, ([o, i]) => ({ category: o, itemIDs: i.map((item) => item.uuid) })),
+      bookmarked: this.bookmarked ? 1 : 0,
     };
   }
 
@@ -81,5 +82,9 @@ export class Outfit {
 
   public getPlannedDate() {
     return this.planned;
+  }
+
+  public toggleBookmark() {
+    this.bookmarked = !this.bookmarked;
   }
 }

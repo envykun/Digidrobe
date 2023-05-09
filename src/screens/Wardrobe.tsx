@@ -113,7 +113,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />}
         ListEmptyComponent={
           <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
-            <Text style={{ fontSize: 16 }}>No clothing.</Text>
+            <Text style={{ fontSize: 16 }}>{loadingWardrobe || loadingCategories ? "Loading..." : "No clothing."}</Text>
           </View>
         }
       />

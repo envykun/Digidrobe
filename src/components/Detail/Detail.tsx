@@ -12,7 +12,7 @@ export default function Detail({ label, value, suffix, editable }: DetailProps) 
       <Text style={{ fontSize: 16, fontWeight: "100" }}>{label}</Text>
       <Text style={{ fontSize: 16, maxWidth: 240 }}>
         {value ?? "-"}
-        {value && suffix}
+        {value || value === 0 ? suffix : null}
       </Text>
     </View>
   );

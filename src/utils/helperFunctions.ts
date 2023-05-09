@@ -1,6 +1,6 @@
 import { NavigationProp } from "@react-navigation/native";
 import { formatRelative, formatDistanceToNow } from "date-fns";
-import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
+import { Dimensions, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 export const calculateCostPerWear = (cost: number, wear: number) => {
   return (cost / wear).toFixed(2);
@@ -114,6 +114,11 @@ interface ICategoryTranslation {
   de: CategoryIDs;
 }
 
+/**
+ * TOPS
+ * BOTTOMS
+ * SHOES
+ */
 const categoryTranslation: ICategoryTranslation = {
   en: {
     1: "Headpiece",
@@ -160,4 +165,16 @@ export const headerOnScrollTransition = ({ event, navigation, headerHeight, head
     },
     headerShadowVisible: headerOpacity == 1 ? true : false,
   });
+};
+
+export interface ICalculateOutfitContainerSize {
+  inset: number;
+  gap: number;
+}
+export const calculateOutfitContainerSize = ({ inset, gap }: ICalculateOutfitContainerSize) => {
+  const outfitImageWidth = (Dimensions.get("screen").width - 2 * inset - gap) / 2;
+  const itemImageWidth = (outfitImageWidth - gap) / 2;
+  const outfitImageHeight = itemImageWidth * 3 + 2 * gap;
+  const itemImageHeight = itemImageWidth;
+  return { outfitImageWidth, outfitImageHeight, itemImageWidth, itemImageHeight };
 };

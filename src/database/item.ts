@@ -81,6 +81,43 @@ export const getWardrobeItems = async (db: SQLite.WebSQLDatabase) => {
   });
 };
 
+export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, uuid: string) => {
+  return new Promise<Item[]>((resolve, reject) => {
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT * FROM wardrobe WHERE uuid='${uuid}'`, [], async (t, res) => {
+          const wardrobe = await Promise.all(
+            res.rows._array.map(async (item: ItemDataResponse) => {
+              return new Item({
+                uuid: item.uuid,
+                name: item.name,
+                wears: item.wears,
+                lastWorn: item.last_worn ?? undefined,
+                cost: item.cost ?? undefined,
+                brand: await getValueById(db, item.brand, TableNames.BRANDS),
+                model: item.model ?? undefined,
+                size: item.size ?? undefined,
+                bought: item.bought_date ?? undefined,
+                boughtFrom: await getValueById(db, item.bought_from, TableNames.BOUGHT_FROM),
+                notes: item.notes ?? undefined,
+                image: item.imageURL ?? undefined,
+                category: (await getFromJunctionTableResolved(db, item.uuid, "categories")) ?? undefined,
+                fabric: (await getFromJunctionTableResolved(db, item.uuid, "fabrics")) ?? undefined,
+                color: (await getFromJunctionTableResolved(db, item.uuid, "colors")) ?? undefined,
+                favorite: item.favorite,
+              });
+            })
+          );
+          resolve(wardrobe.sort((a, b) => a.name.localeCompare(b.name)));
+        }),
+      (error) => {
+        reject(error);
+        return false;
+      }
+    );
+  });
+};
+
 export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
   const query = `UPDATE ${TableNames.WARDROBE} SET favorite = ${item.favorite} WHERE uuid = '${item.uuid}'`;
   return new Promise<number | undefined>((resolve, reject) =>

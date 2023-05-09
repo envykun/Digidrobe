@@ -5,16 +5,20 @@ import { Ionicons } from "@expo/vector-icons";
 
 interface DateTimePickerInputProps {
   onChange?: (value?: Date) => void;
+  text?: string;
+  iconSize?: number;
 }
 
-export default function DateTimePickerInput({ onChange }: DateTimePickerInputProps) {
+export default function DateTimePickerInput({ onChange, text, iconSize }: DateTimePickerInputProps) {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShow(false);
-    selectedDate && setDate(selectedDate);
-    onChange && onChange(selectedDate);
+    if (event.type === "set") {
+      selectedDate && setDate(selectedDate);
+      onChange && onChange(selectedDate);
+    }
   };
 
   const showDatePicker = () => {
@@ -24,9 +28,9 @@ export default function DateTimePickerInput({ onChange }: DateTimePickerInputPro
   return (
     <View style={{ height: 40, justifyContent: "center" }}>
       <TouchableOpacity onPress={showDatePicker} style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-        <Ionicons name="ios-calendar-outline" size={20} color="black" />
+        <Ionicons name="ios-calendar-outline" size={iconSize ?? 20} color="black" />
         <Text style={{ fontSize: 16, maxWidth: 240 }}>
-          {date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
+          {text ? text : date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
         </Text>
       </TouchableOpacity>
       {show && (

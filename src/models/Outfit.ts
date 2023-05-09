@@ -1,5 +1,3 @@
-import { Item } from "@Classes/Item";
-import { OutfitCategoryProp } from "@Components/Box/OutfitCategory";
 import { OutfitMap } from "src/screens/NewOutfit";
 
 export interface IOutfit {
@@ -8,6 +6,7 @@ export interface IOutfit {
   imageURL?: string;
   name?: string;
   items?: OutfitMap;
+  bookmarked?: boolean;
 }
 
 export interface OutfitOverview {
@@ -29,4 +28,5 @@ export interface PreparedForDatabaseOutfit {
   name: string;
   imageURL: string | null;
   data: Array<OutfitDatabaseData>;
+  bookmarked: number;
 }

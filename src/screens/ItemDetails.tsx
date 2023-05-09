@@ -111,7 +111,7 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
           {savedOutfits
             ?.filter((outfit) => outfit.itemImageURLs?.some((i) => item.uuid === i.uuid))
             .map((o) => (
-              <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} />
+              <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} outfit={o} />
             ))}
         </View>
         <View style={{ marginVertical: 64, alignItems: "center" }}>
