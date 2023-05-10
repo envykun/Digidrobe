@@ -35,39 +35,6 @@ const fakeTags: Array<string> = [
   "Outfit 10",
 ];
 
-interface ListHeaderComponentProps {
-  onChange?: (value?: string) => void;
-}
-const ListHeaderComponent = ({ onChange }: ListHeaderComponentProps) => {
-  return (
-    <View style={{ gap: 8, backgroundColor: "yellow" }}>
-      <View style={{ flexDirection: "row", height: 40 }}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "purple",
-          }}
-        >
-          <Text>Sort By</Text>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "aqua",
-          }}
-        >
-          <Text>Filter By</Text>
-        </View>
-      </View>
-      <Input placeholder="Search outfit..." onChange={onChange} />
-    </View>
-  );
-};
-
 export default function Outfitter() {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -128,7 +95,7 @@ export default function Outfitter() {
           showAdditionalFilter={true}
           isOpen={additionalFilterOpen}
           onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
-          additionalChildren={<ListHeaderComponent onChange={setSearchQuery} />}
+          additionalFilterProps={{ onSearchQuery: setSearchQuery }}
         >
           <Chip label="All" active={true} />
           {fakeTags.map((item) => (

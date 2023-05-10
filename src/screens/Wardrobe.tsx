@@ -57,6 +57,8 @@ export default function Wardrobe({
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const refresh = useReducer((x) => x + 1, 0)[1];
 
+  const [sortedWardrobe, setSortedWardrobe] = useState(wardrobe);
+
   const toggleAdditionalFilter = () => {
     setAdditionalFilterOpen((v) => !v);
   };
@@ -111,42 +113,45 @@ export default function Wardrobe({
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[Colors.primary, "transparent"]}
-        style={{ alignItems: "center" }}
+      <FilterBar
+        showAdditionalFilter
+        isOpen={additionalFilterOpen}
+        additionalFilterProps={{
+          itemData: wardrobe,
+          dataCallback: setSortedWardrobe,
+        }}
       >
-        <FilterBar showAdditionalFilter isOpen={additionalFilterOpen}>
-          <Chip
-            label="All"
-            active={!activeFilter}
-            onPress={() => setActiveFilter(undefined)}
-          />
-          {loadingCategories
-            ? Array.from({ length: 6 }).map((_, idx) => (
-                <Skeleton key={idx} variant="rounded" />
-              ))
-            : categories?.map((item) => (
-                <Chip
-                  key={item.id}
-                  label={item.label}
-                  active={activeFilter === item.label}
-                  onPress={() => setActiveFilter(item.label)}
-                />
-              ))}
-        </FilterBar>
-      </LinearGradient>
+        <Chip
+          label="All"
+          active={!activeFilter}
+          onPress={() => setActiveFilter(undefined)}
+        />
+        {loadingCategories
+          ? Array.from({ length: 6 }).map((_, idx) => (
+              <Skeleton key={idx} variant="rounded" />
+            ))
+          : categories?.map((item) => (
+              <Chip
+                key={item.id}
+                label={item.label}
+                active={activeFilter === item.label}
+                onPress={() => setActiveFilter(item.label)}
+              />
+            ))}
+      </FilterBar>
       <FlatList
         ref={(ref) => {
           flatListRef.current = ref;
         }}
+        onScroll={() => setAdditionalFilterOpen(false)}
         data={
           activeFilter
-            ? wardrobe
+            ? sortedWardrobe
                 ?.filter((item) =>
                   route.params?.favoriteFilter ? item.isFavorite() : item
                 )
                 .filter((item) => item.category?.includes(activeFilter))
-            : wardrobe?.filter((item) =>
+            : sortedWardrobe?.filter((item) =>
                 route.params?.favoriteFilter ? item.isFavorite() : item
               )
         }

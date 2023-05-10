@@ -1,10 +1,20 @@
-import { PropsWithChildren, ReactElement } from "react";
-import { ScrollView, StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
+import { PropsWithChildren, ReactElement, useEffect, useRef } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  Animated,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@Styles/colors";
+import AdditionalFilter, { AdditionalFilterProps } from "./AdditionalFilter";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface FilterBarProps {
   showAdditionalFilter?: boolean;
+  additionalFilterProps?: Partial<AdditionalFilterProps>;
   isOpen?: boolean;
   onPress?: () => void;
   additionalChildren?: ReactElement;
@@ -16,20 +26,69 @@ export default function FilterBar({
   isOpen,
   onPress,
   additionalChildren,
+  additionalFilterProps,
 }: PropsWithChildren<FilterBarProps>) {
+  const additionalFilterAnim = useRef(new Animated.Value(0)).current;
+
+  const showAdditionalFilterAnim = () => {
+    Animated.timing(additionalFilterAnim, {
+      toValue: 1,
+      useNativeDriver: false,
+      duration: 150,
+    }).start();
+  };
+
+  const hideAdditionalFilterAnim = () => {
+    Animated.timing(additionalFilterAnim, {
+      toValue: 0,
+      useNativeDriver: false,
+      duration: 150,
+    }).start();
+  };
+
+  useEffect(() => {
+    isOpen ? showAdditionalFilterAnim() : hideAdditionalFilterAnim();
+  }, [isOpen]);
+
   return (
     <>
-      <View style={styles.container}>
-        {/* {showAdditionalFilter && (
-          <TouchableOpacity style={[styles.additionalFilter, isOpen && styles.active]} onPress={onPress}>
-            <Ionicons name="ios-filter" size={24} color="black" />
-          </TouchableOpacity>
-        )} */}
-        <ScrollView horizontal contentContainerStyle={styles.filterBar}>
-          {children}
-        </ScrollView>
-      </View>
-      {isOpen && <View style={styles.additionalChildren}>{additionalChildren}</View>}
+      <LinearGradient
+        colors={[Colors.primary, "white"]}
+        style={{ alignItems: "center", zIndex: 4 }}
+      >
+        <View style={styles.container}>
+          <ScrollView horizontal contentContainerStyle={styles.filterBar}>
+            {children}
+          </ScrollView>
+        </View>
+      </LinearGradient>
+      {showAdditionalFilter && (
+        <Animated.View
+          style={[
+            styles.additionalChildren,
+            {
+              transform: [
+                {
+                  translateY: additionalFilterAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-100, 0],
+                  }),
+                },
+              ],
+            },
+            {
+              maxHeight: additionalFilterAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 90],
+              }),
+            },
+          ]}
+        >
+          {additionalChildren ?? (
+            <AdditionalFilter {...additionalFilterProps} />
+          )}
+        </Animated.View>
+      )}
     </>
   );
 }
@@ -45,7 +104,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    // backgroundColor: Colors.primary,
   },
   additionalFilter: {
     marginLeft: 8,
@@ -60,5 +118,6 @@ const styles = StyleSheet.create({
   additionalChildren: {
     width: Dimensions.get("window").width,
     paddingHorizontal: 8,
+    zIndex: 1,
   },
 });

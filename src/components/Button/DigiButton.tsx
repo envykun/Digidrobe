@@ -1,6 +1,12 @@
 import { Colors } from "@Styles/colors";
 import { ReactNode } from "react";
-import { Button, GestureResponderEvent, TouchableHighlight, StyleSheet, Text } from "react-native";
+import {
+  Button,
+  GestureResponderEvent,
+  TouchableHighlight,
+  StyleSheet,
+  Text,
+} from "react-native";
 
 interface DigiButtonProps {
   title: string;
@@ -11,18 +17,34 @@ interface DigiButtonProps {
 
 type DigiButtonVariant = "default" | "outline" | "contained" | "text";
 
-export default function DigiButton({ title, onPress, variant = "default", icon }: DigiButtonProps) {
+export default function DigiButton({
+  title,
+  onPress,
+  variant = "default",
+  icon,
+}: DigiButtonProps) {
   switch (variant) {
     case "contained":
     case "outline":
       return (
-        <TouchableHighlight underlayColor="#dddddd" onPress={onPress} style={styles.variantOutline}>
-          <Text>{title}</Text>
+        <TouchableHighlight
+          underlayColor="#dddddd"
+          onPress={onPress}
+          style={[styles.button, styles.variantOutline]}
+        >
+          <>
+            {icon}
+            <Text>{title}</Text>
+          </>
         </TouchableHighlight>
       );
     case "text":
       return (
-        <TouchableHighlight underlayColor="#dddddd" onPress={onPress} style={[styles.button, styles.variantText]}>
+        <TouchableHighlight
+          underlayColor="#dddddd"
+          onPress={onPress}
+          style={[styles.button, styles.variantText]}
+        >
           <>
             {icon}
             <Text style={styles.title}>{title}</Text>
@@ -41,10 +63,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     columnGap: 4,
     alignItems: "center",
+    justifyContent: "center",
   },
   variantText: {},
   variantContained: {},
-  variantOutline: {},
+  variantOutline: {
+    borderWidth: 1,
+  },
   title: {
     fontSize: 16,
     color: Colors.primary,
