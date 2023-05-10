@@ -9,9 +9,18 @@ import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useContext, useEffect, useState } from "react";
-import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
+import {
+  FlatList,
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SnackbarContext from "@Context/SnackbarContext";
+import Skeleton from "@Components/Skeleton/Skeleton";
 
 const fakeTags: Array<string> = [
   "Sommer",
@@ -33,10 +42,24 @@ const ListHeaderComponent = ({ onChange }: ListHeaderComponentProps) => {
   return (
     <View style={{ gap: 8, backgroundColor: "yellow" }}>
       <View style={{ flexDirection: "row", height: 40 }}>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "purple" }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "purple",
+          }}
+        >
           <Text>Sort By</Text>
         </View>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "aqua" }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "aqua",
+          }}
+        >
           <Text>Filter By</Text>
         </View>
       </View>
@@ -51,7 +74,12 @@ export default function Outfitter() {
   const db = getDatabase();
   const snack = useContext(SnackbarContext);
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
-  const { data: outfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
+  const {
+    data: outfits,
+    isLoading: loadingOutfits,
+    error,
+    refetch,
+  } = useGet(getOutfitsAsync(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -62,7 +90,11 @@ export default function Outfitter() {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: ({ tintColor, pressOpacity }: any) => (
-        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
+        <TouchableOpacity
+          onPress={toggleAdditionalFilter}
+          activeOpacity={pressOpacity}
+          style={{ marginLeft: 16 }}
+        >
           <Ionicons name="ios-filter" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
@@ -78,13 +110,20 @@ export default function Outfitter() {
     if (!snack || !date || !outfitName) return;
     snack.setIsOpen(true);
     snack.setMessage(
-      `Planned '${outfitName}' for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}.`
+      `Planned '${outfitName}' for ${date.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })}.`
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
+      <LinearGradient
+        colors={["#E2C895", "transparent"]}
+        style={{ alignItems: "center" }}
+      >
         <FilterBar
           showAdditionalFilter={true}
           isOpen={additionalFilterOpen}
@@ -98,7 +137,13 @@ export default function Outfitter() {
         </FilterBar>
       </LinearGradient>
       <FlatList
-        data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
+        data={
+          searchQuery
+            ? outfits?.filter((outfit) =>
+                outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : outfits
+        }
         renderItem={({ item }) => (
           <PlannedOutfit
             label={item.name}
@@ -111,11 +156,32 @@ export default function Outfitter() {
         contentContainerStyle={{ rowGap: 16, padding: 8 }}
         showsVerticalScrollIndicator={false}
         style={{ height: "100%" }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refetch} />
+        }
         ListEmptyComponent={
-          <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
-            <Text style={{ fontSize: 16 }}>{isLoading ? "Loading..." : "No clothing."}</Text>
-          </View>
+          loadingOutfits ? (
+            <View style={{ paddingHorizontal: 8, gap: 16 }}>
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <Skeleton
+                  key={idx}
+                  variant="rounded"
+                  height={260}
+                  width={"100%"}
+                />
+              ))}
+            </View>
+          ) : (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>No clothing.</Text>
+            </View>
+          )
         }
       />
     </SafeAreaView>

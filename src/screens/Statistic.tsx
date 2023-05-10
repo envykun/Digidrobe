@@ -1,4 +1,5 @@
 import DigiButton from "@Components/Button/DigiButton";
+import Skeleton from "@Components/Skeleton/Skeleton";
 import Snackbar from "@Components/Snackbar/Snackbar";
 import WorkInProgress from "@Components/WIP";
 import { useState } from "react";
@@ -8,7 +9,12 @@ import { MultiSelect } from "react-native-element-dropdown";
 
 export default function Statistic() {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(["italy", "spain", "barcelona", "finland"]);
+  const [value, setValue] = useState([
+    "italy",
+    "spain",
+    "barcelona",
+    "finland",
+  ]);
   const [value2, setValue2] = useState<any>(null);
   const [items, setItems] = useState([
     { label: "Spain", value: "spain" },
@@ -43,7 +49,15 @@ export default function Statistic() {
         searchable={true}
         multiple={true}
         mode="BADGE"
-        badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
+        badgeDotColors={[
+          "#e76f51",
+          "#00b4d8",
+          "#e9c46a",
+          "#e76f51",
+          "#8ac926",
+          "#00b4d8",
+          "#e9c46a",
+        ]}
         listMode="SCROLLVIEW"
         scrollViewProps={{
           nestedScrollEnabled: true,
@@ -79,6 +93,8 @@ export default function Statistic() {
         action={{ text: "UNDO", onPress: () => console.log("UNDO") }}
       />
       <DigiButton title="Premade Snack" onPress={() => setIsOpen2(!isOpen2)} />
+      <Skeleton />
+      <Skeleton variant="circular" />
     </View>
   );
 }
