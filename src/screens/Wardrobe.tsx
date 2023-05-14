@@ -109,7 +109,6 @@ export default function Wardrobe({
       };
     }, [navigation, flatListRef.current])
   );
-  console.log("Loading Wardrobe", loadingWardrobe);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@expo/ngrok": "^4.1.0",
     "@types/react": "~18.0.14",
     "@types/react-native": "^0.71.3",
     "babel-plugin-module-resolver": "^5.0.0",

@@ -7,7 +7,11 @@ export interface InputProps {
   onChange?: (value?: string) => void;
 }
 
-export default function Input({ placeholder, textInputProps, onChange }: InputProps) {
+export default function Input({
+  placeholder,
+  textInputProps,
+  onChange,
+}: InputProps) {
   const [text, setText] = useState<string>("");
 
   const handleChange = (text: string) => {
@@ -35,7 +39,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#d8d8d876",
     height: 40,
-    width: "100%",
+    flex: 1,
     zIndex: 1,
   },
 });

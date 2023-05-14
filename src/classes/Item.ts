@@ -44,7 +44,12 @@ export class Item implements ItemMetadata {
     favorite,
   }: ItemMetadata) {
     this.uuid = uuid;
-    this.name = name && name !== "" ? name : this.brand && this.model ? `${this.brand} ${this.model}` : "Untitled";
+    this.name =
+      name && name !== ""
+        ? name
+        : this.brand && this.model
+        ? `${this.brand} ${this.model}`
+        : "Untitled";
     this.wears = wears;
     this.lastWorn = lastWorn;
     this.cost = cost;
@@ -86,7 +91,9 @@ export class Item implements ItemMetadata {
         label: "Categories",
         setter: (value) => {
           if (!value) return;
-          this.category ? this.category.push(value.trim()) : (this.category = [value.trim()]);
+          this.category
+            ? this.category.push(value.trim())
+            : (this.category = [value.trim()]);
         },
         inputType: "multi-select",
       },
@@ -136,6 +143,15 @@ export class Item implements ItemMetadata {
         setter: (value) => {
           this.boughtFrom = value?.trim();
         },
+      },
+      {
+        key: "color",
+        label: "Color",
+        setter: (value) => {
+          if (!value) return;
+          this.color = this.color ? [...this.color, value] : [value];
+        },
+        inputType: "multi-select",
       },
       {
         key: "notes",

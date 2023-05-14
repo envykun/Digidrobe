@@ -93,7 +93,9 @@ export default function AdditionalFilter({
             />
           </View>
         </View>
-        <Input placeholder="Search outfit..." onChange={onSearchQuery} />
+        <View style={{ height: 40 }}>
+          <Input placeholder="Search outfit..." onChange={onSearchQuery} />
+        </View>
       </View>
       <BottomSheet
         isOpen={bottomSheetOpen}

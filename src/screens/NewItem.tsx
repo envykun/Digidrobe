@@ -1,44 +1,45 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, Platform, TouchableOpacity, FlatList } from "react-native";
-import { layout } from "@Styles/global";
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 import { Item } from "src/classes/Item";
 import DetailInput from "@Components/Inputs/DetailInput";
-import ShortcutItem from "@Components/Shortcut/ShortcutItem";
-import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@Components/Modal/BottomSheet";
-import { useEffect, useRef, useState, useContext } from "react";
-
-import * as ImagePicker from "expo-image-picker";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useRef, useContext } from "react";
 import { getCategories, getDatabase } from "src/database/database";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { randomUUID } from "expo-crypto";
-import { Category } from "@Models/Category";
 import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";
 import { createItem } from "@Database/item";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
+import ImageContainer from "@Components/Box/ImageContainer";
 
 export default function NewItem() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
-  const [image, setImage] = useState<string | null>(null);
+
   const db = getDatabase();
   const { data: categories, isLoading, error } = useGet(getCategories(db));
   const snack = useContext(SnackbarContext);
-
-  const closeModal = () => {
-    setIsBottomSheetOpen(false);
-  };
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={handleCreate}>
-          <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+          <Ionicons
+            name="ios-checkmark-circle-outline"
+            size={32}
+            color={tintColor}
+          />
         </TouchableOpacity>
       ),
     });
@@ -50,52 +51,6 @@ export default function NewItem() {
         return categories?.map((c) => c.label);
       default:
         return undefined;
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== "web") {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== "web") {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    })();
-  }, []);
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const { uri } = result.assets[0];
-      newItem.setImage(uri);
-      setImage(uri);
-    }
-  };
-
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const { uri } = result.assets[0];
-      newItem.setImage(uri);
-      setImage(uri);
     }
   };
 
@@ -115,124 +70,35 @@ export default function NewItem() {
   return (
     <SafeAreaView>
       <ScrollContainer hideTitle disableRefresh>
-        <FlatList
-          removeClippedSubviews={false}
-          style={layout.scrollContainer}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            <>
-              <View style={styles.image}>
-                {image ? (
-                  <View style={{ width: "100%", height: "100%", position: "relative" }}>
-                    <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-                    <View
-                      style={{
-                        position: "absolute",
-                        bottom: 42,
-                        right: 12,
-                        backgroundColor: "#ebebeb",
-                        borderRadius: 120,
-                        width: 48,
-                        height: 48,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        elevation: 2,
-                      }}
-                    >
-                      <TouchableOpacity
-                        onPress={() => {
-                          newItem.setImage(undefined);
-                          setImage(null);
-                        }}
-                      >
-                        <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.noImage}>
-                    <View style={{ height: 80 }}>
-                      <ShortcutItem
-                        label="Add Image"
-                        icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-                        onPress={() => setIsBottomSheetOpen(true)}
-                      />
-                    </View>
-                  </View>
-                )}
-              </View>
-              <View style={styles.description}>
-                <Text style={{ fontSize: 24 }}>Name</Text>
-                <Input
-                  onChange={(text) => {
-                    if (!text) return;
-                    newItem.name = text;
-                  }}
-                />
-              </View>
-            </>
-          }
-          data={newItem.getConstructorKeys()}
-          renderItem={({ item: prop }) => (
-            <View style={{ flex: 1 }}>
-              <DetailInput
-                label={prop.label}
-                inputProps={{ onChange: prop.setter, textInputProps: { keyboardType: prop.keyboardType } }}
-                type={prop.inputType}
-                bottomSheetData={mapData(prop.key)}
-              />
-            </View>
-          )}
-          keyExtractor={(item) => item.key}
-          ListFooterComponent={
-            <View style={{ marginVertical: 64, alignItems: "center" }}>
-              <Text style={{ color: "#E2C895" }} onPress={handleCreate}>
-                Save Item
-              </Text>
-            </View>
-          }
-        />
+        <ImageContainer setImageCallback={newItem.setImage} />
+        <View style={styles.description}>
+          <Text style={{ fontSize: 24 }}>Name</Text>
+          <Input
+            onChange={(text) => {
+              if (!text) return;
+              newItem.name = text;
+            }}
+          />
+        </View>
+        {newItem.getConstructorKeys().map((item) => (
+          <DetailInput
+            key={item.key}
+            label={item.label}
+            inputProps={{
+              onChange: item.setter,
+              textInputProps: { keyboardType: item.keyboardType },
+            }}
+            type={item.inputType}
+            bottomSheetData={mapData(item.key)}
+          />
+        ))}
+        <View style={{ height: 80 }} />
       </ScrollContainer>
-      <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
-        <View style={styles.sheetButton}>
-          <ShortcutItem
-            label="Files"
-            icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
-            onPress={() => {
-              closeModal();
-              pickImage();
-            }}
-          />
-        </View>
-        <View style={styles.sheetButton}>
-          <ShortcutItem
-            label="Camera"
-            icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
-            onPress={() => {
-              closeModal();
-              takeImage();
-            }}
-          />
-        </View>
-      </BottomSheet>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  image: {
-    height: 360,
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  noImage: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#e9e9e9",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   content: {
     marginBottom: 32,
     height: "100%",
@@ -244,7 +110,7 @@ const styles = StyleSheet.create({
     marginVertical: 32,
     marginTop: -32,
     paddingHorizontal: 8,
-    paddingTop: 24,
+    paddingTop: 48,
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
@@ -255,13 +121,4 @@ const styles = StyleSheet.create({
   sheetButton: {
     height: 80,
   },
-  // descriptionInner: {
-  //   flexDirection: "row",
-  //   justifyContent: "space-between",
-  //   paddingTop: 8,
-  // },
-  // details: {
-  //   flexDirection: "column",
-  //   padding: 8,
-  // },
 });
