@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -22,6 +22,7 @@ import { SnackbarContextProvider } from "@Context/SnackbarContext";
 import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
 import { Colors } from "@Styles/colors";
 import { OutfitOverview } from "@Models/Outfit";
+import * as SplashScreen from "expo-splash-screen";
 
 export type RootStackParamList = {
   Root: any;
@@ -233,11 +234,39 @@ function BottomTabNavigator() {
   );
 }
 
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
-  initDatabase();
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await initDatabase();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      console.info("Data initialized.");
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
     <SnackbarContextProvider>
-      <View style={styles.container}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
         <NavigationContainer>
           <RootNavigator />
         </NavigationContainer>
