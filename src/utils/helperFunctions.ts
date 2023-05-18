@@ -94,10 +94,10 @@ export const getWeatherTextByCode = (code?: number): string => {
 //   { amount: Number.POSITIVE_INFINITY, name: "years" },
 // ];
 
-export const formatTimeAgo = (lastWorn?: string) => {
+export const formatTimeAgo = (lastWorn?: Date) => {
   if (!lastWorn) return "-";
-  let date = new Date(lastWorn);
-  return formatDistanceToNow(date, { addSuffix: true });
+  console.log("LAST WORN", lastWorn);
+  return formatDistanceToNow(lastWorn, { addSuffix: true });
 };
 
 type CategoryIDs = {

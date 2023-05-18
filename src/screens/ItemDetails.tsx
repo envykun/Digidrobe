@@ -11,7 +11,8 @@ import { getOutfitsAsync } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
-import { setItemAsFavorite } from "@Database/item";
+import { getWardrobeItemsById, setItemAsFavorite, updateWearDetails } from "@Database/item";
+import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -25,32 +26,41 @@ const chartData: ChartData = {
 type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails">;
 
 export default function ItemDetails({ route }: ItemDetailsProps) {
-  const item = route.params.item;
+  const routeItem = route.params.item;
   const db = getDatabase();
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
+  const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
+  const item = data ? data[0] : routeItem;
 
-  const handleFavoritePress = () => {
+  if (isLoading || loadingItem)
+    return (
+      <View>
+        <Text>Loading</Text>
+      </View>
+    );
+
+  if (error || itemError)
+    return (
+      <View>
+        <Text>Error</Text>
+      </View>
+    );
+
+  const handleFavoritePress = async () => {
     item.toggleFavorite();
-    setItemAsFavorite(db, item);
+    await setItemAsFavorite(db, item);
     refetch();
   };
 
-  if (isLoading)
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
-
-  if (error)
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
+  const handleUpdateWears = async (date?: Date) => {
+    if (!date) return;
+    item.updateWearDetails(date);
+    await updateWearDetails(db, item, date);
+    refetch();
+  };
 
   return (
-    <ScrollContainer isLoading={isLoading} refetch={refetch}>
+    <ScrollContainer isLoading={isLoading} refetch={refetchItem}>
       <View style={styles.image}>
         {item.image ? (
           <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
@@ -71,6 +81,9 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
             <Text>Last worn: {formatTimeAgo(item.lastWorn)}</Text>
           </View>
         </View>
+        <View style={styles.description}>
+          <DateTimePickerInput text="I wore this" onChange={handleUpdateWears} />
+        </View>
         <View style={styles.details}>
           <Detail label="Cost" value={item.cost} suffix="€" />
           <Detail
@@ -87,7 +100,7 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
             label="Bought"
             value={
               item.bought &&
-              new Date(item.bought).toLocaleDateString(undefined, {
+              new Date(item.bought).toLocaleDateString("de", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",

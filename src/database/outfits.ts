@@ -107,8 +107,8 @@ const addToOutfitJunctionTable = (db: SQLite.WebSQLDatabase, outfitID: string, d
 export const addToPlannedOutfits = (db: SQLite.WebSQLDatabase, outfitID: string, date: Date) => {
   db.transaction((tx) => {
     tx.executeSql(
-      `INSERT OR IGNORE INTO ${TableNames.PLANNED_OUTFITS} (outfitID, date) VALUES (?,?)`,
-      [outfitID, date.toISOString()],
+      `INSERT OR IGNORE INTO ${TableNames.PLANNED_OUTFITS} (outfitID, date, worn) VALUES (?,?,?)`,
+      [outfitID, date.toISOString(), 0],
       (txObj, resultSet) => console.log("Successfully added to planned outfits."),
       (txObj, error) => {
         console.log("Error", txObj, error);

@@ -18,12 +18,10 @@ export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   return new Promise<number | undefined>((resolve, reject) =>
     db.transaction((tx) => {
       tx.executeSql(
-        `INSERT INTO ${TableNames.WARDROBE} (uuid, name, wears, last_worn, cost, brand, model, size, bought_date, bought_from, notes, imageURL, favorite) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        `INSERT INTO ${TableNames.WARDROBE} (uuid, name, cost, brand, model, size, bought_date, bought_from, notes, imageURL, favorite) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
         [
           dbParsedItem.uuid,
           dbParsedItem.name,
-          dbParsedItem.wears,
-          dbParsedItem.lastWorn,
           dbParsedItem.cost,
           brand,
           dbParsedItem.model,
@@ -51,11 +49,12 @@ export const getWardrobeItems = async (db: SQLite.WebSQLDatabase) => {
         tx.executeSql("SELECT * FROM wardrobe", [], async (t, res) => {
           const wardrobe = await Promise.all(
             res.rows._array.map(async (item: ItemDataResponse) => {
+              const wearDetails = await getWarobeWearDetails(db, item.uuid);
               return new Item({
                 uuid: item.uuid,
                 name: item.name,
-                wears: item.wears,
-                lastWorn: item.last_worn ?? undefined,
+                wears: wearDetails.wears,
+                lastWorn: wearDetails.lastWorn ?? undefined,
                 cost: item.cost ?? undefined,
                 brand: await getValueById(db, item.brand, TableNames.BRANDS),
                 model: item.model ?? undefined,
@@ -88,11 +87,12 @@ export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, uuid: stri
         tx.executeSql(`SELECT * FROM wardrobe WHERE uuid='${uuid}'`, [], async (t, res) => {
           const wardrobe = await Promise.all(
             res.rows._array.map(async (item: ItemDataResponse) => {
+              const wearDetails = await getWarobeWearDetails(db, item.uuid);
               return new Item({
                 uuid: item.uuid,
                 name: item.name,
-                wears: item.wears,
-                lastWorn: item.last_worn ?? undefined,
+                wears: wearDetails.wears,
+                lastWorn: wearDetails.lastWorn ?? undefined,
                 cost: item.cost ?? undefined,
                 brand: await getValueById(db, item.brand, TableNames.BRANDS),
                 model: item.model ?? undefined,
@@ -109,6 +109,25 @@ export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, uuid: stri
             })
           );
           resolve(wardrobe.sort((a, b) => a.name.localeCompare(b.name)));
+        }),
+      (error) => {
+        reject(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const getWarobeWearDetails = async (db: SQLite.WebSQLDatabase, uuid: string) => {
+  return new Promise<{ wears: number; lastWorn: Date | null }>((resolve, reject) => {
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT * FROM ${TableNames.WARDROBE_WEARS} WHERE itemID='${uuid}'`, [], (_, res) => {
+          const wearCount = res.rows._array.length;
+          const lastWorn = wearCount > 0 ? new Date(res.rows._array.reduce((a, b) => (a.date > b.date ? a : b)).date) : null;
+          const wearDetails = { wears: wearCount, lastWorn: lastWorn };
+          console.log("RES", wearDetails);
+          resolve(wearDetails);
         }),
       (error) => {
         reject(error);
@@ -135,4 +154,55 @@ export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
   );
 };
 
-export const updateWearCount = (db: SQLite.WebSQLDatabase, item: Item) => {};
+export const updateWearDetails = (db: SQLite.WebSQLDatabase, item: Item, date: Date) => {
+  console.log("ITEM WEARS", item.wears);
+  const query = `INSERT INTO ${TableNames.WARDROBE_WEARS} (itemID, date) VALUES (?,?)`;
+  return new Promise<number | undefined>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        query,
+        [item.uuid, date.toISOString()],
+        (_, res) => resolve(res.insertId),
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    })
+  );
+};
+
+// export const updateWearCount = (db: SQLite.WebSQLDatabase, item: Item) => {
+//   console.log("ITEM WEARS", item.wears);
+//   const query = `UPDATE ${TableNames.WARDROBE} SET wears = ${item.wears + 1} WHERE uuid = '${item.uuid}'`;
+//   return new Promise<number | undefined>((resolve, reject) =>
+//     db.transaction((tx) => {
+//       tx.executeSql(
+//         query,
+//         [],
+//         (_, res) => resolve(res.insertId),
+//         (_, error) => {
+//           reject(error);
+//           return false;
+//         }
+//       );
+//     })
+//   );
+// };
+
+// export const updateLastWorn = (db: SQLite.WebSQLDatabase, itemID: string, date: Date) => {
+//   const query = `UPDATE ${TableNames.WARDROBE} SET last_worn = '${date.toISOString()}' WHERE uuid = '${itemID}'`;
+//   return new Promise<number | undefined>((resolve, reject) =>
+//     db.transaction((tx) => {
+//       tx.executeSql(
+//         query,
+//         [],
+//         (_, res) => resolve(res.insertId),
+//         (_, error) => {
+//           reject(error);
+//           return false;
+//         }
+//       );
+//     })
+//   );
+// };

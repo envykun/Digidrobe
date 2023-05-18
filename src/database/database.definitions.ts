@@ -1,3 +1,5 @@
+import { createQuery, outfitPlannedQuery, wardrobeQuery, wardrobeWearsQuery } from "./database.queries";
+
 export interface TableDefinitionQuery {
   name: string;
   query: string;
@@ -16,46 +18,14 @@ export enum TableNames {
   OUTFITS = "outfits",
   OUTFIT_CATEGORY_WARDROBE = "outfit_category_wardrobe",
   PLANNED_OUTFITS = "planned_outfits",
+  WARDROBE_WEARS = "wardrobe_wears",
+  OUTFIT_WEARS = "outfit_wears",
 }
-
-export interface QueryType {
-  key: string;
-  type: "TEXT" | "INTEGER";
-  params?: Array<ParamsType>;
-}
-
-export type ParamsType = "NOT NULL" | "PRIMARY KEY";
-
-export const wardrobeQuery: Array<QueryType> = [
-  { key: "uuid", type: "TEXT", params: ["NOT NULL", "PRIMARY KEY"] },
-  { key: "name", type: "TEXT", params: ["NOT NULL"] },
-  { key: "wears", type: "INTEGER" },
-  { key: "last_worn", type: "TEXT" },
-  { key: "cost", type: "INTEGER" },
-  { key: "brand", type: "INTEGER" },
-  { key: "model", type: "TEXT" },
-  { key: "size", type: "INTEGER" },
-  { key: "bought_date", type: "TEXT" },
-  { key: "bought_from", type: "INTEGER" },
-  { key: "notes", type: "TEXT" },
-  { key: "imageURL", type: "TEXT" },
-  { key: "favorite", type: "INTEGER", params: ["NOT NULL"] },
-];
-
-export const createQuery = (queryDefinition: Array<QueryType>): string => {
-  return queryDefinition
-    .map((col) => {
-      return `${col.key} ${col.type} ${col.params?.join(" ")}`;
-    })
-    .join(", ");
-};
 
 export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
   {
     name: TableNames.WARDROBE,
     query: createQuery(wardrobeQuery),
-    // query:
-    // "uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, wears INTEGER, last_worn TEXT, cost INTEGER, brand INTEGER, model TEXT, size INTEGER, bought_date TEXT, bought_from INTEGER, notes TEXT, imageURL TEXT",
   },
   {
     name: TableNames.CATEGORIES,
@@ -100,7 +70,13 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
   },
   {
     name: TableNames.PLANNED_OUTFITS,
-    query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL, UNIQUE(outfitID, date)",
+    // query: createQuery(outfitPlannedQuery),
+    query: "outfitID TEXT NOT NULL REFERENCES outfits(uuid), date TEXT NOT NULL, worn INTEGER NOT NULL, UNIQUE(outfitID, date)",
+  },
+  {
+    name: TableNames.WARDROBE_WEARS,
+    // query: createQuery(wardrobeWearsQuery),
+    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), date TEXT NOT NULL, UNIQUE(itemID, date)",
   },
 ];
 

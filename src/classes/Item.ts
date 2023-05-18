@@ -1,14 +1,12 @@
 import { InputType } from "@Components/Inputs/DetailInput";
-import { setItemAsFavorite } from "@Database/item";
 import { ItemMetadata } from "@Models/Item";
-import { randomUUID } from "expo-crypto";
 import { KeyboardTypeOptions } from "react-native";
 
 export class Item implements ItemMetadata {
   uuid: string;
   name: string;
   wears: number;
-  lastWorn?: string;
+  lastWorn?: Date;
   cost?: number;
   category?: Array<string>;
   brand?: string;
@@ -44,12 +42,7 @@ export class Item implements ItemMetadata {
     favorite,
   }: ItemMetadata) {
     this.uuid = uuid;
-    this.name =
-      name && name !== ""
-        ? name
-        : this.brand && this.model
-        ? `${this.brand} ${this.model}`
-        : "Untitled";
+    this.name = name && name !== "" ? name : this.brand && this.model ? `${this.brand} ${this.model}` : "Untitled";
     this.wears = wears;
     this.lastWorn = lastWorn;
     this.cost = cost;
@@ -91,9 +84,7 @@ export class Item implements ItemMetadata {
         label: "Categories",
         setter: (value) => {
           if (!value) return;
-          this.category
-            ? this.category.push(value.trim())
-            : (this.category = [value.trim()]);
+          this.category ? this.category.push(value.trim()) : (this.category = [value.trim()]);
         },
         inputType: "multi-select",
       },
@@ -199,6 +190,14 @@ export class Item implements ItemMetadata {
 
   public toggleFavorite() {
     this.favorite = this.isFavorite() ? 0 : 1;
+  }
+
+  public updateWearDetails(date?: Date) {
+    this.wears = this.wears + 1;
+    if (!date) return;
+    if (!this.lastWorn || this.lastWorn < date) {
+      this.lastWorn = date;
+    }
   }
 }
 

@@ -8,8 +8,12 @@ import { createMultipleValues } from "./generics";
 
 export const initDatabase = async () => {
   const db = SQLite.openDatabase("digidrobe.db");
-  tableDefinitionQuery.forEach(async (definition) => await createTable(db, definition.name, definition.query));
+  // tableDefinitionQuery.forEach(async (definition) => await createTable(db, definition.name, definition.query));
+  for (const definition of tableDefinitionQuery) {
+    await createTable(db, definition.name, definition.query);
+  }
   await createMultipleValues(db, initBaseData.baseCategories, TableNames.CATEGORIES);
+  console.log("IM DONE");
   return db;
 };
 
@@ -18,9 +22,14 @@ export const getDatabase = () => {
 };
 
 export const createTable = async (db: SQLite.WebSQLDatabase, tableName: string, definitionQuery: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableName} (${definitionQuery})`);
-  });
+  console.log("CREATING TABLE:", tableName);
+  db.transaction(
+    (tx) => {
+      tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableName} (${definitionQuery})`);
+      console.log("DONE");
+    },
+    (error) => console.log("ERROR", error)
+  );
 };
 
 export const getCategories = (db: SQLite.WebSQLDatabase) => {
@@ -62,12 +71,10 @@ export const initializeTestData = (db: SQLite.WebSQLDatabase) => {
       cost: i.cost,
       fabric: i.fabric,
       image: i.image ?? undefined,
-      lastWorn: i.lastWorn ?? undefined,
       model: i.model,
       name: i.name,
       notes: i.notes ?? undefined,
       size: i.size ?? undefined,
-      wears: i.wears,
     });
     await createItem(db, item);
   });
