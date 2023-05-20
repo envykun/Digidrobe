@@ -175,15 +175,6 @@ export class Item implements ItemMetadata {
     };
   }
 
-  public getArrayByType(type: "category" | "fabric") {
-    if (type === "category") {
-      return this.category?.join("; ");
-    }
-    if (type === "fabric") {
-      return this.fabric?.join("; ");
-    }
-  }
-
   public isFavorite(): boolean {
     return this.favorite === 1 ? true : false;
   }

@@ -96,7 +96,6 @@ export const getWeatherTextByCode = (code?: number): string => {
 
 export const formatTimeAgo = (lastWorn?: Date) => {
   if (!lastWorn) return "-";
-  console.log("LAST WORN", lastWorn);
   return formatDistanceToNow(lastWorn, { addSuffix: true });
 };
 

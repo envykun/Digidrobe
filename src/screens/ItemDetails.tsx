@@ -13,6 +13,7 @@ import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
 import { getWardrobeItemsById, setItemAsFavorite, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
+import DetailTag from "@Components/Chip/DetailTag";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -32,13 +33,6 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
   const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
   const item = data ? data[0] : routeItem;
 
-  if (isLoading || loadingItem)
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
-
   if (error || itemError)
     return (
       <View>
@@ -57,6 +51,29 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
     item.updateWearDetails(date);
     await updateWearDetails(db, item, date);
     refetch();
+  };
+
+  const renderSavedOutfits = () => {
+    const filteredOutfits = savedOutfits
+      ?.filter((outfit) => outfit.itemImageURLs?.some((i) => item.uuid === i.uuid))
+      .map((o) => <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} outfit={o} />);
+
+    if (filteredOutfits && filteredOutfits.length) {
+      return (
+        <>
+          <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits ({filteredOutfits.length})</Text>
+          <View style={{ alignItems: "center", gap: 8 }}>{filteredOutfits}</View>
+        </>
+      );
+    }
+    return (
+      <View>
+        <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits (0)</Text>
+        <View style={{ alignItems: "center", marginTop: 16 }}>
+          <Text>No Outfits.</Text>
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -91,11 +108,19 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
             value={item.cost && item.wears > 0 ? calculateCostPerWear(item.cost, item.wears) : item.cost}
             suffix="€"
           />
-          <Detail label="Category" value={item.getArrayByType("category")} />
+          <Detail label="Category">
+            {item.category?.map((category) => (
+              <DetailTag key={category} label={category} />
+            ))}
+          </Detail>
           <Detail label="Brand" value={item.brand} />
           <Detail label="Model" value={item.model} />
           <Detail label="Size" value={item.size} />
-          <Detail label="Fabric" value={item.getArrayByType("fabric")} />
+          <Detail label="Fabric">
+            {item.fabric?.map((fabric) => (
+              <DetailTag key={fabric} label={fabric} />
+            ))}
+          </Detail>
           <Detail
             label="Bought"
             value={
@@ -119,14 +144,7 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
         >
           <DigiLineChart chartData={chartData} />
         </View>
-        <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits (12)</Text>
-        <View style={{ alignItems: "center", gap: 8 }}>
-          {savedOutfits
-            ?.filter((outfit) => outfit.itemImageURLs?.some((i) => item.uuid === i.uuid))
-            .map((o) => (
-              <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} outfit={o} />
-            ))}
-        </View>
+        {renderSavedOutfits()}
         <View style={{ marginVertical: 64, alignItems: "center" }}>
           <Text style={{ color: "red" }}>Delete item</Text>
         </View>

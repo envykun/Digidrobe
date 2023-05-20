@@ -8,12 +8,10 @@ import { createMultipleValues } from "./generics";
 
 export const initDatabase = async () => {
   const db = SQLite.openDatabase("digidrobe.db");
-  // tableDefinitionQuery.forEach(async (definition) => await createTable(db, definition.name, definition.query));
   for (const definition of tableDefinitionQuery) {
     await createTable(db, definition.name, definition.query);
   }
   await createMultipleValues(db, initBaseData.baseCategories, TableNames.CATEGORIES);
-  console.log("IM DONE");
   return db;
 };
 
@@ -22,11 +20,9 @@ export const getDatabase = () => {
 };
 
 export const createTable = async (db: SQLite.WebSQLDatabase, tableName: string, definitionQuery: string) => {
-  console.log("CREATING TABLE:", tableName);
   db.transaction(
     (tx) => {
       tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableName} (${definitionQuery})`);
-      console.log("DONE");
     },
     (error) => console.log("ERROR", error)
   );

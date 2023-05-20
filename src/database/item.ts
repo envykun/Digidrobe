@@ -126,7 +126,6 @@ export const getWarobeWearDetails = async (db: SQLite.WebSQLDatabase, uuid: stri
           const wearCount = res.rows._array.length;
           const lastWorn = wearCount > 0 ? new Date(res.rows._array.reduce((a, b) => (a.date > b.date ? a : b)).date) : null;
           const wearDetails = { wears: wearCount, lastWorn: lastWorn };
-          console.log("RES", wearDetails);
           resolve(wearDetails);
         }),
       (error) => {
@@ -155,7 +154,6 @@ export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
 };
 
 export const updateWearDetails = (db: SQLite.WebSQLDatabase, item: Item, date: Date) => {
-  console.log("ITEM WEARS", item.wears);
   const query = `INSERT INTO ${TableNames.WARDROBE_WEARS} (itemID, date) VALUES (?,?)`;
   return new Promise<number | undefined>((resolve, reject) =>
     db.transaction((tx) => {
@@ -172,37 +170,7 @@ export const updateWearDetails = (db: SQLite.WebSQLDatabase, item: Item, date: D
   );
 };
 
-// export const updateWearCount = (db: SQLite.WebSQLDatabase, item: Item) => {
-//   console.log("ITEM WEARS", item.wears);
-//   const query = `UPDATE ${TableNames.WARDROBE} SET wears = ${item.wears + 1} WHERE uuid = '${item.uuid}'`;
-//   return new Promise<number | undefined>((resolve, reject) =>
-//     db.transaction((tx) => {
-//       tx.executeSql(
-//         query,
-//         [],
-//         (_, res) => resolve(res.insertId),
-//         (_, error) => {
-//           reject(error);
-//           return false;
-//         }
-//       );
-//     })
-//   );
-// };
-
-// export const updateLastWorn = (db: SQLite.WebSQLDatabase, itemID: string, date: Date) => {
-//   const query = `UPDATE ${TableNames.WARDROBE} SET last_worn = '${date.toISOString()}' WHERE uuid = '${itemID}'`;
-//   return new Promise<number | undefined>((resolve, reject) =>
-//     db.transaction((tx) => {
-//       tx.executeSql(
-//         query,
-//         [],
-//         (_, res) => resolve(res.insertId),
-//         (_, error) => {
-//           reject(error);
-//           return false;
-//         }
-//       );
-//     })
-//   );
-// };
+export const deleteItem = (db: SQLite.WebSQLDatabase, itemID: string) => {
+  // Delete from wardrobe
+  // Delete from wardrobe_wears
+};
