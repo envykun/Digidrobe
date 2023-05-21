@@ -5,7 +5,7 @@ export interface InputProps {
   placeholder?: string;
   textInputProps?: Partial<TextInputProps>;
   defaultValue?: string;
-  onChange?: (value?: string) => void;
+  onChange?: (value?: any) => void;
 }
 
 export default function Input({ placeholder, textInputProps, defaultValue, onChange }: InputProps) {

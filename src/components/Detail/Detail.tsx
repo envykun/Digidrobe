@@ -36,5 +36,8 @@ const styles = StyleSheet.create({
   children: {
     flexDirection: "row",
     gap: 4,
+    flexWrap: "wrap",
+    flex: 1,
+    justifyContent: "flex-end",
   },
 });

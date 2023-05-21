@@ -1,86 +1,67 @@
-import { Text, View, StyleSheet, FlatList } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import Input, { InputProps } from "./Input";
 import DateTimePickerInput from "./DateTimePickerInput";
-import { useState } from "react";
-import BottomSheet from "@Components/Modal/BottomSheet";
-import DigiButton from "@Components/Button/DigiButton";
-import BottomSheetItem from "@Components/Modal/BottomSheetItem";
-import Chip from "@Components/Chip/Chip";
+import { useContext, useEffect, useState } from "react";
 import MultiSelectWithChips from "./MultiSelectWithChips";
+import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
 
 export interface DetailInputProps {
   label: string;
   inputProps?: Partial<InputProps>;
   type?: InputType;
-  bottomSheetData?: Array<string>;
   defaultValue?: string | string[];
 }
 
 export type InputType = "date" | "autocomplete" | "multi-select" | "default";
 
-export default function DetailInput({ label, inputProps, type = "default", bottomSheetData, defaultValue }: DetailInputProps) {
-  const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string | undefined>();
+export default function DetailInput({ label, inputProps, type = "default", defaultValue }: DetailInputProps) {
   const [selectedValues, setSelectedValues] = useState<Array<string>>(Array.isArray(defaultValue) ? defaultValue : []);
-  const filteredData = bottomSheetData
-    ?.filter((value) => selectedValues.indexOf(value) == -1)
-    .concat(["Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item"]);
+  const bottomSheet = useContext(BottomSheetContext);
 
-  const handleMultiSelect = (value?: string) => {
-    if (!value) return;
+  const handleMultiSelect = (value: string) => {
     setSelectedValues((old) => [...old, value]);
-    inputProps && inputProps.onChange && inputProps.onChange(value);
   };
 
   const removeSelectedValue = (value: string) => {
     setSelectedValues((oldValues) => oldValues.filter((v) => v !== value));
   };
 
-  const closeModal = () => {
-    setBottomSheetOpen(false);
-    setSearchQuery(undefined);
+  const handleBottomSheet = () => {
+    if (!bottomSheet) return;
+    bottomSheet.setTitle(`Select ${label}...`);
+    bottomSheet.setShowSearch(true);
+    bottomSheet.setContentType(label);
+    bottomSheet?.setSelectedValues(selectedValues);
+    bottomSheet.setOnPress(() => handleMultiSelect);
+    bottomSheet.setIsOpen(true);
   };
 
   const handleDateChange = (value?: Date) => {
-    console.log("VALUE", value);
     inputProps && inputProps.onChange && inputProps.onChange(value?.toISOString());
   };
+
+  useEffect(() => {
+    if (type === "multi-select") {
+      inputProps && inputProps.onChange && inputProps.onChange(selectedValues);
+      bottomSheet?.setSelectedValues(selectedValues);
+    }
+  }, [selectedValues]);
 
   const renderInput = (inputType?: string) => {
     switch (inputType) {
       case "date":
         return <DateTimePickerInput onChange={handleDateChange} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
       case "multi-select":
-        return (
-          <MultiSelectWithChips
-            selectedValues={selectedValues}
-            onButtonPress={() => setBottomSheetOpen(true)}
-            onChipPress={removeSelectedValue}
-          />
-        );
+        return <MultiSelectWithChips selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
       default:
         return <Input {...inputProps} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
     }
   };
+
   return (
     <View style={styles.detail}>
       <Text style={{ fontSize: 16, fontWeight: "100", minWidth: "30%" }}>{label}</Text>
       {renderInput(type)}
-      <BottomSheet title={`Select ${label}...`} isOpen={bottomSheetOpen} showSearch searchCallback={setSearchQuery} closeModal={closeModal}>
-        <FlatList
-          data={
-            searchQuery
-              ? filteredData?.filter((value) => value.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()))
-              : filteredData
-          }
-          renderItem={({ item }) => <BottomSheetItem label={item} onPress={handleMultiSelect} />}
-          ListEmptyComponent={
-            searchQuery ? <BottomSheetItem label={searchQuery} onPress={handleMultiSelect} /> : <Text>Nothing left.</Text>
-          }
-          showsVerticalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-        />
-      </BottomSheet>
     </View>
   );
 }
@@ -91,11 +72,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 8,
-  },
-  itemSeparator: {
-    height: 1,
-    backgroundColor: "#00000022",
-    width: "100%",
-    borderRadius: 12,
   },
 });

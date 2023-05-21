@@ -114,3 +114,20 @@ export const getFromJunctionTableResolved = async (
     });
   });
 };
+
+export const deleteFromJunctionTable = async (db: SQLite.WebSQLDatabase, itemID: string, table: string) => {
+  return new Promise<SQLite.SQLResultSet | null>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        `DELETE FROM ${table} WHERE itemID='${itemID}'`,
+        undefined,
+        (_txCb, res) => resolve(res ?? null),
+        (_txCb, error) => {
+          console.log("error", error);
+          reject(error);
+          return true;
+        }
+      );
+    })
+  );
+};

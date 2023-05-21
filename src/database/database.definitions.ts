@@ -33,7 +33,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
   },
   {
     name: TableNames.WARDROBE_CATEGORY,
-    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES categories(id)",
+    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES categories(id), UNIQUE(itemID, propID)",
   },
   {
     name: TableNames.BRANDS,
@@ -45,7 +45,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
   },
   {
     name: TableNames.WARDROBE_FABRIC,
-    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES fabrics(id)",
+    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES fabrics(id), UNIQUE(itemID, propID)",
   },
   {
     name: TableNames.BOUGHT_FROM,
@@ -57,7 +57,7 @@ export const tableDefinitionQuery: Array<TableDefinitionQuery> = [
   },
   {
     name: TableNames.WARDROBE_COLOR,
-    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES colors(id)",
+    query: "itemID TEXT NOT NULL REFERENCES wardrobe(uuid), propID INTEGER NOT NULL REFERENCES colors(id), UNIQUE(itemID, propID)",
   },
   {
     name: TableNames.OUTFITS,

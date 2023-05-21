@@ -11,14 +11,15 @@ import { getOutfitsAsync } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
-import { getWardrobeItemsById, setItemAsFavorite, updateWearDetails } from "@Database/item";
+import { getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import DetailTag from "@Components/Chip/DetailTag";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import DetailInput from "@Components/Inputs/DetailInput";
 import EditableDetail from "@Components/Detail/EditableDetail";
 import Input from "@Components/Inputs/Input";
 import ImageContainer from "@Components/Box/ImageContainer";
+import { Item } from "@Classes/Item";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -36,7 +37,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const db = getDatabase();
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
-  const item = data ? data[0] : routeItem;
+  const item = useRef<Item>(data ? data[0] : routeItem).current;
 
   const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -55,7 +56,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
       setEditMode(true);
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
-          <TouchableOpacity onPress={() => handleEdit(false)}>
+          <TouchableOpacity onPress={() => handleSaveUpdatedItem(item)}>
             <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
           </TouchableOpacity>
         ),
@@ -70,6 +71,11 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
         ),
       });
     }
+  };
+
+  const handleSaveUpdatedItem = (currItem: Item) => {
+    handleEdit(false);
+    updateItem(db, currItem);
   };
 
   const handleFavoritePress = async () => {
@@ -120,8 +126,8 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
       {editMode && <ImageContainer defaultImage={item.getImage()} setImageCallback={item.setImage} />}
       {!editMode && (
         <View style={styles.image}>
-          {item.image ? (
-            <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          {item.getImage() ? (
+            <Image source={{ uri: item.getImage() }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
           ) : (
             <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
           )}

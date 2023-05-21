@@ -44,6 +44,22 @@ export const getCategories = (db: SQLite.WebSQLDatabase) => {
   );
 };
 
+export const getFabrics = (db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<Category>>((resolve, reject) =>
+    db.transaction((tx) =>
+      tx.executeSql(
+        `SELECT * FROM ${TableNames.FABRICS}`,
+        [],
+        (_, res) => resolve(res.rows._array.sort((a, b) => a.label.localeCompare(b.label))),
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      )
+    )
+  );
+};
+
 // Delete Database
 export const deleteDatabase = (db: SQLite.WebSQLDatabase) => {
   db.closeAsync();

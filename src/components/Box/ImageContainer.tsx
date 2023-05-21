@@ -1,9 +1,9 @@
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
 import { TouchableOpacity, View, Image, StyleSheet, Platform } from "react-native";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import BottomSheet from "@Components/Modal/BottomSheet";
+import BottomSheetContext from "@Context/BottomSheetContext";
 
 export interface ImageContainerProps {
   setImageCallback: (imageUri: string | undefined) => void;
@@ -11,11 +11,11 @@ export interface ImageContainerProps {
 }
 
 export default function ImageContainer({ setImageCallback, defaultImage }: ImageContainerProps) {
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+  const bottomSheet = useContext(BottomSheetContext);
   const [image, setImage] = useState<string | null>(defaultImage ?? null);
 
   const closeModal = () => {
-    setIsBottomSheetOpen(false);
+    bottomSheet?.resetBottomSheet();
   };
 
   useEffect(() => {
@@ -64,6 +64,37 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
     }
   };
 
+  const bottomSheetContent = (
+    <>
+      <View style={styles.sheetButton}>
+        <ShortcutItem
+          label="Files"
+          icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
+          onPress={() => {
+            closeModal();
+            pickImage();
+          }}
+        />
+      </View>
+      <View style={styles.sheetButton}>
+        <ShortcutItem
+          label="Camera"
+          icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
+          onPress={() => {
+            closeModal();
+            takeImage();
+          }}
+        />
+      </View>
+    </>
+  );
+
+  const handleOpen = () => {
+    bottomSheet?.setTitle("Choose your source...");
+    bottomSheet?.setContent(bottomSheetContent);
+    bottomSheet?.setIsOpen(true);
+  };
+
   return (
     <View style={styles.image}>
       {image ? (
@@ -96,11 +127,7 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
       ) : (
         <View style={styles.noImage}>
           <View style={{ height: 80 }}>
-            <ShortcutItem
-              label="Add Image"
-              icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />}
-              onPress={() => setIsBottomSheetOpen(true)}
-            />
+            <ShortcutItem label="Add Image" icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />} onPress={handleOpen} />
             {/* 
             <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
               <Ionicons name="information-circle" color={"grey"} size={24} />
@@ -110,28 +137,6 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
           </View>
         </View>
       )}
-      <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
-        <View style={styles.sheetButton}>
-          <ShortcutItem
-            label="Files"
-            icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
-            onPress={() => {
-              closeModal();
-              pickImage();
-            }}
-          />
-        </View>
-        <View style={styles.sheetButton}>
-          <ShortcutItem
-            label="Camera"
-            icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
-            onPress={() => {
-              closeModal();
-              takeImage();
-            }}
-          />
-        </View>
-      </BottomSheet>
     </View>
   );
 }

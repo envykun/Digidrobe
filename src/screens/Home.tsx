@@ -1,17 +1,9 @@
 import { layout } from "@Styles/global";
-import {
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  RefreshControl,
-} from "react-native";
+import { ScrollView, Text, View, StyleSheet, Dimensions, TouchableOpacity, RefreshControl } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Calendar from "@Components/Calendar/Calendar";
 import ShortcutBox from "@Components/Shortcut/ShortcutBox";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import WeatherAndLocation from "@Components/WeatherAndLocation/WeatherAndLocation";
 import { OutfitOverview } from "@Models/Outfit";
 import { getPlannedOutfitByDate } from "@Database/outfits";
@@ -23,20 +15,15 @@ import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { ColorsRGB } from "@Styles/colors";
 import { useGetQuote } from "@Hooks/useGetQuote";
 import Skeleton from "@Components/Skeleton/Skeleton";
+import BottomSheetContext from "@Context/BottomSheetContext";
 
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const db = getDatabase();
-  const {
-    data: plannedOutfit,
-    isLoading,
-    error,
-    refetch,
-  } = useGet(getPlannedOutfitByDate(db, selectedDate));
-  const { quote, isLoading: isLoadingQuote } = useGetQuote(
-    "https://zenquotes.io/api/today"
-  );
+  const { data: plannedOutfit, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
+  const { quote, isLoading: isLoadingQuote } = useGetQuote("https://zenquotes.io/api/today");
+  const bottomSheet = useContext(BottomSheetContext);
 
   useEffect(() => {
     // TODO: Fix this refetch for selected date.
@@ -44,15 +31,10 @@ export default function Home() {
   }, [selectedDate]);
 
   return (
-    <ScrollContainer
-      headerTransparent={false}
-      headerBackgroundColor={ColorsRGB.primary}
-    >
+    <ScrollContainer headerTransparent={false} headerBackgroundColor={ColorsRGB.primary}>
       <View style={[styles.topContainer, layout.noHeaderSpacing]}>
         <View style={{ marginVertical: 16 }}>
-          <Text style={{ fontSize: 32, color: "white" }}>
-            Hello, Jule-Sophie!
-          </Text>
+          <Text style={{ fontSize: 32, color: "white" }}>Hello, Jule-Sophie!</Text>
           {isLoadingQuote ? (
             <View style={{ gap: 2 }}>
               <Skeleton variant="text" height={16} />
@@ -73,10 +55,7 @@ export default function Home() {
         </View>
         <WeatherAndLocation />
       </View>
-      <LinearGradient
-        colors={["#E2C895", "transparent"]}
-        style={{ alignItems: "center" }}
-      >
+      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
         <ShortcutBox />
       </LinearGradient>
       <View style={{ alignItems: "center", paddingVertical: 16, gap: 16 }}>
@@ -95,15 +74,18 @@ export default function Home() {
         ) : (
           <View style={styles.plannedOutfitBox}>
             <Text>You have no outfits planned.</Text>
-            <DigiButton
-              title="Plan now"
-              variant="text"
-              onPress={() => console.log("TODO: navigate to plan outfit")}
-            />
+            <DigiButton title="Plan now" variant="text" onPress={() => console.log("TODO: navigate to plan outfit")} />
           </View>
         )}
         <View style={styles.plannedOutfitBox}>
           <Text>Maybe some other Stuff?</Text>
+          <DigiButton
+            title="OpenBottomSheet"
+            onPress={() => {
+              bottomSheet?.setTitle("Cool Bottom");
+              bottomSheet?.setIsOpen(!bottomSheet.isOpen);
+            }}
+          />
         </View>
       </View>
     </ScrollContainer>

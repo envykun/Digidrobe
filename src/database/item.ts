@@ -2,7 +2,7 @@ import { Item } from "@Classes/Item";
 import * as SQLite from "expo-sqlite";
 import { TableNames } from "./database.definitions";
 import { ItemDataResponse } from "@Models/Item";
-import { createMultipleValues, createValueInTable, getValueById, getFromJunctionTableResolved } from "./generics";
+import { createMultipleValues, createValueInTable, getValueById, getFromJunctionTableResolved, deleteFromJunctionTable } from "./generics";
 
 export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   const dbParsedItem = item.getDBParsedItem();
@@ -170,7 +170,64 @@ export const updateWearDetails = (db: SQLite.WebSQLDatabase, item: Item, date: D
   );
 };
 
+export const updateItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
+  const oldItem = await getWardrobeItemsById(db, item.uuid);
+  const dbParsedItem = item.getDBParsedItem();
+
+  // let brand = dbParsedItem.brand ? await getValueById(db, item.brand, TableNames.BRANDS) : null
+  console.log("TODO: update BRAND and BOUGHT_FROM");
+  // if category changed
+  if (JSON.stringify(dbParsedItem.category) !== JSON.stringify(oldItem[0].category)) {
+    await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_CATEGORY);
+    dbParsedItem.category &&
+      (await createMultipleValues(db, dbParsedItem.category, TableNames.CATEGORIES, dbParsedItem.uuid, TableNames.WARDROBE_CATEGORY));
+  }
+  // if fabric changed
+  if (JSON.stringify(dbParsedItem.fabric) !== JSON.stringify(oldItem[0].fabric)) {
+    await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_FABRIC);
+    dbParsedItem.fabric && (await createMultipleValues(db, dbParsedItem.fabric, TableNames.FABRICS, item.uuid, TableNames.WARDROBE_FABRIC));
+  }
+  // if color changed
+  if (JSON.stringify(dbParsedItem.color) !== JSON.stringify(oldItem[0].color)) {
+    await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_COLOR);
+    dbParsedItem.color && (await createMultipleValues(db, dbParsedItem.color, TableNames.COLORS, item.uuid, TableNames.WARDROBE_COLOR));
+  }
+  // if brand changed
+  if (dbParsedItem.brand !== oldItem[0].brand) {
+    const brand = dbParsedItem.brand ? await createValueInTable(db, dbParsedItem.brand, TableNames.BRANDS) : null;
+  }
+  // if boughtFrom changed
+  if (dbParsedItem.boughtFrom !== oldItem[0].boughtFrom) {
+    const bought_from = dbParsedItem.boughtFrom ? await createValueInTable(db, dbParsedItem.boughtFrom, TableNames.BOUGHT_FROM) : null;
+  }
+
+  return new Promise<number | undefined>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        `UPDATE ${TableNames.WARDROBE} SET name=?, cost=?, model=?, size=?, bought_date=?, notes=?, imageURL=? WHERE uuid='${item.uuid}'`,
+        [
+          dbParsedItem.name,
+          dbParsedItem.cost,
+          dbParsedItem.model,
+          dbParsedItem.size,
+          dbParsedItem.bought,
+          dbParsedItem.notes,
+          dbParsedItem.image,
+        ],
+        (_, res) => resolve(res.insertId),
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    })
+  );
+};
+
 export const deleteItem = (db: SQLite.WebSQLDatabase, itemID: string) => {
   // Delete from wardrobe
   // Delete from wardrobe_wears
+  // Delete from wardrobe_category
+  // Delete from wardrobe_fabric
+  // Delete from wardrobe_color
 };

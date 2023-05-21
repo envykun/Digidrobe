@@ -14,7 +14,6 @@ export interface ItemMetadata {
   bought?: string;
   boughtFrom?: string;
   notes?: string;
-  savedOutfits?: Array<any>;
   image?: string;
   favorite?: number;
 }

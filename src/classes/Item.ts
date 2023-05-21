@@ -18,7 +18,6 @@ export class Item implements ItemMetadata {
   bought?: string;
   boughtFrom?: string;
   notes?: string;
-  savedOutfits?: Array<any>;
   image?: string;
   color?: Array<string>;
   favorite?: number;
@@ -40,7 +39,6 @@ export class Item implements ItemMetadata {
     notes,
     image,
     color,
-    savedOutfits,
     favorite,
   }: ItemMetadata) {
     this.uuid = uuid;
@@ -62,13 +60,14 @@ export class Item implements ItemMetadata {
   }
 
   public setImage(imgURL?: string) {
+    console.log("SETTING IMAGE", imgURL);
     this.image = imgURL;
   }
 
   public getImage() {
     return this.image;
   }
-  // TODO: MultiInput
+
   public getConstructorKeys(): Array<ConstructorInput> {
     return [
       {
@@ -78,7 +77,7 @@ export class Item implements ItemMetadata {
         editable: true,
         inputType: "default",
         setter: (value) => {
-          if (!value) return;
+          if (!value || Array.isArray(value)) return;
           this.cost = parseFloat(value);
         },
         keyboardType: "number-pad",
@@ -97,9 +96,8 @@ export class Item implements ItemMetadata {
         value: this.category,
         editable: true,
         setter: (value) => {
-          if (!value) return;
-          this.category ? this.category.push(value.trim()) : (this.category = [value.trim()]);
-          console.log("value", value);
+          if (!value || !Array.isArray(value)) return;
+          this.category = value;
         },
         inputType: "multi-select",
       },
@@ -109,6 +107,7 @@ export class Item implements ItemMetadata {
         value: this.brand,
         editable: true,
         setter: (value) => {
+          if (!value || Array.isArray(value)) return;
           this.brand = value?.trim();
         },
       },
@@ -118,6 +117,7 @@ export class Item implements ItemMetadata {
         value: this.model,
         editable: true,
         setter: (value) => {
+          if (!value || Array.isArray(value)) return;
           this.model = value?.trim();
         },
       },
@@ -127,7 +127,7 @@ export class Item implements ItemMetadata {
         value: this.size?.toString(),
         editable: true,
         setter: (value) => {
-          if (!value) return;
+          if (!value || Array.isArray(value)) return;
           this.size = parseFloat(value);
         },
         keyboardType: "number-pad",
@@ -138,8 +138,8 @@ export class Item implements ItemMetadata {
         value: this.fabric,
         editable: true,
         setter: (value) => {
-          if (!value) return;
-          this.fabric = value.split(",").map((v) => v.trim());
+          if (!value || !Array.isArray(value)) return;
+          this.fabric = value;
         },
         inputType: "multi-select",
       },
@@ -150,7 +150,7 @@ export class Item implements ItemMetadata {
         isDate: true,
         editable: true,
         setter: (value) => {
-          if (!value) return;
+          if (!value || Array.isArray(value)) return;
           this.bought = value;
         },
         inputType: "date",
@@ -161,7 +161,8 @@ export class Item implements ItemMetadata {
         value: this.boughtFrom,
         editable: true,
         setter: (value) => {
-          this.boughtFrom = value?.trim();
+          if (!value || Array.isArray(value)) return;
+          this.boughtFrom = value.trim();
         },
       },
       {
@@ -170,8 +171,8 @@ export class Item implements ItemMetadata {
         value: this.color,
         editable: true,
         setter: (value) => {
-          if (!value) return;
-          this.color = this.color ? [...this.color, value] : [value];
+          if (!value || !Array.isArray(value)) return;
+          this.color = value;
         },
         inputType: "multi-select",
       },
@@ -181,7 +182,8 @@ export class Item implements ItemMetadata {
         value: this.notes,
         editable: true,
         setter: (value) => {
-          this.notes = value?.trim();
+          if (!value || Array.isArray(value)) return;
+          this.notes = value.trim();
         },
       },
     ];
@@ -201,9 +203,9 @@ export class Item implements ItemMetadata {
       boughtFrom: this.boughtFrom ?? null,
       notes: this.notes ?? null,
       image: this.image ?? null,
-      category: this.category ?? null,
-      fabric: this.fabric ?? null,
-      color: this.color ?? null,
+      category: this.category && this.category.length > 0 ? this.category : null,
+      fabric: this.fabric && this.fabric.length > 0 ? this.fabric : null,
+      color: this.color && this.color.length > 0 ? this.color : null,
       favorite: this.favorite ?? 0,
     };
   }
@@ -233,7 +235,7 @@ interface ConstructorInput {
   editable?: boolean;
   placeholder?: string;
   inputType?: InputType;
-  setter?: (value?: string) => void;
+  setter?: (value?: string | Array<string>) => void;
   keyboardType?: KeyboardTypeOptions;
   detailProps?: Partial<DetailProps>;
   detailInputProps?: Partial<DetailInputProps>;

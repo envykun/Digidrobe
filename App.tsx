@@ -23,6 +23,8 @@ import { SnackbarWrapper } from "@Components/Snackbar/SnackbarWrapper";
 import { Colors } from "@Styles/colors";
 import { OutfitOverview } from "@Models/Outfit";
 import * as SplashScreen from "expo-splash-screen";
+import { BottomSheetContainer } from "@Components/Modal/BottomSheetContainer";
+import { BottomSheetContextProvider } from "@Context/BottomSheetContext";
 
 export type RootStackParamList = {
   Root: any;
@@ -266,12 +268,15 @@ export default function App() {
 
   return (
     <SnackbarContextProvider>
-      <View style={styles.container} onLayout={onLayoutRootView}>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-        <SnackbarWrapper />
-      </View>
+      <BottomSheetContextProvider>
+        <View style={styles.container} onLayout={onLayoutRootView}>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+          <BottomSheetContainer />
+          <SnackbarWrapper />
+        </View>
+      </BottomSheetContextProvider>
     </SnackbarContextProvider>
   );
 }
