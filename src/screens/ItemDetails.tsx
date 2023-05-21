@@ -14,6 +14,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { getWardrobeItemsById, setItemAsFavorite, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import DetailTag from "@Components/Chip/DetailTag";
+import { useEffect, useLayoutEffect, useState } from "react";
+import DetailInput from "@Components/Inputs/DetailInput";
+import EditableDetail from "@Components/Detail/EditableDetail";
+import Input from "@Components/Inputs/Input";
+import ImageContainer from "@Components/Box/ImageContainer";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -26,19 +31,46 @@ const chartData: ChartData = {
 
 type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails">;
 
-export default function ItemDetails({ route }: ItemDetailsProps) {
+export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const routeItem = route.params.item;
   const db = getDatabase();
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
   const item = data ? data[0] : routeItem;
 
-  if (error || itemError)
-    return (
-      <View>
-        <Text>Error</Text>
-      </View>
-    );
+  const [editMode, setEditMode] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ tintColor }: any) => (
+        <TouchableOpacity onPress={() => handleEdit(true)}>
+          <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  const handleEdit = (edit: boolean) => {
+    if (edit) {
+      setEditMode(true);
+      navigation.setOptions({
+        headerRight: ({ tintColor }: any) => (
+          <TouchableOpacity onPress={() => handleEdit(false)}>
+            <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+          </TouchableOpacity>
+        ),
+      });
+    } else {
+      setEditMode(false);
+      navigation.setOptions({
+        headerRight: ({ tintColor }: any) => (
+          <TouchableOpacity onPress={() => handleEdit(true)}>
+            <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  };
 
   const handleFavoritePress = async () => {
     item.toggleFavorite();
@@ -76,20 +108,39 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
     );
   };
 
+  if (error || itemError)
+    return (
+      <View>
+        <Text>Error</Text>
+      </View>
+    );
+
   return (
     <ScrollContainer isLoading={isLoading} refetch={refetchItem}>
-      <View style={styles.image}>
-        {item.image ? (
-          <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-        ) : (
-          <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-        )}
-      </View>
+      {editMode && <ImageContainer defaultImage={item.getImage()} setImageCallback={item.setImage} />}
+      {!editMode && (
+        <View style={styles.image}>
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          ) : (
+            <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+          )}
+        </View>
+      )}
       <View style={styles.content}>
         <View style={styles.description}>
           <View style={styles.descriptionInner}>
-            <Text style={{ fontSize: 24 }}>{item.name}</Text>
-            <TouchableOpacity onPress={handleFavoritePress} style={[]}>
+            {editMode ? (
+              <Input
+                defaultValue={item.name}
+                onChange={(value) => {
+                  if (value) item.name = value;
+                }}
+              />
+            ) : (
+              <Text style={{ fontSize: 24 }}>{item.name}</Text>
+            )}
+            <TouchableOpacity onPress={handleFavoritePress} style={{ paddingLeft: 16 }}>
               <Ionicons name={item.isFavorite() ? "heart" : "heart-outline"} size={28} color={item.isFavorite() ? "red" : "black"} />
             </TouchableOpacity>
           </View>
@@ -102,38 +153,30 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
           <DateTimePickerInput text="I wore this" onChange={handleUpdateWears} />
         </View>
         <View style={styles.details}>
-          <Detail label="Cost" value={item.cost} suffix="€" />
-          <Detail
-            label="Cost per wear"
-            value={item.cost && item.wears > 0 ? calculateCostPerWear(item.cost, item.wears) : item.cost}
-            suffix="€"
-          />
-          <Detail label="Category">
-            {item.category?.map((category) => (
-              <DetailTag key={category} label={category} />
-            ))}
-          </Detail>
-          <Detail label="Brand" value={item.brand} />
-          <Detail label="Model" value={item.model} />
-          <Detail label="Size" value={item.size} />
-          <Detail label="Fabric">
-            {item.fabric?.map((fabric) => (
-              <DetailTag key={fabric} label={fabric} />
-            ))}
-          </Detail>
-          <Detail
-            label="Bought"
-            value={
-              item.bought &&
-              new Date(item.bought).toLocaleDateString("de", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })
-            }
-          />
-          <Detail label="Bought from" value={item.boughtFrom} />
-          <Detail label="Notes" value={item.notes} />
+          {item.getConstructorKeys().map((i) => (
+            <EditableDetail
+              edit={i.editable ? editMode : false}
+              key={i.key}
+              label={i.label}
+              detail={{
+                ...i.detailProps,
+                value: i.isDate
+                  ? typeof i.value === "string"
+                    ? new Date(i.value).toLocaleDateString("de", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : i.value
+                  : i.value,
+              }}
+              detailInput={{
+                inputProps: { onChange: i.setter, textInputProps: { keyboardType: i.keyboardType } },
+                type: i.inputType,
+                defaultValue: i.value,
+              }}
+            />
+          ))}
         </View>
         <View
           style={{
@@ -145,9 +188,6 @@ export default function ItemDetails({ route }: ItemDetailsProps) {
           <DigiLineChart chartData={chartData} />
         </View>
         {renderSavedOutfits()}
-        <View style={{ marginVertical: 64, alignItems: "center" }}>
-          <Text style={{ color: "red" }}>Delete item</Text>
-        </View>
       </View>
     </ScrollContainer>
   );

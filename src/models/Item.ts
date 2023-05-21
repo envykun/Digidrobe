@@ -4,6 +4,7 @@ export interface ItemMetadata {
   wears?: number;
   lastWorn?: Date;
   cost?: number;
+  costPerWear?: number;
   category?: Array<string>;
   brand?: string;
   model?: string;

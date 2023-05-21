@@ -8,19 +8,20 @@ import BottomSheetItem from "@Components/Modal/BottomSheetItem";
 import Chip from "@Components/Chip/Chip";
 import MultiSelectWithChips from "./MultiSelectWithChips";
 
-interface DetailInputProps {
+export interface DetailInputProps {
   label: string;
   inputProps?: Partial<InputProps>;
   type?: InputType;
   bottomSheetData?: Array<string>;
+  defaultValue?: string | string[];
 }
 
 export type InputType = "date" | "autocomplete" | "multi-select" | "default";
 
-export default function DetailInput({ label, inputProps, type = "default", bottomSheetData }: DetailInputProps) {
+export default function DetailInput({ label, inputProps, type = "default", bottomSheetData, defaultValue }: DetailInputProps) {
   const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
-  const [selectedValues, setSelectedValues] = useState<Array<string>>([]);
+  const [selectedValues, setSelectedValues] = useState<Array<string>>(Array.isArray(defaultValue) ? defaultValue : []);
   const filteredData = bottomSheetData
     ?.filter((value) => selectedValues.indexOf(value) == -1)
     .concat(["Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item", "Item"]);
@@ -48,7 +49,7 @@ export default function DetailInput({ label, inputProps, type = "default", botto
   const renderInput = (inputType?: string) => {
     switch (inputType) {
       case "date":
-        return <DateTimePickerInput onChange={handleDateChange} />;
+        return <DateTimePickerInput onChange={handleDateChange} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
       case "multi-select":
         return (
           <MultiSelectWithChips
@@ -58,7 +59,7 @@ export default function DetailInput({ label, inputProps, type = "default", botto
           />
         );
       default:
-        return <Input {...inputProps} />;
+        return <Input {...inputProps} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
     }
   };
   return (

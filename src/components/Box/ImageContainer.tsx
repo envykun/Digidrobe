@@ -1,11 +1,5 @@
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
-import {
-  TouchableOpacity,
-  View,
-  Image,
-  StyleSheet,
-  Platform,
-} from "react-native";
+import { TouchableOpacity, View, Image, StyleSheet, Platform } from "react-native";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -13,13 +7,12 @@ import BottomSheet from "@Components/Modal/BottomSheet";
 
 export interface ImageContainerProps {
   setImageCallback: (imageUri: string | undefined) => void;
+  defaultImage?: string;
 }
 
-export default function ImageContainer({
-  setImageCallback,
-}: ImageContainerProps) {
+export default function ImageContainer({ setImageCallback, defaultImage }: ImageContainerProps) {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(defaultImage ?? null);
 
   const closeModal = () => {
     setIsBottomSheetOpen(false);
@@ -28,8 +21,7 @@ export default function ImageContainer({
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
         }
@@ -76,10 +68,7 @@ export default function ImageContainer({
     <View style={styles.image}>
       {image ? (
         <View style={{ width: "100%", height: "100%", position: "relative" }}>
-          <Image
-            source={{ uri: image }}
-            style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-          />
+          <Image source={{ uri: image }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
           <View
             style={{
               position: "absolute",
@@ -121,11 +110,7 @@ export default function ImageContainer({
           </View>
         </View>
       )}
-      <BottomSheet
-        isOpen={isBottomSheetOpen}
-        closeModal={closeModal}
-        title="Choose your source..."
-      >
+      <BottomSheet isOpen={isBottomSheetOpen} closeModal={closeModal} title="Choose your source...">
         <View style={styles.sheetButton}>
           <ShortcutItem
             label="Files"
@@ -153,7 +138,7 @@ export default function ImageContainer({
 
 const styles = StyleSheet.create({
   image: {
-    height: 360,
+    height: 480,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",

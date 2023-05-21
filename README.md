@@ -16,9 +16,9 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 - [x] Favorite Items -> Shortcut
 - [ ] Saved Outfits -> Shortcut
 - [ ] Recent Worn Outfits
-- [ ] Worn logic (Count update, last worn update)
+- [x] Worn logic (Count update, last worn update)
 - [ ] Plan outfit (How to plan a saved/created outfit)
-- [ ] Item Detail -> Saved Outfits
+- [x] Item Detail -> Saved Outfits
 - [ ] Item Detail -> Statistics chart
 - [ ] Filterbar / Search -> Wardrobe, Outfitter
 - [ ] General styling

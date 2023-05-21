@@ -7,10 +7,11 @@ interface DateTimePickerInputProps {
   onChange?: (value?: Date) => void;
   text?: string;
   iconSize?: number;
+  defaultValue?: string;
 }
 
-export default function DateTimePickerInput({ onChange, text, iconSize }: DateTimePickerInputProps) {
-  const [date, setDate] = useState(new Date());
+export default function DateTimePickerInput({ onChange, text, iconSize, defaultValue }: DateTimePickerInputProps) {
+  const [date, setDate] = useState(defaultValue ? new Date(defaultValue) : new Date());
   const [show, setShow] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {

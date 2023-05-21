@@ -1,10 +1,4 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
 import { Item } from "src/classes/Item";
 import DetailInput from "@Components/Inputs/DetailInput";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,8 +17,7 @@ import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import ImageContainer from "@Components/Box/ImageContainer";
 
 export default function NewItem() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
 
   const db = getDatabase();
@@ -35,11 +28,7 @@ export default function NewItem() {
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={handleCreate}>
-          <Ionicons
-            name="ios-checkmark-circle-outline"
-            size={32}
-            color={tintColor}
-          />
+          <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
         </TouchableOpacity>
       ),
     });
@@ -80,18 +69,21 @@ export default function NewItem() {
             }}
           />
         </View>
-        {newItem.getConstructorKeys().map((item) => (
-          <DetailInput
-            key={item.key}
-            label={item.label}
-            inputProps={{
-              onChange: item.setter,
-              textInputProps: { keyboardType: item.keyboardType },
-            }}
-            type={item.inputType}
-            bottomSheetData={mapData(item.key)}
-          />
-        ))}
+        {newItem
+          .getConstructorKeys()
+          .filter((item) => item.editable)
+          .map((item) => (
+            <DetailInput
+              key={item.key}
+              label={item.label}
+              inputProps={{
+                onChange: item.setter,
+                textInputProps: { keyboardType: item.keyboardType },
+              }}
+              type={item.inputType}
+              bottomSheetData={mapData(item.key)}
+            />
+          ))}
         <View style={{ height: 80 }} />
       </ScrollContainer>
     </SafeAreaView>

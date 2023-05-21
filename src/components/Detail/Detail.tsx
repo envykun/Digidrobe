@@ -1,21 +1,27 @@
-import { PropsWithChildren } from "react";
+import DetailTag from "@Components/Chip/DetailTag";
 import { Text, View, StyleSheet } from "react-native";
 
-interface DetailProps {
+export interface DetailProps {
   label: string;
-  value?: string | number;
+  value?: string | number | Array<string>;
   suffix?: string;
-  editable?: boolean;
 }
-export default function Detail({ label, value, suffix, editable, children }: PropsWithChildren<DetailProps>) {
+export default function Detail({ label, value, suffix }: DetailProps) {
   return (
     <View style={styles.detail}>
       <Text style={{ fontSize: 16, fontWeight: "100" }}>{label}</Text>
-      <Text style={{ fontSize: 16, maxWidth: 240 }}>
-        {value ?? (!children && "-")}
-        {value || value === 0 ? suffix : null}
-      </Text>
-      {children && <View style={styles.children}>{children}</View>}
+      {Array.isArray(value) ? (
+        <View style={styles.children}>
+          {value.map((d) => (
+            <DetailTag key={d} label={d} />
+          ))}
+        </View>
+      ) : (
+        <Text style={{ fontSize: 16, maxWidth: 240 }}>
+          {value ?? "-"}
+          {value || value === 0 ? suffix : null}
+        </Text>
+      )}
     </View>
   );
 }

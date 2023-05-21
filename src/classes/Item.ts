@@ -1,4 +1,6 @@
-import { InputType } from "@Components/Inputs/DetailInput";
+import { DetailProps } from "@Components/Detail/Detail";
+import { DetailInputProps, InputType } from "@Components/Inputs/DetailInput";
+import { calculateCostPerWear } from "@DigiUtils/helperFunctions";
 import { ItemMetadata } from "@Models/Item";
 import { KeyboardTypeOptions } from "react-native";
 
@@ -66,31 +68,46 @@ export class Item implements ItemMetadata {
   public getImage() {
     return this.image;
   }
-
+  // TODO: MultiInput
   public getConstructorKeys(): Array<ConstructorInput> {
     return [
       {
         key: "cost",
         label: "Cost",
+        value: this.cost?.toString(),
+        editable: true,
         inputType: "default",
         setter: (value) => {
           if (!value) return;
           this.cost = parseFloat(value);
         },
         keyboardType: "number-pad",
+        detailProps: { suffix: " €" },
+      },
+      {
+        key: "costPerWear",
+        label: "Cost per wear",
+        editable: false,
+        value: this.cost && this.wears > 0 ? calculateCostPerWear(this.cost, this.wears) : this.cost?.toString(),
+        detailProps: { suffix: " €" },
       },
       {
         key: "category",
         label: "Categories",
+        value: this.category,
+        editable: true,
         setter: (value) => {
           if (!value) return;
           this.category ? this.category.push(value.trim()) : (this.category = [value.trim()]);
+          console.log("value", value);
         },
         inputType: "multi-select",
       },
       {
         key: "brand",
         label: "Brand",
+        value: this.brand,
+        editable: true,
         setter: (value) => {
           this.brand = value?.trim();
         },
@@ -98,6 +115,8 @@ export class Item implements ItemMetadata {
       {
         key: "model",
         label: "Model",
+        value: this.model,
+        editable: true,
         setter: (value) => {
           this.model = value?.trim();
         },
@@ -105,6 +124,8 @@ export class Item implements ItemMetadata {
       {
         key: "size",
         label: "Size",
+        value: this.size?.toString(),
+        editable: true,
         setter: (value) => {
           if (!value) return;
           this.size = parseFloat(value);
@@ -114,14 +135,20 @@ export class Item implements ItemMetadata {
       {
         key: "fabric",
         label: "Fabric",
+        value: this.fabric,
+        editable: true,
         setter: (value) => {
           if (!value) return;
           this.fabric = value.split(",").map((v) => v.trim());
         },
+        inputType: "multi-select",
       },
       {
         key: "bought",
         label: "Bought",
+        value: this.bought,
+        isDate: true,
+        editable: true,
         setter: (value) => {
           if (!value) return;
           this.bought = value;
@@ -131,6 +158,8 @@ export class Item implements ItemMetadata {
       {
         key: "boughtFrom",
         label: "Bought from",
+        value: this.boughtFrom,
+        editable: true,
         setter: (value) => {
           this.boughtFrom = value?.trim();
         },
@@ -138,6 +167,8 @@ export class Item implements ItemMetadata {
       {
         key: "color",
         label: "Color",
+        value: this.color,
+        editable: true,
         setter: (value) => {
           if (!value) return;
           this.color = this.color ? [...this.color, value] : [value];
@@ -147,6 +178,8 @@ export class Item implements ItemMetadata {
       {
         key: "notes",
         label: "Notes",
+        value: this.notes,
+        editable: true,
         setter: (value) => {
           this.notes = value?.trim();
         },
@@ -193,11 +226,15 @@ export class Item implements ItemMetadata {
 }
 
 interface ConstructorInput {
-  key: keyof ItemMetadata;
+  key: string & keyof ItemMetadata;
   label: string;
+  value?: string | Array<string>;
+  isDate?: boolean;
+  editable?: boolean;
   placeholder?: string;
   inputType?: InputType;
-  // data?: Array<string>;
-  setter: (value?: string) => void;
+  setter?: (value?: string) => void;
   keyboardType?: KeyboardTypeOptions;
+  detailProps?: Partial<DetailProps>;
+  detailInputProps?: Partial<DetailInputProps>;
 }

@@ -4,15 +4,12 @@ import { StyleSheet, TextInput, TextInputProps } from "react-native";
 export interface InputProps {
   placeholder?: string;
   textInputProps?: Partial<TextInputProps>;
+  defaultValue?: string;
   onChange?: (value?: string) => void;
 }
 
-export default function Input({
-  placeholder,
-  textInputProps,
-  onChange,
-}: InputProps) {
-  const [text, setText] = useState<string>("");
+export default function Input({ placeholder, textInputProps, defaultValue, onChange }: InputProps) {
+  const [text, setText] = useState<string>(defaultValue ?? "");
 
   const handleChange = (text: string) => {
     setText(text);
