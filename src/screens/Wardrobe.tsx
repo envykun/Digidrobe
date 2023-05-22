@@ -57,7 +57,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
   }, [isFocused]);
 
   useEffect(() => {
-    if (!wardrobe) return;
+    if (!wardrobe || loadingWardrobe) return;
     if (!route.params?.itemID) return;
     const itemID = route.params.itemID;
     const scrollIndex = Math.floor(wardrobe.findIndex((i) => i.uuid === itemID) / 2);
@@ -67,7 +67,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
       index: scrollIndex,
     });
     navigation.setParams({ itemID: undefined });
-  }, [wardrobe, route]);
+  }, [wardrobe, route, loadingWardrobe]);
 
   useFocusEffect(
     useCallback(() => {
