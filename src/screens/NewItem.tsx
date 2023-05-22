@@ -48,7 +48,7 @@ export default function NewItem() {
   return (
     <SafeAreaView>
       <ScrollContainer hideTitle disableRefresh>
-        <ImageContainer setImageCallback={newItem.setImage} />
+        <ImageContainer setImageCallback={(uri) => newItem.setImage(uri)} />
         <View style={styles.description}>
           <Text style={{ fontSize: 24 }}>Name</Text>
           <Input

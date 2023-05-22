@@ -60,7 +60,6 @@ export class Item implements ItemMetadata {
   }
 
   public setImage(imgURL?: string) {
-    console.log("SETTING IMAGE", imgURL);
     this.image = imgURL;
   }
 

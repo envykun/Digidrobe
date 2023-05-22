@@ -123,7 +123,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
 
   return (
     <ScrollContainer isLoading={isLoading} refetch={refetchItem}>
-      {editMode && <ImageContainer defaultImage={item.getImage()} setImageCallback={item.setImage} />}
+      {editMode && <ImageContainer defaultImage={item.getImage()} setImageCallback={(uri) => item.setImage(uri)} />}
       {!editMode && (
         <View style={styles.image}>
           {item.getImage() ? (

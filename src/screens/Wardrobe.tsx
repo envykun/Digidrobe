@@ -1,59 +1,33 @@
-import {
-  StatusBar,
-  Text,
-  View,
-  StyleSheet,
-  SectionList,
-  SafeAreaView,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native";
+import { StatusBar, Text, View, StyleSheet, SectionList, SafeAreaView, FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import Chip from "@Components/Chip/Chip";
 import Card from "@Components/Card/Card";
 import FilterBar from "@Components/FilterBar/FilterBar";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { getCategories, getDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
-import {
-  useFocusEffect,
-  useIsFocused,
-  useNavigation,
-} from "@react-navigation/native";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList } from "App";
 import { useGet } from "@Hooks/useGet";
 import { Ionicons } from "@expo/vector-icons";
 import { getWardrobeItems, setItemAsFavorite } from "@Database/item";
-import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@Styles/colors";
 import Skeleton from "@Components/Skeleton/Skeleton";
+import { Category } from "@Models/Category";
 
-export default function Wardrobe({
-  route,
-}: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
+export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const db = getDatabase();
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
   const [refreshing, setRefreshing] = useState(false);
-  const {
-    data: wardrobe,
-    isLoading: loadingWardrobe,
-    error: wardrobeError,
-    refetch: refetchWardrobe,
-  } = useGet(getWardrobeItems(db));
+  const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
   const {
     data: categories,
     isLoading: loadingCategories,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useGet(getCategories(db));
+  } = useGet(getCategories<Category>(db));
   const flatListRef = useRef<FlatList<Item> | null>();
   const isFocused = useIsFocused();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const refresh = useReducer((x) => x + 1, 0)[1];
 
@@ -66,11 +40,7 @@ export default function Wardrobe({
   useEffect(() => {
     navigation.setOptions({
       headerLeft: ({ tintColor, pressOpacity }: any) => (
-        <TouchableOpacity
-          onPress={toggleAdditionalFilter}
-          activeOpacity={pressOpacity}
-          style={{ marginLeft: 16 }}
-        >
+        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
           <Ionicons name="ios-filter" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
@@ -90,9 +60,7 @@ export default function Wardrobe({
     if (!wardrobe) return;
     if (!route.params?.itemID) return;
     const itemID = route.params.itemID;
-    const scrollIndex = Math.floor(
-      wardrobe.findIndex((i) => i.uuid === itemID) / 2
-    );
+    const scrollIndex = Math.floor(wardrobe.findIndex((i) => i.uuid === itemID) / 2);
     if (scrollIndex === -1) return;
     flatListRef.current?.scrollToIndex({
       animated: true,
@@ -120,22 +88,11 @@ export default function Wardrobe({
           dataCallback: setSortedWardrobe,
         }}
       >
-        <Chip
-          label="All"
-          active={!activeFilter}
-          onPress={() => setActiveFilter(undefined)}
-        />
+        <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
         {loadingCategories
-          ? Array.from({ length: 6 }).map((_, idx) => (
-              <Skeleton key={idx} variant="rounded" />
-            ))
+          ? Array.from({ length: 6 }).map((_, idx) => <Skeleton key={idx} variant="rounded" />)
           : categories?.map((item) => (
-              <Chip
-                key={item.id}
-                label={item.label}
-                active={activeFilter === item.label}
-                onPress={() => setActiveFilter(item.label)}
-              />
+              <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
             ))}
       </FilterBar>
       <FlatList
@@ -146,13 +103,9 @@ export default function Wardrobe({
         data={
           activeFilter
             ? sortedWardrobe
-                ?.filter((item) =>
-                  route.params?.favoriteFilter ? item.isFavorite() : item
-                )
+                ?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
                 .filter((item) => item.category?.includes(activeFilter))
-            : sortedWardrobe?.filter((item) =>
-                route.params?.favoriteFilter ? item.isFavorite() : item
-              )
+            : sortedWardrobe?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
         }
         numColumns={2}
         renderItem={({ item }) => (
@@ -172,9 +125,7 @@ export default function Wardrobe({
           offset: 240 * index,
           index,
         })}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />}
         ListEmptyComponent={
           loadingWardrobe || loadingCategories ? (
             <View

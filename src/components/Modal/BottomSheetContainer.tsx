@@ -24,8 +24,6 @@ export function BottomSheetContainer() {
     bottomSheet.resetBottomSheet();
   };
 
-  console.log("Categories", categories);
-
   const handleData = (type?: BottomSheetContent, search?: string) => {
     let data;
     switch (type) {
