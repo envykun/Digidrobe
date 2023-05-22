@@ -176,6 +176,7 @@ export const updateItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
 
   // let brand = dbParsedItem.brand ? await getValueById(db, item.brand, TableNames.BRANDS) : null
   console.log("TODO: update BRAND and BOUGHT_FROM");
+
   // if category changed
   if (JSON.stringify(dbParsedItem.category) !== JSON.stringify(oldItem[0].category)) {
     await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_CATEGORY);

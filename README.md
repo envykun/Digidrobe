@@ -7,7 +7,7 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 ### Open TODOS:
 
 - [x] Header Component
-- [ ] Edit Item
+- [x] Edit Item
 - [ ] Delete Item
 - [ ] Outfit Details
 - [ ] Create Outfit -> Styling, UX (change how the category selection works)

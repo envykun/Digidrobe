@@ -1,5 +1,5 @@
 import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import BottomSheet from "./BottomSheet";
 import { getCategories, getDatabase, getFabrics } from "@Database/database";
 import { useGet } from "@Hooks/useGet";
@@ -11,12 +11,21 @@ import { GenericBottomSheetItem } from "@Models/Generic";
 export function BottomSheetContainer() {
   const bottomSheet = useContext(BottomSheetContext);
   const db = getDatabase();
-  const { data: categories } = useGet(getCategories<GenericBottomSheetItem>(db));
-  const { data: fabrics } = useGet(getFabrics<GenericBottomSheetItem>(db));
+  const { data: categories, refetch: refetchCategories } = useGet(getCategories<GenericBottomSheetItem>(db));
+  const { data: fabrics, refetch: refetchFabrics } = useGet(getFabrics<GenericBottomSheetItem>(db));
   const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedColors).map(([key, value]) => {
     return { id: key, label: key, hex: value };
   });
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
+
+  useEffect(() => {
+    bottomSheet?.isOpen && handleRefetch();
+  }, [bottomSheet?.isOpen]);
+
+  const handleRefetch = () => {
+    refetchCategories();
+    refetchFabrics();
+  };
 
   const handleCloseModal = () => {
     if (!bottomSheet) return;
@@ -40,7 +49,14 @@ export function BottomSheetContainer() {
         break;
     }
     data = data?.filter((i) => !bottomSheet?.selectedValues.includes(i.label));
-    return search ? data?.filter((d) => d.label.toLowerCase().includes(search.toLowerCase())) : data;
+    data = search ? data?.filter((d) => d.label.toLowerCase().includes(search.toLowerCase())) : data;
+    data = type !== "Color" && search ? data?.concat({ id: search, label: search }) : data;
+    return data;
+  };
+
+  const handleBySearch = (value?: string) => {
+    bottomSheet?.onPress && bottomSheet?.onPress(value);
+    handleCloseModal();
   };
 
   const renderList = (type?: BottomSheetContent) => {
@@ -52,7 +68,7 @@ export function BottomSheetContainer() {
         renderItem={({ item }) => (
           <BottomSheetItem
             label={item.label}
-            onPress={bottomSheet.onPress}
+            onPress={item.label === searchQuery ? handleBySearch : bottomSheet.onPress}
             selected={bottomSheet.selectedValues.includes(item.label)}
             color={item.hex}
           />
