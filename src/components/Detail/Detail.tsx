@@ -5,15 +5,16 @@ export interface DetailProps {
   label: string;
   value?: string | number | Array<string>;
   suffix?: string;
+  isColor?: boolean;
 }
-export default function Detail({ label, value, suffix }: DetailProps) {
+export default function Detail({ label, value, suffix, isColor }: DetailProps) {
   return (
     <View style={styles.detail}>
       <Text style={{ fontSize: 16, fontWeight: "100" }}>{label}</Text>
       {Array.isArray(value) ? (
         <View style={styles.children}>
           {value.map((d) => (
-            <DetailTag key={d} label={d} />
+            <DetailTag key={d} label={d} isColor={isColor} />
           ))}
         </View>
       ) : (

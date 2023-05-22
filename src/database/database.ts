@@ -28,8 +28,8 @@ export const createTable = async (db: SQLite.WebSQLDatabase, tableName: string, 
   );
 };
 
-export const getCategories = (db: SQLite.WebSQLDatabase) => {
-  return new Promise<Array<Category>>((resolve, reject) =>
+export const getCategories = <T>(db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<T>>((resolve, reject) =>
     db.transaction((tx) =>
       tx.executeSql(
         `SELECT * FROM ${TableNames.CATEGORIES}`,
@@ -44,8 +44,8 @@ export const getCategories = (db: SQLite.WebSQLDatabase) => {
   );
 };
 
-export const getFabrics = (db: SQLite.WebSQLDatabase) => {
-  return new Promise<Array<Category>>((resolve, reject) =>
+export const getFabrics = <T>(db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<T>>((resolve, reject) =>
     db.transaction((tx) =>
       tx.executeSql(
         `SELECT * FROM ${TableNames.FABRICS}`,

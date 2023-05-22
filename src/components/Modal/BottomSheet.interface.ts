@@ -4,4 +4,5 @@ export interface BottomSheetItemProps {
   onPress?: (value: string) => void;
   twoColumn?: boolean;
   selected?: boolean;
+  color?: string;
 }

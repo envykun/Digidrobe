@@ -21,7 +21,6 @@ export default function NewItem() {
   const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
 
   const db = getDatabase();
-  // const { data: categories, isLoading, error } = useGet(getCategories(db));
   const snack = useContext(SnackbarContext);
 
   useEffect(() => {
@@ -34,17 +33,7 @@ export default function NewItem() {
     });
   }, [navigation]);
 
-  // const mapData = (key?: keyof ItemMetadata) => {
-  //   switch (key) {
-  //     case "category":
-  //       return categories?.map((c) => c.label);
-  //     default:
-  //       return undefined;
-  //   }
-  // };
-
   const handleCreate = () => {
-    console.log("NEW ITEM TO CREATE", newItem);
     createItem(db, newItem).then(() => {
       if (!snack) return;
       snack.setIsOpen(true);

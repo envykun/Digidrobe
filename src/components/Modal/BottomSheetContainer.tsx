@@ -1,24 +1,32 @@
 import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import BottomSheet from "./BottomSheet";
 import { getCategories, getDatabase, getFabrics } from "@Database/database";
 import { useGet } from "@Hooks/useGet";
 import { FlatList, Text, StyleSheet, View } from "react-native";
 import BottomSheetItem from "./BottomSheetItem";
+import { NamedColors } from "@Styles/colors";
+import { GenericBottomSheetItem } from "@Models/Generic";
 
 export function BottomSheetContainer() {
   const bottomSheet = useContext(BottomSheetContext);
   const db = getDatabase();
-  const { data: categories } = useGet(getCategories(db));
-  const { data: fabrics } = useGet(getFabrics(db));
+  const { data: categories } = useGet(getCategories<GenericBottomSheetItem>(db));
+  const { data: fabrics } = useGet(getFabrics<GenericBottomSheetItem>(db));
+  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedColors).map(([key, value]) => {
+    return { id: key, label: key, hex: value };
+  });
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
 
   const handleCloseModal = () => {
     if (!bottomSheet) return;
+    setSearchQuery(undefined);
     bottomSheet.resetBottomSheet();
   };
 
-  const handleData = (type?: BottomSheetContent) => {
+  console.log("Categories", categories);
+
+  const handleData = (type?: BottomSheetContent, search?: string) => {
     let data;
     switch (type) {
       case "Categories":
@@ -27,20 +35,29 @@ export function BottomSheetContainer() {
       case "Fabric":
         data = fabrics;
         break;
+      case "Color":
+        data = mappedColors;
+        break;
       default:
         break;
     }
     data = data?.filter((i) => !bottomSheet?.selectedValues.includes(i.label));
-    return searchQuery ? data?.filter((d) => d.label.includes(searchQuery)) : data;
+    return search ? data?.filter((d) => d.label.toLowerCase().includes(search.toLowerCase())) : data;
   };
 
   const renderList = (type?: BottomSheetContent) => {
     if (!type || !bottomSheet) return null;
+    const data = handleData(bottomSheet.contentType, searchQuery);
     return (
       <FlatList
-        data={handleData(bottomSheet.contentType)}
+        data={data}
         renderItem={({ item }) => (
-          <BottomSheetItem label={item.label} onPress={bottomSheet.onPress} selected={bottomSheet.selectedValues.includes(item.label)} />
+          <BottomSheetItem
+            label={item.label}
+            onPress={bottomSheet.onPress}
+            selected={bottomSheet.selectedValues.includes(item.label)}
+            color={item.hex}
+          />
         )}
         ListEmptyComponent={<Text>Nothing left.</Text>}
         showsVerticalScrollIndicator={false}

@@ -35,7 +35,7 @@ export default function BottomSheet({
           )}
           {showSearch && (
             <View style={styles.searchInput}>
-              <Input placeholder="Type to search..." onChange={searchCallback} />
+              <Input placeholder="Type to search..." onChange={searchCallback} clearButton />
             </View>
           )}
           <View style={styles.container}>{children}</View>

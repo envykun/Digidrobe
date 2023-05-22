@@ -174,7 +174,7 @@ export class Item implements ItemMetadata {
           if (!value || !Array.isArray(value)) return;
           this.color = value;
         },
-        inputType: "multi-select",
+        inputType: "multi-select-color",
       },
       {
         key: "notes",

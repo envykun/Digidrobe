@@ -166,6 +166,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
               label={i.label}
               detail={{
                 ...i.detailProps,
+                isColor: i.inputType === "multi-select-color",
                 value: i.isDate
                   ? typeof i.value === "string"
                     ? new Date(i.value).toLocaleDateString("de", {
