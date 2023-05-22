@@ -2,13 +2,13 @@
 
 This repository is about a react native app with typescript. It represents a digital wardrobe (hence the name digidrobe), where users can save their clothes with pictures, create outfits for the day, check some statistics about each piece, etc.
 
-To run the App simply run `npm install` in the root folder and launch it with expo command `expo start`.
+To run the App simply run `npm install` in the root folder and launch it with expo command `npx expo start`.
 
 ### Open TODOS:
 
 - [x] Header Component
 - [x] Edit Item
-- [ ] Delete Item
+- [x] Delete Item
 - [ ] Outfit Details
 - [ ] Create Outfit -> Styling, UX (change how the category selection works)
 - [ ] Edit Outfit

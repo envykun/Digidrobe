@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
-import Detail from "@Components/Detail/Detail";
+import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
-import { calculateCostPerWear, formatTimeAgo } from "@DigiUtils/helperFunctions";
+import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
@@ -11,15 +10,16 @@ import { getOutfitsAsync } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
-import { getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
+import { deleteItem, getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
-import DetailTag from "@Components/Chip/DetailTag";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import DetailInput from "@Components/Inputs/DetailInput";
+import { useContext, useLayoutEffect, useRef, useState } from "react";
 import EditableDetail from "@Components/Detail/EditableDetail";
 import Input from "@Components/Inputs/Input";
 import ImageContainer from "@Components/Box/ImageContainer";
 import { Item } from "@Classes/Item";
+import DigiButton from "@Components/Button/DigiButton";
+import { deleteAlert } from "@DigiUtils/alertHelper";
+import SnackbarContext from "@Context/SnackbarContext";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -35,6 +35,7 @@ type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails"
 export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const routeItem = route.params.item;
   const db = getDatabase();
+  const snack = useContext(SnackbarContext);
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
   const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
   const item = useRef<Item>(data ? data[0] : routeItem).current;
@@ -89,6 +90,17 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
     item.updateWearDetails(date);
     await updateWearDetails(db, item, date);
     refetch();
+  };
+
+  const handleDeleteItem = async () => {
+    if (!snack) return;
+    deleteItem(db, item.uuid)
+      .then(() => {
+        snack.setMessage(`${item.name} was deleted.`);
+        snack.setIsOpen(true);
+      })
+      .catch((e) => console.log(e))
+      .finally(() => navigation.goBack());
   };
 
   const renderSavedOutfits = () => {
@@ -195,6 +207,9 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
           <DigiLineChart chartData={chartData} />
         </View>
         {renderSavedOutfits()}
+        <View style={{ flex: 1, height: 80, width: "100%" }}>
+          <DigiButton title="Delete THIS" variant="text" onPress={() => deleteAlert("Item", item.name, handleDeleteItem)} />
+        </View>
       </View>
     </ScrollContainer>
   );

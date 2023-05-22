@@ -225,10 +225,28 @@ export const updateItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   );
 };
 
-export const deleteItem = (db: SQLite.WebSQLDatabase, itemID: string) => {
+export const deleteItem = async (db: SQLite.WebSQLDatabase, itemID: string) => {
   // Delete from wardrobe
+  const deleteItem = new Promise<number | undefined>((resolve, reject) =>
+    db.transaction((tx) => {
+      tx.executeSql(
+        `DELETE FROM ${TableNames.WARDROBE} WHERE uuid='${itemID}'`,
+        [],
+        (_, res) => resolve(res.insertId),
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    })
+  );
   // Delete from wardrobe_wears
+  const deleteWears = await deleteFromJunctionTable(db, itemID, TableNames.WARDROBE_WEARS);
   // Delete from wardrobe_category
+  const deleteCat = await deleteFromJunctionTable(db, itemID, TableNames.WARDROBE_CATEGORY);
   // Delete from wardrobe_fabric
+  const deleteFab = await deleteFromJunctionTable(db, itemID, TableNames.WARDROBE_FABRIC);
   // Delete from wardrobe_color
+  const deleteCol = await deleteFromJunctionTable(db, itemID, TableNames.WARDROBE_COLOR);
+  return Promise.all([deleteItem, deleteWears, deleteCat, deleteFab, deleteCol]);
 };
