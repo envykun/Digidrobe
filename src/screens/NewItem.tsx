@@ -3,16 +3,14 @@ import { Item } from "src/classes/Item";
 import DetailInput from "@Components/Inputs/DetailInput";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useContext } from "react";
-import { getCategories, getDatabase } from "src/database/database";
+import { getDatabase } from "src/database/database";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { randomUUID } from "expo-crypto";
-import { ItemMetadata } from "@Models/Item";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";
 import { createItem } from "@Database/item";
-import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import ImageContainer from "@Components/Box/ImageContainer";
 

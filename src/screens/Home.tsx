@@ -67,7 +67,7 @@ export default function Home() {
               key={outfit.uuid}
               label={outfit.name}
               outfitImage={outfit.imageURL}
-              itemImages={outfit.itemImageURLs}
+              itemImages={outfit.getItemImagePreviews()}
               outfit={outfit}
             />
           ))

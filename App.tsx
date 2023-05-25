@@ -25,6 +25,7 @@ import { OutfitOverview } from "@Models/Outfit";
 import * as SplashScreen from "expo-splash-screen";
 import { BottomSheetContainer } from "@Components/Modal/BottomSheetContainer";
 import { BottomSheetContextProvider } from "@Context/BottomSheetContext";
+import { Outfit } from "@Classes/Outfit";
 
 export type RootStackParamList = {
   Root: any;
@@ -32,7 +33,7 @@ export type RootStackParamList = {
   NewOutfit: any;
   NewItem: any;
   Outfits: any;
-  OutfitDetails: { outfit: OutfitOverview };
+  OutfitDetails: { outfit: Outfit };
   Favorites: any;
   Recent: any;
   UserSettings: any;

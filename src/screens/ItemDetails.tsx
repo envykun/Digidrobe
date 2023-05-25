@@ -6,11 +6,11 @@ import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { getDatabase } from "@Database/database";
-import { getOutfitsAsync } from "@Database/outfits";
+import { getOutfits } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
-import { deleteItem, getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
+import { deleteItem, getWardrobeItemById, getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import { useContext, useLayoutEffect, useRef, useState } from "react";
 import EditableDetail from "@Components/Detail/EditableDetail";
@@ -36,9 +36,9 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const routeItem = route.params.item;
   const db = getDatabase();
   const snack = useContext(SnackbarContext);
-  const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfitsAsync(db));
-  const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemsById(db, routeItem.uuid));
-  const item = useRef<Item>(data ? data[0] : routeItem).current;
+  const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfits(db));
+  const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemById(db, routeItem.uuid));
+  const item = useRef<Item>(data ? data : routeItem).current;
 
   const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -105,22 +105,18 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
 
   const renderSavedOutfits = () => {
     const filteredOutfits = savedOutfits
-      ?.filter((outfit) => outfit.itemImageURLs?.some((i) => item.uuid === i.uuid))
-      .map((o) => <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.itemImageURLs} outfit={o} />);
+      ?.filter((outfit) => outfit.getAllItems().some((i) => item.uuid === i.uuid))
+      .map((o) => <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.getItemImagePreviews()} outfit={o} />);
 
-    if (filteredOutfits && filteredOutfits.length) {
-      return (
-        <>
-          <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits ({filteredOutfits.length})</Text>
-          <View style={{ alignItems: "center", gap: 8 }}>{filteredOutfits}</View>
-        </>
-      );
-    }
     return (
-      <View>
-        <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits (0)</Text>
+      <View style={{ marginHorizontal: 8 }}>
+        <Text style={{ fontSize: 24, marginLeft: 16 }}>Saved Outfits ({filteredOutfits?.length ?? 0})</Text>
         <View style={{ alignItems: "center", marginTop: 16 }}>
-          <Text>No Outfits.</Text>
+          {filteredOutfits && filteredOutfits.length ? (
+            <View style={{ alignItems: "center", gap: 8 }}>{filteredOutfits}</View>
+          ) : (
+            <Text>No Outfits.</Text>
+          )}
         </View>
       </View>
     );

@@ -10,3 +10,13 @@ export const layout = StyleSheet.create({
     position: "relative",
   },
 });
+
+export const utils = (marginHorizontal?: number | string) =>
+  StyleSheet.create({
+    divider: {
+      borderTopWidth: 1,
+      borderColor: "#efefef",
+      marginVertical: 8,
+      marginHorizontal: marginHorizontal ?? 8,
+    },
+  });

@@ -1,17 +1,15 @@
 import * as SQLite from "expo-sqlite";
-import { TableNames, initBaseData, tableDefinitionQuery } from "./database.definitions";
+import { TableNames, tableDefinitionQuery } from "./database.definitions";
 import { Item } from "src/classes/Item";
-import { Category } from "@Models/Category";
 import TestData from "./TestData.json";
 import { createItem } from "./item";
-import { createMultipleValues } from "./generics";
+import { BaseCategory } from "./constants";
 
 export const initDatabase = async () => {
   const db = SQLite.openDatabase("digidrobe.db");
   for (const definition of tableDefinitionQuery) {
     await createTable(db, definition.name, definition.query);
   }
-  await createMultipleValues(db, initBaseData.baseCategories, TableNames.CATEGORIES);
   return db;
 };
 
@@ -20,11 +18,19 @@ export const getDatabase = () => {
 };
 
 export const createTable = async (db: SQLite.WebSQLDatabase, tableName: string, definitionQuery: string) => {
-  db.transaction(
-    (tx) => {
-      tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableName} (${definitionQuery})`);
-    },
-    (error) => console.log("ERROR", error)
+  return new Promise<number | undefined>((resolve, reject) =>
+    db.transaction(
+      (tx) => {
+        tx.executeSql(`CREATE TABLE IF NOT EXISTS ${tableName} (${definitionQuery})`, [], (_, res) => {
+          console.log(`Creating ${tableName} successful.`);
+          resolve(res.insertId);
+        });
+      },
+      (error) => {
+        reject(error);
+        console.log("ERROR", error);
+      }
+    )
   );
 };
 
@@ -60,6 +66,22 @@ export const getFabrics = <T>(db: SQLite.WebSQLDatabase) => {
   );
 };
 
+export const getTags = <T>(db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<T>>((resolve, reject) =>
+    db.transaction((tx) =>
+      tx.executeSql(
+        `SELECT * FROM ${TableNames.TAGS}`,
+        [],
+        (_, res) => resolve(res.rows._array.sort((a, b) => a.label.localeCompare(b.label))),
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      )
+    )
+  );
+};
+
 // Delete Database
 export const deleteDatabase = (db: SQLite.WebSQLDatabase) => {
   db.closeAsync();
@@ -78,6 +100,7 @@ export const initializeTestData = (db: SQLite.WebSQLDatabase) => {
       bought: i.bought ?? undefined,
       boughtFrom: i.boughtFrom,
       brand: i.brand,
+      baseCategory: i.baseCategory as BaseCategory,
       category: i.category,
       color: i.color ?? undefined,
       cost: i.cost,
@@ -94,9 +117,13 @@ export const initializeTestData = (db: SQLite.WebSQLDatabase) => {
 
 export const wipeOutfits = (db: SQLite.WebSQLDatabase) => {
   db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFITS}`));
-  db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFIT_CATEGORY_WARDROBE}`));
+  db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.OUTFIT_WARDROBE}`));
 };
 
 export const dropOutfits = (db: SQLite.WebSQLDatabase) => {
   db.transaction((tx) => tx.executeSql(`DROP TABLE IF EXISTS ${TableNames.OUTFITS}`));
+};
+
+export const wipePlannedOutfits = (db: SQLite.WebSQLDatabase) => {
+  db.transaction((tx) => tx.executeSql(`DELETE FROM ${TableNames.PLANNED_OUTFITS}`));
 };

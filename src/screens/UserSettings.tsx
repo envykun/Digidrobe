@@ -1,7 +1,15 @@
 import WorkInProgress from "@Components/WIP";
 import { layout } from "@Styles/global";
 import { SafeAreaView, ScrollView, Text, TouchableHighlight } from "react-native";
-import { deleteDatabase, dropOutfits, getDatabase, initializeTestData, wipeDatabase, wipeOutfits } from "@Database/database";
+import {
+  deleteDatabase,
+  dropOutfits,
+  getDatabase,
+  initializeTestData,
+  wipeDatabase,
+  wipeOutfits,
+  wipePlannedOutfits,
+} from "@Database/database";
 
 export default function UserSettings() {
   const db = getDatabase();
@@ -77,6 +85,20 @@ export default function UserSettings() {
           }}
         >
           <Text style={{ fontSize: 16, color: "white" }}>DROP OUTFITS</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={() => wipePlannedOutfits(db)}
+          style={{
+            padding: 12,
+            borderWidth: 1,
+            backgroundColor: "orange",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: 12,
+            borderRadius: 4,
+          }}
+        >
+          <Text style={{ fontSize: 16, color: "white" }}>WIPE PLANNED OUTFITS</Text>
         </TouchableHighlight>
       </ScrollView>
     </SafeAreaView>

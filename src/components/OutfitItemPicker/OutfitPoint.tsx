@@ -9,7 +9,7 @@ interface OutfitPointProps {
   label?: string;
   onAdd?: () => void;
   onDelete?: (item: Item) => void;
-  position: { top?: number; right?: number; bottom?: number; left?: number };
+  position: { top?: string | number; right?: string | number; bottom?: string | number; left?: string | number };
 }
 
 export default function OutfitPoint({ label, data, onAdd, onDelete, position }: OutfitPointProps) {
@@ -19,12 +19,12 @@ export default function OutfitPoint({ label, data, onAdd, onDelete, position }: 
   return (
     <View style={[styles.imagePointOfInterest, { top: position.top, right: position.right, bottom: position.bottom, left: position.left }]}>
       {label && <Text>{label}</Text>}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
         {data?.map((item) => (
           <OutfitPointCard key={item.uuid} imageURL={item.getImage()} label={item.name} onPress={() => handleDelete(item)} />
         ))}
-        <TouchableOpacity onPress={onAdd} style={{ marginLeft: 8 }}>
-          <SimpleLineIcons name="plus" size={20} color={Colors.primary} />
+        <TouchableOpacity onPress={onAdd} style={styles.touchable}>
+          <SimpleLineIcons name="plus" size={24} color={Colors.primary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -35,5 +35,12 @@ const styles = StyleSheet.create({
   imagePointOfInterest: {
     position: "absolute",
     height: 80,
+    maxWidth: 128,
+  },
+  touchable: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

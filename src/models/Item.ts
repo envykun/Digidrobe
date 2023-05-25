@@ -1,3 +1,5 @@
+import { BaseCategory } from "@Database/constants";
+
 export interface ItemMetadata {
   uuid: string;
   name?: string;
@@ -16,6 +18,7 @@ export interface ItemMetadata {
   notes?: string;
   image?: string;
   favorite?: number;
+  baseCategory: BaseCategory;
 }
 
 export interface ItemDataResponse {
@@ -32,4 +35,5 @@ export interface ItemDataResponse {
   uuid: string;
   wears: number;
   favorite: number;
+  base_category: BaseCategory;
 }

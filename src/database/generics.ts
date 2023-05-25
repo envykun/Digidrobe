@@ -76,39 +76,47 @@ export const getValueById = async (db: SQLite.WebSQLDatabase, id: number | null,
 export const getFromJunctionTableResolved = async (
   db: SQLite.WebSQLDatabase,
   itemID: string,
-  type: "categories" | "colors" | "fabrics"
+  type: "categories" | "colors" | "fabrics" | "tags"
 ) => {
   let junctionTable: string;
   let tableName: string;
+  let mainTable: string;
 
   switch (type) {
     case "categories":
       junctionTable = TableNames.WARDROBE_CATEGORY;
       tableName = TableNames.CATEGORIES;
+      mainTable = TableNames.WARDROBE;
       break;
     case "colors":
       junctionTable = TableNames.WARDROBE_COLOR;
       tableName = TableNames.COLORS;
+      mainTable = TableNames.WARDROBE;
       break;
     case "fabrics":
       junctionTable = TableNames.WARDROBE_FABRIC;
       tableName = TableNames.FABRICS;
+      mainTable = TableNames.WARDROBE;
+      break;
+    case "tags":
+      junctionTable = TableNames.OUTFIT_TAGS;
+      tableName = TableNames.TAGS;
+      mainTable = TableNames.OUTFITS;
       break;
     default:
       return;
   }
 
-  return new Promise<any>((resolve, reject) => {
-    const query = `SELECT label FROM ${junctionTable} INNER JOIN ${TableNames.WARDROBE} ON ${TableNames.WARDROBE}.uuid = ${junctionTable}.itemID INNER JOIN ${tableName} ON ${tableName}.id = ${junctionTable}.propID WHERE ${TableNames.WARDROBE}.uuid = "${itemID}"`;
+  return new Promise<Array<string> | undefined>((resolve, reject) => {
+    const query = `SELECT label FROM ${junctionTable} INNER JOIN ${mainTable} ON ${mainTable}.uuid = ${junctionTable}.itemID INNER JOIN ${tableName} ON ${tableName}.id = ${junctionTable}.propID WHERE ${mainTable}.uuid = "${itemID}"`;
     db.transaction((tx) => {
       tx.executeSql(
         query,
         undefined,
-        (_txCb, res) => resolve(res.rows._array.length > 0 ? res.rows._array.map((v) => v.label) : null),
+        (_txCb, res) => resolve(res.rows._array.length > 0 ? res.rows._array.map((v) => v.label) : undefined),
         (_txCb, error) => {
-          console.log("error", error);
-          reject(error);
-          return true;
+          reject(`Error fetching ${type}:` + error);
+          return false;
         }
       );
     });

@@ -3,3 +3,13 @@ export interface GenericBottomSheetItem {
   label: string;
   hex?: string;
 }
+
+export interface Category {
+  id: string;
+  label: string;
+}
+
+export interface Tag {
+  id: string;
+  label: string;
+}

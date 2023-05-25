@@ -1,5 +1,6 @@
 import { DetailProps } from "@Components/Detail/Detail";
 import { DetailInputProps, InputType } from "@Components/Inputs/DetailInput";
+import { BaseCategories, BaseCategory } from "@Database/constants";
 import { calculateCostPerWear } from "@DigiUtils/helperFunctions";
 import { ItemMetadata } from "@Models/Item";
 import { KeyboardTypeOptions } from "react-native";
@@ -11,6 +12,7 @@ export class Item implements ItemMetadata {
   lastWorn?: Date;
   cost?: number;
   category?: Array<string>;
+  baseCategory: BaseCategory;
   brand?: string;
   model?: string;
   size?: number;
@@ -30,6 +32,7 @@ export class Item implements ItemMetadata {
     wears = 0,
     lastWorn,
     category,
+    baseCategory,
     cost,
     model,
     size,
@@ -47,6 +50,7 @@ export class Item implements ItemMetadata {
     this.lastWorn = lastWorn;
     this.cost = cost;
     this.category = category;
+    this.baseCategory = baseCategory;
     this.brand = brand;
     this.model = model;
     this.size = size;
@@ -99,6 +103,17 @@ export class Item implements ItemMetadata {
           this.category = value;
         },
         inputType: "multi-select",
+      },
+      {
+        key: "baseCategory",
+        label: "BaseCategory",
+        value: BaseCategories[this.baseCategory],
+        editable: true,
+        setter: (value) => {
+          if (!value || Array.isArray(value)) return;
+          this.baseCategory = parseInt(value) as BaseCategory;
+        },
+        inputType: "autocomplete",
       },
       {
         key: "brand",
@@ -206,6 +221,7 @@ export class Item implements ItemMetadata {
       fabric: this.fabric && this.fabric.length > 0 ? this.fabric : null,
       color: this.color && this.color.length > 0 ? this.color : null,
       favorite: this.favorite ?? 0,
+      baseCategory: this.baseCategory ?? 0,
     };
   }
 

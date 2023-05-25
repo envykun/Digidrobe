@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0e0e0",
     paddingVertical: 2,
     paddingHorizontal: 6,
+    elevation: 0.5,
   },
   detailText: {
     fontSize: 10,

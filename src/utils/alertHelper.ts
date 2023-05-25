@@ -9,3 +9,13 @@ export const deleteAlert = (type: string, label: string, deleteCallback: () => v
   ];
   Alert.alert(title, message, buttons, { cancelable: true });
 };
+
+export const unsavedChangesAlert = (discardCallback: () => void) => {
+  const title: string = `Unsaved changes.`;
+  const message: string = `You have unsaved changes. Do you want to discard them?`;
+  const buttons: AlertButton[] = [
+    { text: "Cancel", style: "cancel" },
+    { text: "Discard", onPress: discardCallback, style: "destructive" },
+  ];
+  Alert.alert(title, message, buttons, { cancelable: true });
+};

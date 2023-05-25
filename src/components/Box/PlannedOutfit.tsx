@@ -7,20 +7,58 @@ import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, TouchableOp
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import DetailTag from "@Components/Chip/DetailTag";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
-import { calculateOutfitContainerSize } from "@DigiUtils/helperFunctions";
+import { calculateOutfitContainerSize, formatTimeAgo } from "@DigiUtils/helperFunctions";
+import { Outfit } from "@Classes/Outfit";
+import { useContext, useReducer } from "react";
+import SnackbarContext from "@Context/SnackbarContext";
+import { addToPlannedOutfits, setOutfitAsBookmarked } from "@Database/outfits";
+import { getDatabase } from "@Database/database";
 
 interface PlannedOutfitProps {
   label?: string;
   outfitImage?: string;
   itemImages?: Array<ItemImagePreview>;
-  outfit: OutfitOverview;
-  planOutfitCallback?: (value?: Date | undefined) => void;
+  outfit: Outfit;
 }
 
-export default function PlannedOutfit({ label, outfitImage, itemImages, outfit, planOutfitCallback }: PlannedOutfitProps) {
+export default function PlannedOutfit({ label, outfitImage, itemImages, outfit }: PlannedOutfitProps) {
+  const refresh = useReducer((x) => x + 1, 0)[1];
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const handleNavigation = () => {
     navigation.navigate("OutfitDetails", { outfit: outfit });
+  };
+  const db = getDatabase();
+  const snack = useContext(SnackbarContext);
+
+  const handlePlanOutfit = (date?: Date, outfit?: Outfit) => {
+    if (!snack || !date || !outfit) return;
+    addToPlannedOutfits(db, outfit.uuid, date)
+      .then(() => {
+        snack.setMessage(
+          `Planned '${outfit.name}' for ${date.toLocaleDateString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}.`
+        );
+      })
+      .catch((error) => {
+        snack.setMessage(
+          `Planned '${outfit.name}' for ${date.toLocaleDateString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })} failed.`
+        );
+        console.error("Failed to plan outfit:", error);
+      })
+      .finally(() => snack.setIsOpen(true));
+  };
+
+  const handleFavoritePress = () => {
+    outfit.toggleBookmark();
+    setOutfitAsBookmarked(db, outfit);
+    refresh();
   };
 
   let imageTouchable = null;
@@ -98,11 +136,15 @@ export default function PlannedOutfit({ label, outfitImage, itemImages, outfit, 
         <View>
           <Text style={{ fontSize: 20 }}>{label}</Text>
           <Text style={{ fontSize: 10, fontStyle: "italic", color: "gray" }}>
-            <SimpleLineIcons name="clock" size={8} color="black" /> Last worn: -
+            <SimpleLineIcons name="clock" size={8} color="black" /> Last worn: {formatTimeAgo(outfit.lastWorn)}
           </Text>
         </View>
-        <TouchableOpacity onPress={undefined} style={[]}>
-          <Ionicons name={"bookmark-outline"} size={28} color={"black"} />
+        <TouchableOpacity onPress={handleFavoritePress} style={[]}>
+          <Ionicons
+            name={outfit.isBookmarked() ? "bookmark" : "bookmark-outline"}
+            size={28}
+            color={outfit.isBookmarked() ? "#eeca00" : "black"}
+          />
         </TouchableOpacity>
       </View>
       {imageTouchable}
@@ -119,12 +161,12 @@ export default function PlannedOutfit({ label, outfitImage, itemImages, outfit, 
         <View style={{ flex: 1, flexDirection: "row", gap: 8, alignItems: "center" }}>
           <Ionicons name="ios-pricetags-outline" color="black" />
           <View style={{ flex: 1, flexDirection: "row", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
-            <DetailTag label="Sommer" />
-            <DetailTag label="Sommer" />
-            <DetailTag label="Sommer" />
+            {outfit.tags?.map((tag) => (
+              <DetailTag key={tag} label={tag} />
+            ))}
           </View>
         </View>
-        <DateTimePickerInput text="Plan" iconSize={14} onChange={planOutfitCallback} />
+        <DateTimePickerInput text="Plan" iconSize={14} onChange={(date) => handlePlanOutfit(date, outfit)} />
       </View>
     </View>
   );

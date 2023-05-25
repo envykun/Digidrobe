@@ -1,5 +1,5 @@
 import ShortcutItem from "@Components/Shortcut/ShortcutItem";
-import { TouchableOpacity, View, Image, StyleSheet, Platform } from "react-native";
+import { TouchableOpacity, View, Image, StyleSheet, Platform, Text } from "react-native";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useContext, useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -128,12 +128,10 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
         <View style={styles.noImage}>
           <View style={{ height: 80 }}>
             <ShortcutItem label="Add Image" icon={<SimpleLineIcons name="plus" size={48} color="#E2C895" />} onPress={handleOpen} />
-            {/* 
-            <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-              <Ionicons name="information-circle" color={"grey"} size={24} />
-              <Text>Ziehe dein geplantes Outfit an und mache ein Foto.</Text>
-            </View>
-            */}
+          </View>
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "center", maxWidth: "80%", justifyContent: "center", marginTop: 16 }}>
+            <Ionicons name="information-circle" color={"grey"} size={24} />
+            <Text>Ziehe dein geplantes Outfit an und mache ein Foto.</Text>
           </View>
         </View>
       )}

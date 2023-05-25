@@ -48,7 +48,7 @@ export default function DetailInput({ label, inputProps, type = "default", defau
     }
   }, [selectedValues]);
 
-  const renderInput = (inputType?: string) => {
+  const renderInput = (inputType?: InputType) => {
     switch (inputType) {
       case "date":
         return <DateTimePickerInput onChange={handleDateChange} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
@@ -56,6 +56,8 @@ export default function DetailInput({ label, inputProps, type = "default", defau
         return <MultiSelectWithChips selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
       case "multi-select-color":
         return <MultiSelectWithColor selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
+      case "autocomplete":
+        return <Text>TODO: Add Autocomplete</Text>;
       default:
         return <Input {...inputProps} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
     }

@@ -17,6 +17,7 @@ export const wardrobeQuery: Array<QueryType> = [
   { key: "notes", type: "TEXT" },
   { key: "imageURL", type: "TEXT" },
   { key: "favorite", type: "INTEGER", params: ["NOT NULL"] },
+  { key: "base_category", type: "INTEGER", params: ["NOT NULL"] },
 ];
 
 export const wardrobeWearsQuery: Array<QueryType> = [

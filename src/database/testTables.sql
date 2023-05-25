@@ -27,11 +27,10 @@ CREATE TABLE IF NOT EXISTS outfits(
     imageURL TEXT
 )
 
-CREATE TABLE IF NOT EXISTS outfit_category_wardrobe(
+CREATE TABLE IF NOT EXISTS outfit_wardrobe(
     outfitID TEXT NOT NULL REFERENCES outfits(id),
-    categoryID INTEGER NOT NULL REFERENCES categories(id),
     itemID TEXT NOT NULL REFERENCES wardrobe(uuid),
-    UNIQUE(outfitID,categoryID,itemID)
+    UNIQUE(outfitID,itemID)
 )
 
 CREATE TABLE IF NOT EXISTS planned_outfit(

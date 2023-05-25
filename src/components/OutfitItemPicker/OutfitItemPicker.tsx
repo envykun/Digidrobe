@@ -1,11 +1,11 @@
 import { View, Image, StyleSheet, Dimensions } from "react-native";
 import OutfitPoint from "./OutfitPoint";
 import { Outfit } from "@Classes/Outfit";
-import { OutfitCategoryType } from "src/screens/NewOutfit";
+import { BaseCategory } from "@Database/constants";
 
 export interface OutfitItemPickerProps {
   outfit: Outfit;
-  onPress: (category: OutfitCategoryType) => void;
+  onPress: (baseCategory: BaseCategory) => void;
 }
 
 export default function OutfitItemPicker({ outfit, onPress }: OutfitItemPickerProps) {
@@ -13,61 +13,59 @@ export default function OutfitItemPicker({ outfit, onPress }: OutfitItemPickerPr
   const containerHeight = height * 0.8;
   const paddingTop = 128;
   const paddingBottom = 128;
-  const relHeight = containerHeight - paddingBottom - paddingTop;
-  // TODO: Calculate positions
   const positions = {
-    Head: { top: 0, left: 0 },
-    UpperBody: { top: 0, left: 0 },
-    LowerBody: { top: 0, left: 0 },
-    Accessoirs: { top: 0, left: 0 },
-    Feet: { top: 0, left: 0 },
-    NoCategory: { top: 0, left: 0 },
+    Head: { top: paddingTop, left: "60%", right: 0 },
+    UpperBody: { top: paddingTop + 60, left: "20%", right: 0 },
+    LowerBody: { top: "80%", left: "65%", right: 0 },
+    Accessoirs: { bottom: "40%", left: "5%", right: 0 },
+    Feet: { bottom: "28%", left: "60%", right: 0 },
+    NoCategory: { bottom: "5%", left: "5%", right: 0 },
   };
 
   return (
     <View style={styles({ paddingBottom: paddingBottom, paddingTop: paddingTop, height: containerHeight }).container}>
       <Image source={require("@Styles/img/WomenSilhouette.png")} style={{ resizeMode: "contain", width: "100%", height: "100%" }} />
       <OutfitPoint
-        data={outfit.getItemsByCategory("Head")}
+        data={outfit.getItemsByCategory(1)}
         label={"Headpiece"}
-        position={{ top: 22, left: 210 }}
-        onAdd={() => onPress("Head")}
-        onDelete={(item) => outfit.removeItemFromCategory("Head", item)}
+        position={positions.Head}
+        onAdd={() => onPress(1)}
+        onDelete={(item) => outfit.removeItemFromCategory(1, item)}
       />
       <OutfitPoint
-        data={outfit.getItemsByCategory("UpperBody")}
+        data={outfit.getItemsByCategory(2)}
         label={"Upper body"}
-        position={{ top: 92, left: 110 }}
-        onAdd={() => onPress("UpperBody")}
-        onDelete={(item) => outfit.removeItemFromCategory("UpperBody", item)}
+        position={positions.UpperBody}
+        onAdd={() => onPress(2)}
+        onDelete={(item) => outfit.removeItemFromCategory(2, item)}
       />
       <OutfitPoint
-        data={outfit.getItemsByCategory("LowerBody")}
+        data={outfit.getItemsByCategory(3)}
         label={"Lower body"}
-        position={{ bottom: 230, left: 230 }}
-        onAdd={() => onPress("LowerBody")}
-        onDelete={(item) => outfit.removeItemFromCategory("LowerBody", item)}
+        position={positions.LowerBody}
+        onAdd={() => onPress(3)}
+        onDelete={(item) => outfit.removeItemFromCategory(3, item)}
       />
       <OutfitPoint
-        data={outfit.getItemsByCategory("Accessoirs")}
+        data={outfit.getItemsByCategory(5)}
         label={"Accessoir"}
-        position={{ bottom: 180, right: 260 }}
-        onAdd={() => onPress("Accessoirs")}
-        onDelete={(item) => outfit.removeItemFromCategory("Accessoirs", item)}
+        position={positions.Accessoirs}
+        onAdd={() => onPress(5)}
+        onDelete={(item) => outfit.removeItemFromCategory(5, item)}
       />
       <OutfitPoint
-        data={outfit.getItemsByCategory("Feet")}
+        data={outfit.getItemsByCategory(4)}
         label={"Feet"}
-        position={{ bottom: 90, left: 220 }}
-        onAdd={() => onPress("Feet")}
-        onDelete={(item) => outfit.removeItemFromCategory("Feet", item)}
+        position={positions.Feet}
+        onAdd={() => onPress(4)}
+        onDelete={(item) => outfit.removeItemFromCategory(4, item)}
       />
       <OutfitPoint
-        data={outfit.getItemsByCategory("NoCategory")}
+        data={outfit.getItemsByCategory(0)}
         label={"NoCategory"}
-        position={{ bottom: 20, left: 30 }}
-        onAdd={() => onPress("NoCategory")}
-        onDelete={(item) => outfit.removeItemFromCategory("NoCategory", item)}
+        position={positions.NoCategory}
+        onAdd={() => onPress(0)}
+        onDelete={(item) => outfit.removeItemFromCategory(0, item)}
       />
     </View>
   );
@@ -81,5 +79,8 @@ const styles = (props: { paddingTop: number; paddingBottom: number; height: numb
       height: props.height,
       paddingBottom: props.paddingBottom,
       paddingTop: props.paddingTop,
+    },
+    sheetButton: {
+      height: 80,
     },
   });

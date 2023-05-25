@@ -18,7 +18,7 @@ export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
   return new Promise<number | undefined>((resolve, reject) =>
     db.transaction((tx) => {
       tx.executeSql(
-        `INSERT INTO ${TableNames.WARDROBE} (uuid, name, cost, brand, model, size, bought_date, bought_from, notes, imageURL, favorite) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+        `INSERT INTO ${TableNames.WARDROBE} (uuid, name, cost, brand, model, size, bought_date, bought_from, notes, imageURL, favorite, base_category) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
         [
           dbParsedItem.uuid,
           dbParsedItem.name,
@@ -31,6 +31,7 @@ export const createItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
           dbParsedItem.notes,
           dbParsedItem.image,
           dbParsedItem.favorite,
+          dbParsedItem.baseCategory,
         ],
         (_, res) => resolve(res.insertId),
         (_, error) => {
@@ -66,6 +67,7 @@ export const getWardrobeItems = async (db: SQLite.WebSQLDatabase) => {
                 category: (await getFromJunctionTableResolved(db, item.uuid, "categories")) ?? undefined,
                 fabric: (await getFromJunctionTableResolved(db, item.uuid, "fabrics")) ?? undefined,
                 color: (await getFromJunctionTableResolved(db, item.uuid, "colors")) ?? undefined,
+                baseCategory: item.base_category,
                 favorite: item.favorite,
               });
             })
@@ -80,8 +82,8 @@ export const getWardrobeItems = async (db: SQLite.WebSQLDatabase) => {
   });
 };
 
-export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, uuid: string) => {
-  return new Promise<Item[]>((resolve, reject) => {
+export const getWardrobeItemById = async (db: SQLite.WebSQLDatabase, uuid: string) => {
+  return new Promise<Item>((resolve, reject) => {
     db.transaction(
       (tx) =>
         tx.executeSql(`SELECT * FROM wardrobe WHERE uuid='${uuid}'`, [], async (t, res) => {
@@ -104,17 +106,25 @@ export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, uuid: stri
                 category: (await getFromJunctionTableResolved(db, item.uuid, "categories")) ?? undefined,
                 fabric: (await getFromJunctionTableResolved(db, item.uuid, "fabrics")) ?? undefined,
                 color: (await getFromJunctionTableResolved(db, item.uuid, "colors")) ?? undefined,
+                baseCategory: item.base_category,
                 favorite: item.favorite,
               });
             })
           );
-          resolve(wardrobe.sort((a, b) => a.name.localeCompare(b.name)));
+          resolve(wardrobe[0]);
         }),
       (error) => {
         reject(error);
         return false;
       }
     );
+  });
+};
+
+export const getWardrobeItemsById = async (db: SQLite.WebSQLDatabase, itemIDs: Array<string>) => {
+  return new Promise<Item[]>(async (resolve, reject) => {
+    const items = await Promise.all(itemIDs.map(async (uuid) => await getWardrobeItemById(db, uuid)));
+    resolve(items);
   });
 };
 
@@ -171,34 +181,34 @@ export const updateWearDetails = (db: SQLite.WebSQLDatabase, item: Item, date: D
 };
 
 export const updateItem = async (db: SQLite.WebSQLDatabase, item: Item) => {
-  const oldItem = await getWardrobeItemsById(db, item.uuid);
+  const oldItem = await getWardrobeItemById(db, item.uuid);
   const dbParsedItem = item.getDBParsedItem();
 
   // let brand = dbParsedItem.brand ? await getValueById(db, item.brand, TableNames.BRANDS) : null
   console.log("TODO: update BRAND and BOUGHT_FROM");
 
   // if category changed
-  if (JSON.stringify(dbParsedItem.category) !== JSON.stringify(oldItem[0].category)) {
+  if (JSON.stringify(dbParsedItem.category) !== JSON.stringify(oldItem.category)) {
     await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_CATEGORY);
     dbParsedItem.category &&
       (await createMultipleValues(db, dbParsedItem.category, TableNames.CATEGORIES, dbParsedItem.uuid, TableNames.WARDROBE_CATEGORY));
   }
   // if fabric changed
-  if (JSON.stringify(dbParsedItem.fabric) !== JSON.stringify(oldItem[0].fabric)) {
+  if (JSON.stringify(dbParsedItem.fabric) !== JSON.stringify(oldItem.fabric)) {
     await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_FABRIC);
     dbParsedItem.fabric && (await createMultipleValues(db, dbParsedItem.fabric, TableNames.FABRICS, item.uuid, TableNames.WARDROBE_FABRIC));
   }
   // if color changed
-  if (JSON.stringify(dbParsedItem.color) !== JSON.stringify(oldItem[0].color)) {
+  if (JSON.stringify(dbParsedItem.color) !== JSON.stringify(oldItem.color)) {
     await deleteFromJunctionTable(db, dbParsedItem.uuid, TableNames.WARDROBE_COLOR);
     dbParsedItem.color && (await createMultipleValues(db, dbParsedItem.color, TableNames.COLORS, item.uuid, TableNames.WARDROBE_COLOR));
   }
   // if brand changed
-  if (dbParsedItem.brand !== oldItem[0].brand) {
+  if (dbParsedItem.brand !== oldItem.brand) {
     const brand = dbParsedItem.brand ? await createValueInTable(db, dbParsedItem.brand, TableNames.BRANDS) : null;
   }
   // if boughtFrom changed
-  if (dbParsedItem.boughtFrom !== oldItem[0].boughtFrom) {
+  if (dbParsedItem.boughtFrom !== oldItem.boughtFrom) {
     const bought_from = dbParsedItem.boughtFrom ? await createValueInTable(db, dbParsedItem.boughtFrom, TableNames.BOUGHT_FROM) : null;
   }
 

@@ -3,6 +3,7 @@
         "bought": "2023-05-12T12:56:03.735Z",
         "boughtFrom": "Amazon",
         "brand": "Adidas",
+        "baseCategory": 0,
         "category": [
             "Hose",
             "Jogginghose"
@@ -24,6 +25,7 @@
         "bought": null,
         "boughtFrom": "Nike",
         "brand": "Nike",
+        "baseCategory": 3,
         "category": [
             "Hose"
         ],
@@ -43,6 +45,7 @@
         "bought": null,
         "boughtFrom": "KaDeWe",
         "brand": "Gucci",
+        "baseCategory": 5,
         "category": [
             "Handtasche"
         ],
@@ -62,6 +65,7 @@
         "bought": null,
         "boughtFrom": "North Face Berlin",
         "brand": "North Face",
+        "baseCategory": 2,
         "category": [
             "Regenjacke",
             "Jacke"
@@ -82,6 +86,7 @@
         "bought": null,
         "boughtFrom": "Amazon",
         "brand": "S.Oliver",
+        "baseCategory": 4,
         "category": [
             "Socken"
         ],
@@ -101,6 +106,7 @@
         "bought": null,
         "boughtFrom": "Amazon",
         "brand": "Adidas",
+        "baseCategory": 3,
         "category": [
             "Hose",
             "Jogginghose"
@@ -122,6 +128,7 @@
         "bought": null,
         "boughtFrom": "Nike",
         "brand": "Nike",
+        "baseCategory": 3,
         "category": [
             "Hose"
         ],
@@ -141,6 +148,7 @@
         "bought": null,
         "boughtFrom": "KaDeWe",
         "brand": "Gucci",
+        "baseCategory": 5,
         "category": [
             "Handtasche"
         ],
@@ -160,6 +168,7 @@
         "bought": null,
         "boughtFrom": "North Face Berlin",
         "brand": "North Face",
+        "baseCategory": 2,
         "category": [
             "Regenjacke",
             "Jacke"
@@ -180,6 +189,7 @@
         "bought": null,
         "boughtFrom": "Amazon",
         "brand": "S.Oliver",
+        "baseCategory": 4,
         "category": [
             "Socken"
         ],

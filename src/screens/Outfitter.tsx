@@ -1,52 +1,24 @@
 import PlannedOutfit from "@Components/Box/PlannedOutfit";
 import Chip from "@Components/Chip/Chip";
 import FilterBar from "@Components/FilterBar/FilterBar";
-import Input from "@Components/Inputs/Input";
-import { getDatabase } from "@Database/database";
-import { getOutfitsAsync } from "@Database/outfits";
+import { getDatabase, getTags } from "@Database/database";
+import { getOutfits } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
-import { OutfitOverview } from "@Models/Outfit";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useContext, useEffect, useState } from "react";
-import {
-  FlatList,
-  View,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  RefreshControl,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import SnackbarContext from "@Context/SnackbarContext";
 import Skeleton from "@Components/Skeleton/Skeleton";
-
-const fakeTags: Array<string> = [
-  "Sommer",
-  "Winter",
-  "Leicht Bekleidet",
-  "Modisch",
-  "Datenight",
-  "Schick",
-  "Outfit 7",
-  "Outfit 8",
-  "Outfit 9",
-  "Outfit 10",
-];
+import { Tag } from "@Models/Generic";
 
 export default function Outfitter() {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const db = getDatabase();
-  const snack = useContext(SnackbarContext);
+  const [activeFilter, setActiveFilter] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
-  const {
-    data: outfits,
-    isLoading: loadingOutfits,
-    error,
-    refetch,
-  } = useGet(getOutfitsAsync(db));
+  const { data: outfits, isLoading: loadingOutfits, error, refetch: refetchOutfits } = useGet(getOutfits(db));
+  const { data: tags, isLoading: loadingTags, error: tagsError, refetch: refetchTags } = useGet(getTags<Tag>(db));
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -54,14 +26,15 @@ export default function Outfitter() {
     setAdditionalFilterOpen((v) => !v);
   };
 
+  const handleRefetch = () => {
+    refetchOutfits();
+    refetchTags();
+  };
+
   useEffect(() => {
     navigation.setOptions({
       headerLeft: ({ tintColor, pressOpacity }: any) => (
-        <TouchableOpacity
-          onPress={toggleAdditionalFilter}
-          activeOpacity={pressOpacity}
-          style={{ marginLeft: 16 }}
-        >
+        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
           <Ionicons name="ios-filter" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
@@ -69,73 +42,41 @@ export default function Outfitter() {
   }, [navigation]);
 
   useEffect(() => {
-    refetch();
+    // db.transaction((tx) =>
+    //   tx.executeSql(`SELECT * from ${TableNames.OUTFIT_WARDROBE}`, [], (_, res) => console.log("Junc", res.rows._array))
+    // );
+    handleRefetch();
   }, [isFocused]);
-
-  const handlePlanOutfit = (date?: Date, outfitName?: string) => {
-    // TODO: Add to planned list
-    if (!snack || !date || !outfitName) return;
-    snack.setIsOpen(true);
-    snack.setMessage(
-      `Planned '${outfitName}' for ${date.toLocaleDateString(undefined, {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })}.`
-    );
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={["#E2C895", "transparent"]}
-        style={{ alignItems: "center" }}
+      <FilterBar
+        showAdditionalFilter
+        isOpen={additionalFilterOpen}
+        // onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
+        additionalFilterProps={{ onSearchQuery: setSearchQuery }}
       >
-        <FilterBar
-          showAdditionalFilter={true}
-          isOpen={additionalFilterOpen}
-          onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
-          additionalFilterProps={{ onSearchQuery: setSearchQuery }}
-        >
-          <Chip label="All" active={true} />
-          {fakeTags.map((item) => (
-            <Chip key={item} label={item} />
-          ))}
-        </FilterBar>
-      </LinearGradient>
+        <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
+        {loadingTags
+          ? Array.from({ length: 6 }).map((_, idx) => <Skeleton key={idx} variant="rounded" />)
+          : tags?.map((tag) => (
+              <Chip key={tag.id} label={tag.label} active={activeFilter === tag.label} onPress={() => setActiveFilter(tag.label)} />
+            ))}
+      </FilterBar>
       <FlatList
-        data={
-          searchQuery
-            ? outfits?.filter((outfit) =>
-                outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())
-              )
-            : outfits
-        }
-        renderItem={({ item }) => (
-          <PlannedOutfit
-            label={item.name}
-            outfitImage={item.imageURL}
-            itemImages={item.itemImageURLs}
-            outfit={item}
-            planOutfitCallback={(date) => handlePlanOutfit(date, item.name)}
-          />
+        data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
+        renderItem={({ item: outfit }) => (
+          <PlannedOutfit label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />
         )}
         contentContainerStyle={{ rowGap: 16, padding: 8 }}
         showsVerticalScrollIndicator={false}
         style={{ height: "100%" }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refetch} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefetch} />}
         ListEmptyComponent={
           loadingOutfits ? (
             <View style={{ paddingHorizontal: 8, gap: 16 }}>
               {Array.from({ length: 3 }).map((_, idx) => (
-                <Skeleton
-                  key={idx}
-                  variant="rounded"
-                  height={260}
-                  width={"100%"}
-                />
+                <Skeleton key={idx} variant="rounded" height={260} width={"100%"} />
               ))}
             </View>
           ) : (
