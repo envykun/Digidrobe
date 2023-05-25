@@ -26,6 +26,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { BottomSheetContainer } from "@Components/Modal/BottomSheetContainer";
 import { BottomSheetContextProvider } from "@Context/BottomSheetContext";
 import { Outfit } from "@Classes/Outfit";
+import { initializeSettings } from "@Hooks/useAsyncStorage";
 
 export type RootStackParamList = {
   Root: any;
@@ -246,6 +247,7 @@ export default function App() {
     async function prepare() {
       try {
         await initDatabase();
+        await initializeSettings();
       } catch (e) {
         console.warn(e);
       } finally {

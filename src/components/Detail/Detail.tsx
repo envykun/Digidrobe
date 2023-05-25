@@ -1,13 +1,14 @@
 import DetailTag from "@Components/Chip/DetailTag";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 export interface DetailProps {
   label: string;
   value?: string | number | Array<string>;
   suffix?: string;
   isColor?: boolean;
+  onPressEdit?: () => void;
 }
-export default function Detail({ label, value, suffix, isColor }: DetailProps) {
+export default function Detail({ label, value, suffix, isColor, onPressEdit }: DetailProps) {
   return (
     <View style={styles.detail}>
       <Text style={{ fontSize: 16, fontWeight: "100" }}>{label}</Text>
@@ -18,10 +19,12 @@ export default function Detail({ label, value, suffix, isColor }: DetailProps) {
           ))}
         </View>
       ) : (
-        <Text style={{ fontSize: 16, maxWidth: 240 }}>
-          {value ?? "-"}
-          {value || value === 0 ? suffix : null}
-        </Text>
+        <TouchableOpacity disabled={!Boolean(onPressEdit)} onPress={onPressEdit}>
+          <Text style={{ fontSize: 16, maxWidth: 240 }}>
+            {value ?? "-"}
+            {value || value === 0 ? suffix : null}
+          </Text>
+        </TouchableOpacity>
       )}
     </View>
   );

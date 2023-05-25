@@ -1,7 +1,7 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Switch } from "react-native";
 import Input, { InputProps } from "./Input";
 import DateTimePickerInput from "./DateTimePickerInput";
-import { useContext, useEffect, useState } from "react";
+import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import MultiSelectWithChips from "./MultiSelectWithChips";
 import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
 import MultiSelectWithColor from "./MultiSelectWithColor";
@@ -15,7 +15,7 @@ export interface DetailInputProps {
 
 export type InputType = "date" | "autocomplete" | "multi-select" | "multi-select-color" | "default";
 
-export default function DetailInput({ label, inputProps, type = "default", defaultValue }: DetailInputProps) {
+export default function DetailInput({ label, inputProps, type = "default", defaultValue, children }: PropsWithChildren<DetailInputProps>) {
   const [selectedValues, setSelectedValues] = useState<Array<string>>(Array.isArray(defaultValue) ? defaultValue : []);
   const bottomSheet = useContext(BottomSheetContext);
 
@@ -66,7 +66,7 @@ export default function DetailInput({ label, inputProps, type = "default", defau
   return (
     <View style={styles.detail}>
       <Text style={{ fontSize: 16, fontWeight: "100", minWidth: "30%" }}>{label}</Text>
-      {renderInput(type)}
+      {children ?? renderInput(type)}
     </View>
   );
 }

@@ -16,13 +16,17 @@ import { ColorsRGB } from "@Styles/colors";
 import { useGetQuote } from "@Hooks/useGetQuote";
 import Skeleton from "@Components/Skeleton/Skeleton";
 import BottomSheetContext from "@Context/BottomSheetContext";
+import { useAsyncStorage } from "@Hooks/useAsyncStorage";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const db = getDatabase();
+  const isFocused = useIsFocused();
   const { data: plannedOutfit, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
   const { quote, isLoading: isLoadingQuote } = useGetQuote("https://zenquotes.io/api/today");
+  const { data: settings, refetch: refetchSettings } = useAsyncStorage();
   const bottomSheet = useContext(BottomSheetContext);
 
   useEffect(() => {
@@ -30,28 +34,36 @@ export default function Home() {
     refetch();
   }, [selectedDate]);
 
+  useEffect(() => {
+    if (isFocused) {
+      refetchSettings();
+      console.log("REFETCHING");
+    }
+  }, [isFocused]);
+
   return (
     <ScrollContainer headerTransparent={false} headerBackgroundColor={ColorsRGB.primary}>
       <View style={[styles.topContainer, layout.noHeaderSpacing]}>
         <View style={{ marginVertical: 16 }}>
-          <Text style={{ fontSize: 32, color: "white" }}>Hello, Jule-Sophie!</Text>
-          {isLoadingQuote ? (
-            <View style={{ gap: 2 }}>
-              <Skeleton variant="text" height={16} />
-              <Skeleton variant="text" height={16} width={"40%"} />
-            </View>
-          ) : (
-            <Text
-              style={{
-                fontSize: 12,
-                fontStyle: "italic",
-                color: "#808080",
-                marginTop: 4,
-              }}
-            >
-              {quote}
-            </Text>
-          )}
+          <Text style={{ fontSize: 32, color: "white" }}>Hello, {settings?.name}!</Text>
+          {!settings?.quoteDisabled &&
+            (isLoadingQuote ? (
+              <View style={{ gap: 2 }}>
+                <Skeleton variant="text" height={16} />
+                <Skeleton variant="text" height={16} width={"40%"} />
+              </View>
+            ) : (
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontStyle: "italic",
+                  color: "#808080",
+                  marginTop: 4,
+                }}
+              >
+                {quote}
+              </Text>
+            ))}
         </View>
         <WeatherAndLocation />
       </View>

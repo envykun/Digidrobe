@@ -9,15 +9,15 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 - [x] Header Component
 - [x] Edit Item
 - [x] Delete Item
-- [ ] Outfit Details
-- [ ] Create Outfit -> Styling, UX (change how the category selection works)
-- [ ] Edit Outfit
-- [ ] Delete Outfit
+- [x] Outfit Details
+- [x] Create Outfit -> Styling, UX (change how the category selection works)
+- [x] Edit Outfit
+- [x] Delete Outfit
 - [x] Favorite Items -> Shortcut
 - [ ] Saved Outfits -> Shortcut
-- [ ] Recent Worn Outfits
+- [x] Recent Worn Outfits
 - [x] Worn logic (Count update, last worn update)
-- [ ] Plan outfit (How to plan a saved/created outfit)
+- [x] Plan outfit (How to plan a saved/created outfit)
 - [x] Item Detail -> Saved Outfits
 - [ ] Item Detail -> Statistics chart
 - [ ] Filterbar / Search -> Wardrobe, Outfitter
