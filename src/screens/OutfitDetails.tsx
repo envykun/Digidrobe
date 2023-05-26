@@ -7,7 +7,7 @@ import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 import { useGet } from "@Hooks/useGet";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
-import { View, StyleSheet, Image, Text, TouchableOpacity, Dimensions, FlatList } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import { Outfit } from "@Classes/Outfit";
@@ -33,6 +33,7 @@ import ImageContainer from "@Components/Box/ImageContainer";
 import SnackbarContext from "@Context/SnackbarContext";
 import DigiButton from "@Components/Button/DigiButton";
 import { deleteAlert } from "@DigiUtils/alertHelper";
+import DetailImage from "@Components/Image/DetailImage";
 
 type OutfitDetailsProps = NativeStackScreenProps<RootStackParamList, "OutfitDetails">;
 
@@ -166,17 +167,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
 
   return (
     <ScrollContainer isLoading={false}>
-      {editMode ? (
-        <OutfitItemPicker outfit={outfit} onPress={handleOpenBottomSheet} />
-      ) : (
-        <View style={styles.image}>
-          {outfit.imageURL ? (
-            <Image source={{ uri: outfit.imageURL }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-          ) : (
-            <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-          )}
-        </View>
-      )}
+      {editMode ? <OutfitItemPicker outfit={outfit} onPress={handleOpenBottomSheet} /> : <DetailImage image={outfit.imageURL} />}
       <View style={styles.content}>
         <View style={styles.description}>
           <View style={styles.descriptionInner}>
@@ -271,10 +262,6 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
 }
 
 const styles = StyleSheet.create({
-  image: {
-    height: Dimensions.get("screen").height * 0.66, // Take 2/3 of the available screen.
-    overflow: "hidden",
-  },
   content: {
     backgroundColor: "white",
     marginTop: -32,

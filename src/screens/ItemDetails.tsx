@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
 import { formatTimeAgo } from "@DigiUtils/helperFunctions";
@@ -10,7 +10,7 @@ import { getOutfits } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { Ionicons } from "@expo/vector-icons";
-import { deleteItem, getWardrobeItemById, getWardrobeItemsById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
+import { deleteItem, getWardrobeItemById, setItemAsFavorite, updateItem, updateWearDetails } from "@Database/item";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import { useContext, useLayoutEffect, useRef, useState } from "react";
 import EditableDetail from "@Components/Detail/EditableDetail";
@@ -20,6 +20,7 @@ import { Item } from "@Classes/Item";
 import DigiButton from "@Components/Button/DigiButton";
 import { deleteAlert } from "@DigiUtils/alertHelper";
 import SnackbarContext from "@Context/SnackbarContext";
+import DetailImage from "@Components/Image/DetailImage";
 
 const chartData: ChartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
@@ -131,15 +132,10 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
 
   return (
     <ScrollContainer isLoading={isLoading} refetch={refetchItem}>
-      {editMode && <ImageContainer defaultImage={item.getImage()} setImageCallback={(uri) => item.setImage(uri)} />}
-      {!editMode && (
-        <View style={styles.image}>
-          {item.getImage() ? (
-            <Image source={{ uri: item.getImage() }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-          ) : (
-            <Image source={require("../styles/img/noImg.jpg")} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
-          )}
-        </View>
+      {editMode ? (
+        <ImageContainer defaultImage={item.getImage()} setImageCallback={(uri) => item.setImage(uri)} />
+      ) : (
+        <DetailImage image={item.getImage()} />
       )}
       <View style={styles.content}>
         <View style={styles.description}>
@@ -212,10 +208,6 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
 }
 
 const styles = StyleSheet.create({
-  image: {
-    height: 480,
-    overflow: "hidden",
-  },
   content: {
     backgroundColor: "white",
     marginTop: -32,

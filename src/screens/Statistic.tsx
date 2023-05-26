@@ -5,8 +5,6 @@ import Snackbar from "@Components/Snackbar/Snackbar";
 import WorkInProgress from "@Components/WIP";
 import { useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
-import { MultiSelect } from "react-native-element-dropdown";
 
 export default function Statistic() {
   const [open, setOpen] = useState(false);
@@ -35,44 +33,6 @@ export default function Statistic() {
         height: "100%",
       }}
     >
-      <DropDownPicker
-        open={open}
-        value={value}
-        items={items}
-        setOpen={setOpen}
-        setValue={setValue}
-        setItems={setItems}
-        searchable={true}
-        multiple={true}
-        mode="BADGE"
-        badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a", "#e76f51", "#8ac926", "#00b4d8", "#e9c46a"]}
-        listMode="SCROLLVIEW"
-        scrollViewProps={{
-          nestedScrollEnabled: true,
-        }}
-        dropDownContainerStyle={{
-          position: "relative",
-          top: 0,
-        }}
-      />
-      <MultiSelect
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        data={items}
-        search
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder="Select item"
-        searchPlaceholder="Search..."
-        value={value2}
-        onChange={(item) => {
-          setValue2(item);
-        }}
-      />
       <DigiButton title="Open Snackbar" onPress={() => setIsOpen(!isOpen)} />
       <Snackbar
         message="Hello this is Dog."
