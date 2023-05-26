@@ -28,6 +28,8 @@ import { BottomSheetContextProvider } from "@Context/BottomSheetContext";
 import { Outfit } from "@Classes/Outfit";
 import { initializeSettings } from "@Hooks/useAsyncStorage";
 import { i18n } from "@Database/i18n/i18n";
+import FullCalendar from "@Components/Calendar/FullCalendar";
+import CalendarScreen from "@Screens/CalendarScreen";
 
 export type RootStackParamList = {
   Root: any;
@@ -39,6 +41,7 @@ export type RootStackParamList = {
   Favorites: any;
   Recent: any;
   UserSettings: any;
+  Calendar: undefined;
   NotFound: undefined;
 };
 
@@ -157,6 +160,14 @@ function RootNavigator() {
           options={({ route }) => ({
             ...headerOptions,
             title: i18n.t("screens.settings"),
+          })}
+        />
+        <Stack.Screen
+          name="Calendar"
+          component={CalendarScreen}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: i18n.t("screens.calendar"),
           })}
         />
       </Stack.Group>

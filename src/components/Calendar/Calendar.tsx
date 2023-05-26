@@ -4,12 +4,17 @@ import CalendarDateItem from "./CalendarDateItem";
 import { useState } from "react";
 import PagerView from "react-native-pager-view";
 import { addDays, compareAsc, eachDayOfInterval, subDays } from "date-fns";
+import DigiButton from "@Components/Button/DigiButton";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "App";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface CalendarProps {
   onChange?: (date: Date) => void;
 }
 
 export default function Calendar({ onChange }: CalendarProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const currentMonthYear = currentDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
@@ -60,6 +65,7 @@ export default function Calendar({ onChange }: CalendarProps) {
     <View style={styles.calendarBox}>
       <View style={styles.dateText}>
         <Text style={{ fontSize: 16 }}>{currentMonthYear}</Text>
+        <DigiButton title="Calendar" onPress={() => navigation.navigate("Calendar")} variant="text" />
       </View>
       <View style={styles.carousel}>
         <Octicons name="chevron-left" size={24} color={position === 0 ? "lightgrey" : "black"} />
@@ -79,7 +85,7 @@ export default function Calendar({ onChange }: CalendarProps) {
 const styles = StyleSheet.create({
   calendarBox: {
     width: Dimensions.get("window").width,
-    height: 80,
+    // height: 80,
     marginVertical: 16,
   },
   carousel: {
@@ -89,8 +95,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dateText: {
-    marginLeft: 16,
+    marginHorizontal: 16,
     marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   carouselWeek: {
     flexDirection: "row",

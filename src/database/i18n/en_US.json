@@ -20,6 +20,7 @@
     "notes": "Notes"
   },
   "screens": {
-    "settings": "Settings"
+    "settings": "Settings",
+    "calendar": "Calendar"
   }
 }
