@@ -1,6 +1,7 @@
 import { DetailProps } from "@Components/Detail/Detail";
 import { DetailInputProps, InputType } from "@Components/Inputs/DetailInput";
 import { BaseCategories, BaseCategory } from "@Database/constants";
+import { i18n } from "@Database/i18n/i18n";
 import { calculateCostPerWear } from "@DigiUtils/helperFunctions";
 import { ItemMetadata } from "@Models/Item";
 import { KeyboardTypeOptions } from "react-native";
@@ -75,7 +76,7 @@ export class Item implements ItemMetadata {
     return [
       {
         key: "cost",
-        label: "Cost",
+        label: i18n.t("item.cost"),
         value: this.cost?.toString(),
         editable: true,
         inputType: "default",
@@ -88,14 +89,14 @@ export class Item implements ItemMetadata {
       },
       {
         key: "costPerWear",
-        label: "Cost per wear",
+        label: i18n.t("item.costPerWear"),
         editable: false,
         value: this.cost && this.wears > 0 ? calculateCostPerWear(this.cost, this.wears) : this.cost?.toString(),
         detailProps: { suffix: " €" },
       },
       {
         key: "category",
-        label: "Categories",
+        label: i18n.t("item.categories"),
         value: this.category,
         editable: true,
         setter: (value) => {
@@ -106,7 +107,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "baseCategory",
-        label: "BaseCategory",
+        label: i18n.t("item.categoryGroup"),
         value: BaseCategories[this.baseCategory],
         editable: true,
         setter: (value) => {
@@ -117,7 +118,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "brand",
-        label: "Brand",
+        label: i18n.t("item.brand"),
         value: this.brand,
         editable: true,
         setter: (value) => {
@@ -127,7 +128,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "model",
-        label: "Model",
+        label: i18n.t("item.model"),
         value: this.model,
         editable: true,
         setter: (value) => {
@@ -137,7 +138,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "size",
-        label: "Size",
+        label: i18n.t("item.size"),
         value: this.size?.toString(),
         editable: true,
         setter: (value) => {
@@ -148,7 +149,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "fabric",
-        label: "Fabric",
+        label: i18n.t("item.fabric"),
         value: this.fabric,
         editable: true,
         setter: (value) => {
@@ -159,7 +160,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "bought",
-        label: "Bought",
+        label: i18n.t("item.bought"),
         value: this.bought,
         isDate: true,
         editable: true,
@@ -171,7 +172,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "boughtFrom",
-        label: "Bought from",
+        label: i18n.t("item.boughtFrom"),
         value: this.boughtFrom,
         editable: true,
         setter: (value) => {
@@ -181,7 +182,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "color",
-        label: "Color",
+        label: i18n.t("item.color"),
         value: this.color,
         editable: true,
         setter: (value) => {
@@ -192,7 +193,7 @@ export class Item implements ItemMetadata {
       },
       {
         key: "notes",
-        label: "Notes",
+        label: i18n.t("item.notes"),
         value: this.notes,
         editable: true,
         setter: (value) => {

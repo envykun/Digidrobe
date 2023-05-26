@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsItem from "@Components/List/SettingsItem";
 import Input from "@Components/Inputs/Input";
 import { Ionicons } from "@expo/vector-icons";
+import { i18n } from "@Database/i18n/i18n";
 
 const settings = ["ToS/PrivacyPolicy", "FAQ", "Support", "Feedback", "Notifications", "DB Access (Your data, your choice)"];
 
@@ -63,7 +64,9 @@ export default function UserSettings() {
               />
             )}
           </SettingsItem>
-          <SettingsItem label="Language" value={data?.locale} />
+          <SettingsItem label="Language" value={data?.locale}>
+            <DigiButton title="Switch to en" onPress={() => (i18n.locale = "en_US")} />
+          </SettingsItem>
           <SettingsItem label="Disable quote of the day?" onPress={toggleQuote}>
             <Switch value={data?.quoteDisabled ?? false} onValueChange={toggleQuote} />
           </SettingsItem>

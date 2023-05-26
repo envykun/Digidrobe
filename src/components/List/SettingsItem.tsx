@@ -12,7 +12,7 @@ export default function SettingsItem({ label, onPress, value, children }: PropsW
     <TouchableHighlight onPress={onPress}>
       <View style={styles.item}>
         <Text style={{ fontSize: 16, fontWeight: "100" }}>{label}</Text>
-        {children ? children : value && <Text>{value}</Text>}
+        {children ? children : value && <Text style={{ fontSize: 18, fontWeight: "200" }}>{value}</Text>}
       </View>
     </TouchableHighlight>
   );

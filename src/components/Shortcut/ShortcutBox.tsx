@@ -4,18 +4,19 @@ import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
+import { i18n } from "@Database/i18n/i18n";
 
 export default function ShortcutBox() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={styles.shortcutBox}>
       <ShortcutItem
-        label="New"
+        label={i18n.t("button.new")}
         icon={<SimpleLineIcons name="plus" size={24} color="black" />}
         onPress={() => navigation.navigate("NewItem" as never)}
       />
       <ShortcutItem
-        label="Favorites"
+        label={i18n.t("button.favorite")}
         icon={<SimpleLineIcons name="heart" size={24} color="black" />}
         onPress={() => navigation.navigate("Root", { screen: "Wardrobe", params: { favoriteFilter: true } })}
       />
@@ -25,7 +26,7 @@ export default function ShortcutBox() {
         onPress={() => navigation.navigate("Root", { screen: "Outfitter", params: {} })}
       />
       <ShortcutItem
-        label="Recent"
+        label={i18n.t("button.recent")}
         icon={<SimpleLineIcons name="clock" size={24} color="black" />}
         onPress={() => navigation.navigate("Recent" as never)}
       />

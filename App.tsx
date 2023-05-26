@@ -27,6 +27,7 @@ import { BottomSheetContainer } from "@Components/Modal/BottomSheetContainer";
 import { BottomSheetContextProvider } from "@Context/BottomSheetContext";
 import { Outfit } from "@Classes/Outfit";
 import { initializeSettings } from "@Hooks/useAsyncStorage";
+import { i18n } from "@Database/i18n/i18n";
 
 export type RootStackParamList = {
   Root: any;
@@ -155,7 +156,7 @@ function RootNavigator() {
           component={UserSettings}
           options={({ route }) => ({
             ...headerOptions,
-            title: route.params?.title,
+            title: i18n.t("screens.settings"),
           })}
         />
       </Stack.Group>

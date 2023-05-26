@@ -18,6 +18,7 @@ import Skeleton from "@Components/Skeleton/Skeleton";
 import BottomSheetContext from "@Context/BottomSheetContext";
 import { useAsyncStorage } from "@Hooks/useAsyncStorage";
 import { useIsFocused } from "@react-navigation/native";
+import { i18n } from "@Database/i18n/i18n";
 
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
@@ -45,7 +46,9 @@ export default function Home() {
     <ScrollContainer headerTransparent={false} headerBackgroundColor={ColorsRGB.primary}>
       <View style={[styles.topContainer, layout.noHeaderSpacing]}>
         <View style={{ marginVertical: 16 }}>
-          <Text style={{ fontSize: 32, color: "white" }}>Hello, {settings?.name}!</Text>
+          <Text style={{ fontSize: 32, color: "white" }}>
+            {i18n.t("welcome")}, {settings?.name}!
+          </Text>
           {!settings?.quoteDisabled &&
             (isLoadingQuote ? (
               <View style={{ gap: 2 }}>

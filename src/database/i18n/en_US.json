@@ -1,0 +1,25 @@
+{
+  "welcome": "Hello",
+  "button": {
+    "new": "New",
+    "favorite": "Favorites",
+    "recent": "Recent"
+  },
+  "item": {
+    "cost": "Cost",
+    "costPerWear": "Cost per wear",
+    "categories": "Categories",
+    "categoryGroup": "Category group",
+    "brand": "Brand",
+    "model": "Model",
+    "size": "Size",
+    "fabric": "Fabric",
+    "bought": "Purchase date",
+    "boughtFrom": "Purchased at",
+    "color": "Color",
+    "notes": "Notes"
+  },
+  "screens": {
+    "settings": "Settings"
+  }
+}
