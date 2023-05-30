@@ -1,4 +1,4 @@
-import PlannedOutfit from "@Components/Box/PlannedOutfit";
+import OutfitBox from "@Components/Box/OutfitBox";
 import Chip from "@Components/Chip/Chip";
 import FilterBar from "@Components/FilterBar/FilterBar";
 import { getDatabase, getTags } from "@Database/database";
@@ -73,7 +73,7 @@ export default function Outfitter() {
         onScroll={() => setAdditionalFilterOpen(false)}
         data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
         renderItem={({ item: outfit }) => (
-          <PlannedOutfit label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />
+          <OutfitBox label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />
         )}
         contentContainerStyle={{ rowGap: 16, padding: 8 }}
         showsVerticalScrollIndicator={false}

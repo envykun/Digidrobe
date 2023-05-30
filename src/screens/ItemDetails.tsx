@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
 import DigiLineChart from "@Components/Charts/LineChart";
 import { formatTimeAgo } from "@DigiUtils/helperFunctions";
-import PlannedOutfit from "@Components/Box/PlannedOutfit";
+import OutfitBox from "@Components/Box/OutfitBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { getDatabase } from "@Database/database";
@@ -107,7 +107,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const renderSavedOutfits = () => {
     const filteredOutfits = savedOutfits
       ?.filter((outfit) => outfit.getAllItems().some((i) => item.uuid === i.uuid))
-      .map((o) => <PlannedOutfit key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.getItemImagePreviews()} outfit={o} />);
+      .map((o) => <OutfitBox key={o.uuid} label={o.name} outfitImage={o.imageURL} itemImages={o.getItemImagePreviews()} outfit={o} />);
 
     return (
       <View style={{ marginHorizontal: 8 }}>

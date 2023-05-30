@@ -8,7 +8,7 @@ import WeatherAndLocation from "@Components/WeatherAndLocation/WeatherAndLocatio
 import { OutfitOverview } from "@Models/Outfit";
 import { getPlannedOutfitByDate } from "@Database/outfits";
 import { getDatabase } from "@Database/database";
-import PlannedOutfit from "@Components/Box/PlannedOutfit";
+import OutfitBox from "@Components/Box/OutfitBox";
 import DigiButton from "@Components/Button/DigiButton";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
@@ -78,7 +78,7 @@ export default function Home() {
         {isLoading && <Text>Loading...</Text>}
         {plannedOutfit && plannedOutfit.length > 0 ? (
           plannedOutfit.map((outfit) => (
-            <PlannedOutfit
+            <OutfitBox
               key={outfit.uuid}
               label={outfit.name}
               outfitImage={outfit.imageURL}

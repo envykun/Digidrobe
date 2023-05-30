@@ -1,9 +1,9 @@
-import { ItemImagePreview, OutfitOverview } from "@Models/Outfit";
+import { ItemImagePreview } from "@Models/Outfit";
 import { Colors } from "@Styles/colors";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
-import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity } from "react-native";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import DetailTag from "@Components/Chip/DetailTag";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
@@ -14,14 +14,14 @@ import SnackbarContext from "@Context/SnackbarContext";
 import { addToPlannedOutfits, setOutfitAsBookmarked } from "@Database/outfits";
 import { getDatabase } from "@Database/database";
 
-interface PlannedOutfitProps {
+interface OutfitBox {
   label?: string;
   outfitImage?: string;
   itemImages?: Array<ItemImagePreview>;
   outfit: Outfit;
 }
 
-export default function PlannedOutfit({ label, outfitImage, itemImages, outfit }: PlannedOutfitProps) {
+export default function OutfitBox({ label, outfitImage, itemImages, outfit }: OutfitBox) {
   const refresh = useReducer((x) => x + 1, 0)[1];
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const handleNavigation = () => {
