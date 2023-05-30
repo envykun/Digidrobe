@@ -168,7 +168,6 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    rowGap: 8,
     backgroundColor: "white",
   },
   header: {

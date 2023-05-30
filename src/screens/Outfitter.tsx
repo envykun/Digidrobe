@@ -34,12 +34,19 @@ export default function Outfitter() {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: ({ tintColor, pressOpacity }: any) => (
-        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
-          <Ionicons name="ios-filter" size={24} color={tintColor} />
+        <TouchableOpacity
+          onPress={toggleAdditionalFilter}
+          activeOpacity={pressOpacity}
+          style={[
+            { marginLeft: 14, padding: 4, paddingLeft: 5, justifyContent: "center", alignItems: "center" },
+            additionalFilterOpen && { backgroundColor: "black", borderRadius: 8 },
+          ]}
+        >
+          <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, additionalFilterOpen]);
 
   useEffect(() => {
     // db.transaction((tx) =>
@@ -53,8 +60,7 @@ export default function Outfitter() {
       <FilterBar
         showAdditionalFilter
         isOpen={additionalFilterOpen}
-        // onPress={() => setAdditionalFilterOpen(!additionalFilterOpen)}
-        additionalFilterProps={{ onSearchQuery: setSearchQuery }}
+        additionalFilterProps={{ outfitData: outfits, onSearchQuery: setSearchQuery }}
       >
         <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
         {loadingTags
@@ -64,6 +70,7 @@ export default function Outfitter() {
             ))}
       </FilterBar>
       <FlatList
+        onScroll={() => setAdditionalFilterOpen(false)}
         data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
         renderItem={({ item: outfit }) => (
           <PlannedOutfit label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />

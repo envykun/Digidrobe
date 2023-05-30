@@ -1,12 +1,5 @@
 import { PropsWithChildren, ReactElement, useEffect, useRef } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Dimensions,
-  Animated,
-} from "react-native";
+import { ScrollView, StyleSheet, View, TouchableOpacity, Dimensions, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@Styles/colors";
 import AdditionalFilter, { AdditionalFilterProps } from "./AdditionalFilter";
@@ -16,7 +9,6 @@ interface FilterBarProps {
   showAdditionalFilter?: boolean;
   additionalFilterProps?: Partial<AdditionalFilterProps>;
   isOpen?: boolean;
-  onPress?: () => void;
   additionalChildren?: ReactElement;
 }
 
@@ -24,7 +16,6 @@ export default function FilterBar({
   children,
   showAdditionalFilter,
   isOpen,
-  onPress,
   additionalChildren,
   additionalFilterProps,
 }: PropsWithChildren<FilterBarProps>) {
@@ -52,10 +43,7 @@ export default function FilterBar({
 
   return (
     <>
-      <LinearGradient
-        colors={[Colors.primary, "white"]}
-        style={{ alignItems: "center", zIndex: 4 }}
-      >
+      <LinearGradient colors={[Colors.primary, "white"]} style={{ alignItems: "center", zIndex: 4 }}>
         <View style={styles.container}>
           <ScrollView horizontal contentContainerStyle={styles.filterBar}>
             {children}
@@ -84,9 +72,7 @@ export default function FilterBar({
             },
           ]}
         >
-          {additionalChildren ?? (
-            <AdditionalFilter {...additionalFilterProps} />
-          )}
+          {additionalChildren ?? <AdditionalFilter {...additionalFilterProps} />}
         </Animated.View>
       )}
     </>
