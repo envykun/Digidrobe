@@ -23,6 +23,7 @@ import SettingsItem from "@Components/List/SettingsItem";
 import Input from "@Components/Inputs/Input";
 import { Ionicons } from "@expo/vector-icons";
 import { i18n } from "@Database/i18n/i18n";
+import CountryFlag from "react-native-country-flag";
 
 const settings = ["ToS/PrivacyPolicy", "FAQ", "Support", "Feedback", "Notifications", "DB Access (Your data, your choice)"];
 
@@ -65,7 +66,20 @@ export default function UserSettings() {
             )}
           </SettingsItem>
           <SettingsItem label="Language" value={data?.locale}>
-            <DigiButton title="Switch to en" onPress={() => (i18n.locale = "en_US")} />
+            <View style={{ gap: 8 }}>
+              <DigiButton
+                title="Deutsch"
+                variant="outline"
+                onPress={() => (i18n.locale = "de_DE")}
+                icon={<CountryFlag isoCode="de" size={18} />}
+              />
+              <DigiButton
+                title="English"
+                variant="outline"
+                onPress={() => (i18n.locale = "en_US")}
+                icon={<CountryFlag isoCode="us" size={18} />}
+              />
+            </View>
           </SettingsItem>
           <SettingsItem label="Disable quote of the day?" onPress={toggleQuote}>
             <Switch value={data?.quoteDisabled ?? false} onValueChange={toggleQuote} />
