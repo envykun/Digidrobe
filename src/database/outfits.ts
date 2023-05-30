@@ -278,6 +278,41 @@ export const addToPlannedOutfits = async (db: SQLite.WebSQLDatabase, outfitID: s
   );
 };
 
+export const getPlannedOutfits = (db: SQLite.WebSQLDatabase) => {
+  return new Promise<Outfit[]>((resolve, reject) =>
+    db.transaction(
+      (tx) =>
+        tx.executeSql(
+          `SELECT DISTINCT * FROM ${TableNames.PLANNED_OUTFITS} PO INNER JOIN ${TableNames.OUTFITS} O ON O.uuid = PO.outfitID WHERE worn=1`,
+          [],
+          async (t, res) => {
+            const outfits = await Promise.all(
+              res.rows._array.map(async (outfit: OutfitDataResponse) => {
+                const wearDetails = await getOutfitWearDetails(db, outfit.uuid);
+                return new Outfit({
+                  uuid: outfit.uuid,
+                  name: outfit.name,
+                  wears: wearDetails.wears,
+                  lastWorn: wearDetails.lastWorn ?? undefined,
+                  imageURL: outfit.imageURL ?? undefined,
+                  bookmarked: outfit.bookmarked,
+                  items: await getOutfitItemByCategory(db, outfit.uuid),
+                  tags: await getFromJunctionTableResolved(db, outfit.uuid, "tags"),
+                  planned: await getPlannedOutfitById(db, outfit.uuid),
+                });
+              })
+            );
+            resolve(outfits.sort((a, b) => (b.lastWorn?.getDate() ?? 0) - (a.lastWorn?.getDate() ?? 0)));
+          }
+        ),
+      (error) => {
+        reject(error);
+        return true;
+      }
+    )
+  );
+};
+
 export const getPlannedOutfitByDate = (db: SQLite.WebSQLDatabase, date: Date) => {
   const parsedDate = date.toISOString().split("T")[0] + "%";
   return new Promise<Outfit[]>((resolve, reject) =>
