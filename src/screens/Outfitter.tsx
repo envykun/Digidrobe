@@ -4,16 +4,18 @@ import FilterBar from "@Components/FilterBar/FilterBar";
 import { getDatabase, getTags } from "@Database/database";
 import { getOutfits } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, View, Text, SafeAreaView, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Skeleton from "@Components/Skeleton/Skeleton";
 import { Tag } from "@Models/Generic";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabParamList, RootStackParamList } from "App";
 
-export default function Outfitter() {
+export default function Outfitter({ route }: NativeStackScreenProps<BottomTabParamList, "Outfitter">) {
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const db = getDatabase();
   const [activeFilter, setActiveFilter] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
@@ -30,6 +32,14 @@ export default function Outfitter() {
     refetchOutfits();
     refetchTags();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        navigation.setParams({ bookmarkFilter: false });
+      };
+    }, [navigation])
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -71,7 +81,13 @@ export default function Outfitter() {
       </FilterBar>
       <FlatList
         onScroll={() => setAdditionalFilterOpen(false)}
-        data={searchQuery ? outfits?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase())) : outfits}
+        data={
+          searchQuery
+            ? outfits
+                ?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                .filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
+            : outfits?.filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
+        }
         renderItem={({ item: outfit }) => (
           <OutfitBox label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />
         )}

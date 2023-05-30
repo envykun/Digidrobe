@@ -51,7 +51,9 @@ export type BottomTabParamList = {
     itemID?: string;
     favoriteFilter?: boolean;
   };
-  Outfitter: undefined;
+  Outfitter: {
+    bookmarkFilter?: boolean;
+  };
   Statistic: undefined;
 };
 

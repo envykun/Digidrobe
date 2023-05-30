@@ -23,7 +23,7 @@ export default function ShortcutBox() {
       <ShortcutItem
         label="Outfits"
         icon={<Ionicons name="bookmark-outline" size={24} color="black" />}
-        onPress={() => navigation.navigate("Root", { screen: "Outfitter", params: {} })}
+        onPress={() => navigation.navigate("Root", { screen: "Outfitter", params: { bookmarkFilter: true } })}
       />
       <ShortcutItem
         label={i18n.t("button.recent")}

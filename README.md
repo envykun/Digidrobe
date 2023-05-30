@@ -14,7 +14,7 @@ To run the App simply run `npm install` in the root folder and launch it with ex
 - [x] Edit Outfit
 - [x] Delete Outfit
 - [x] Favorite Items -> Shortcut
-- [ ] Saved Outfits -> Shortcut
+- [x] Saved Outfits -> Shortcut
 - [x] Recent Worn Outfits
 - [x] Worn logic (Count update, last worn update)
 - [x] Plan outfit (How to plan a saved/created outfit)
