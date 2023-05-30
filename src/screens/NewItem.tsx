@@ -16,7 +16,7 @@ import ImageContainer from "@Components/Box/ImageContainer";
 
 export default function NewItem() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const newItem = useRef<Item>(new Item({ uuid: randomUUID() })).current;
+  const newItem = useRef<Item>(new Item({ uuid: randomUUID(), baseCategory: 0 })).current;
 
   const db = getDatabase();
   const snack = useContext(SnackbarContext);

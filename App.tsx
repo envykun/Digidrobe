@@ -75,7 +75,7 @@ function RootNavigator() {
       />
       <Stack.Group
         screenOptions={{
-          presentation: "modal",
+          presentation: "card",
         }}
       >
         <Stack.Screen

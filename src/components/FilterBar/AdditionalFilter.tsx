@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import DigiButton from "@Components/Button/DigiButton";
 import BottomSheet from "@Components/Modal/BottomSheet";
 import { Colors } from "@Styles/colors";
+import { useFilter } from "@Hooks/useFilter";
 
 export interface AdditionalFilterProps {
   onSearchQuery?: (value?: string) => void;
@@ -16,27 +17,21 @@ export interface AdditionalFilterProps {
   dataCallback?: (data: any) => void;
 }
 
-export default function AdditionalFilter({
-  onSearchQuery,
-  itemData,
-  dataCallback,
-}: AdditionalFilterProps) {
-  const [sortingFunction, setSortingFunction] =
-    useState<SortFunctionKeys>("name");
+export default function AdditionalFilter({ onSearchQuery, itemData, dataCallback }: AdditionalFilterProps) {
+  const [sortingFunction, setSortingFunction] = useState<SortFunctionKeys>("name");
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
-  const [filterBottomSheetOpen, setFilterBottomSheetOpen] = useState(false);
   const [reversed, setReversed] = useState(false);
+  const { filteredData, activeFilters, handleBottomSheet, clearAllFilters } = useFilter<Array<Item>>({ data: itemData });
 
   useEffect(() => {
     if (!dataCallback) return;
     if (itemData) {
       const sortFunc = sortFunctionsItems[sortingFunction];
       const sortedData = sortFunc(itemData);
-      reversed
-        ? dataCallback([...sortedData.reverse()])
-        : dataCallback([...sortedData]);
+      reversed ? dataCallback([...sortedData.reverse()]) : dataCallback([...sortedData]);
+      filteredData && dataCallback(filteredData);
     }
-  }, [sortingFunction, dataCallback, itemData, reversed]);
+  }, [sortingFunction, dataCallback, itemData, reversed, filteredData]);
 
   const handleSortFunctionSelection = (item: string) => {
     setSortingFunction(item as SortFunctionKeys);
@@ -53,54 +48,42 @@ export default function AdditionalFilter({
               justifyContent: "flex-end",
               alignItems: "center",
               flexDirection: "row-reverse",
-              gap: 16,
+              gap: 12,
             }}
           >
             <TouchableOpacity onPress={() => setReversed((r) => !r)}>
-              <Ionicons
-                name={
-                  reversed
-                    ? "arrow-up-circle-outline"
-                    : "arrow-down-circle-outline"
-                }
-                size={28}
-              />
+              <Ionicons name={reversed ? "arrow-up-circle-outline" : "arrow-down-circle-outline"} size={28} />
             </TouchableOpacity>
-            <DigiButton
-              title={`Sort By: ${sortingFunction}`}
-              variant="contained"
-              onPress={() => setBottomSheetOpen(true)}
-            />
+            <DigiButton title={`Sort By: ${sortingFunction}`} variant="contained" onPress={() => setBottomSheetOpen(true)} />
           </View>
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              flexDirection: "row",
+              gap: 12,
             }}
           >
             <DigiButton
               variant="outline"
               title="Filter"
-              onPress={() => setFilterBottomSheetOpen(true)}
-              icon={
-                <Ionicons
-                  name="filter-outline"
-                  size={16}
-                  style={{ marginRight: 8 }}
-                />
-              }
+              onPress={handleBottomSheet}
+              icon={<Ionicons name="filter-outline" size={16} style={{ marginRight: 8 }} />}
+              badge={activeFilters}
             />
+            {Boolean(activeFilters) && (
+              <TouchableOpacity>
+                <Ionicons name="ios-close-circle-outline" size={28} onPress={clearAllFilters} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <View style={{ height: 40 }}>
           <Input placeholder="Search outfit..." onChange={onSearchQuery} />
         </View>
       </View>
-      <BottomSheet
-        isOpen={bottomSheetOpen}
-        closeModal={() => setBottomSheetOpen(false)}
-      >
+      <BottomSheet isOpen={bottomSheetOpen} closeModal={() => setBottomSheetOpen(false)}>
         <FlatList
           data={Object.keys(sortFunctionsItems)}
           renderItem={({ item }) => (
@@ -124,12 +107,7 @@ export default function AdditionalFilter({
                 {item}
               </Text>
               {item === sortingFunction && (
-                <Ionicons
-                  name="ios-checkmark"
-                  color={Colors.primary}
-                  size={18}
-                  style={{ position: "absolute", right: "10%" }}
-                />
+                <Ionicons name="ios-checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />
               )}
             </TouchableOpacity>
           )}
@@ -142,30 +120,6 @@ export default function AdditionalFilter({
                 alignSelf: "center",
               }}
             />
-          )}
-        />
-      </BottomSheet>
-      <BottomSheet
-        isOpen={filterBottomSheetOpen}
-        closeModal={() => setFilterBottomSheetOpen(false)}
-      >
-        <FlatList
-          data={Object.keys(sortFunctionsItems)}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              //   onPress={() => handleSortFunctionSelection(item)}
-              style={{
-                flex: 1,
-                height: 48,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>{item}</Text>
-            </TouchableOpacity>
-          )}
-          ItemSeparatorComponent={() => (
-            <View style={{ borderBottomWidth: 1 }} />
           )}
         />
       </BottomSheet>

@@ -17,10 +17,22 @@
     "bought": "Purchase date",
     "boughtFrom": "Purchased at",
     "color": "Color",
-    "notes": "Notes"
+    "notes": "Notes",
+    "store": "Store",
+    "lastWorn": "Last worn",
+    "wears": "Wears"
   },
   "screens": {
     "settings": "Settings",
     "calendar": "Calendar"
+  },
+  "filter": {
+    "filterBy": "Filter by {{type}}"
+  },
+  "date": {
+    "from": "From",
+    "to": "Until",
+    "today": "Today",
+    "any": "Anytime"
   }
 }

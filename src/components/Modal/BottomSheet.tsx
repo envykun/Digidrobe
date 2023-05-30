@@ -28,8 +28,9 @@ export default function BottomSheet({
           <View style={styles.outsideClick} />
         </TouchableWithoutFeedback>
         <View style={styles.bottomSheet}>
+          <View style={styles.topKnob} />
           {title && (
-            <View style={{ width: "100%", marginBottom: 16 }}>
+            <View style={{ width: "100%", marginBottom: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontSize: 16, color: "#a5a5a5" }}>{title}</Text>
             </View>
           )}
@@ -82,5 +83,13 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 42,
     width: "100%",
+  },
+  topKnob: {
+    alignSelf: "center",
+    backgroundColor: "#dadada",
+    width: 44,
+    height: 4,
+    borderRadius: 120,
+    marginTop: -14,
   },
 });

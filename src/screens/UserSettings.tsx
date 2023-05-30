@@ -94,6 +94,10 @@ export default function UserSettings() {
           <Text style={{ fontSize: 24 }}>Digidrobe</Text>
           <Text>Version {Constants.expoConfig?.version}</Text>
         </View>
+        <View style={utils(16).divider} />
+        <View style={styles.reset}>
+          <DigiButton title="Show DB Buttons" variant="text" onPress={() => setShowDatabaseButtons((prev) => !prev)} />
+        </View>
         {showDatabaseButtons && (
           <View>
             <TouchableHighlight

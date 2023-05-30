@@ -40,12 +40,19 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
   useEffect(() => {
     navigation.setOptions({
       headerLeft: ({ tintColor, pressOpacity }: any) => (
-        <TouchableOpacity onPress={toggleAdditionalFilter} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
-          <Ionicons name="ios-filter" size={24} color={tintColor} />
+        <TouchableOpacity
+          onPress={toggleAdditionalFilter}
+          activeOpacity={pressOpacity}
+          style={[
+            { marginLeft: 14, padding: 4, paddingLeft: 5, justifyContent: "center", alignItems: "center" },
+            additionalFilterOpen && { backgroundColor: "black", borderRadius: 8 },
+          ]}
+        >
+          <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation, additionalFilterOpen]);
 
   const handleRefetch = () => {
     refetchWardrobe();

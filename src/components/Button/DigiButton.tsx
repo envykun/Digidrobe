@@ -1,28 +1,18 @@
 import { Colors } from "@Styles/colors";
 import { ReactNode } from "react";
-import {
-  Button,
-  GestureResponderEvent,
-  TouchableHighlight,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { Button, GestureResponderEvent, TouchableHighlight, StyleSheet, Text, View, Animated } from "react-native";
 
 interface DigiButtonProps {
   title: string;
   onPress?: (event: GestureResponderEvent) => void;
   variant?: DigiButtonVariant;
   icon?: ReactNode;
+  badge?: number;
 }
 
 type DigiButtonVariant = "default" | "outline" | "contained" | "text";
 
-export default function DigiButton({
-  title,
-  onPress,
-  variant = "default",
-  icon,
-}: DigiButtonProps) {
+export default function DigiButton({ title, onPress, variant = "default", icon, badge }: DigiButtonProps) {
   switch (variant) {
     case "contained":
     case "outline":
@@ -30,11 +20,16 @@ export default function DigiButton({
         <TouchableHighlight
           underlayColor="#dddddd"
           onPress={onPress}
-          style={[styles.button, styles.variantOutline]}
+          style={[styles.button, styles.variantOutline, Boolean(badge) && styles.hasBadge]}
         >
           <>
             {icon}
             <Text>{title}</Text>
+            {Boolean(badge) && (
+              <Animated.View style={[styles.badge]}>
+                <Text style={{ fontSize: 12 }}>{badge}</Text>
+              </Animated.View>
+            )}
           </>
         </TouchableHighlight>
       );
@@ -43,7 +38,7 @@ export default function DigiButton({
         <TouchableHighlight
           underlayColor="#dddddd"
           onPress={onPress}
-          style={[styles.button, styles.variantText]}
+          style={[styles.button, styles.variantText, Boolean(badge) && styles.hasBadge]}
         >
           <>
             {icon}
@@ -73,5 +68,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: Colors.primary,
+  },
+  badge: {
+    marginLeft: 8,
+    borderRadius: 16,
+    height: "100%",
+    aspectRatio: 1 / 1,
+    backgroundColor: Colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    right: 8,
+  },
+  hasBadge: {
+    paddingRight: 32,
   },
 });

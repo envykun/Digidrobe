@@ -146,6 +146,38 @@ export const getWarobeWearDetails = async (db: SQLite.WebSQLDatabase, uuid: stri
   });
 };
 
+export const getMaxWearCount = async (db: SQLite.WebSQLDatabase) => {
+  return new Promise<number>((resolve, reject) =>
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT itemID,COUNT(*) FROM ${TableNames.WARDROBE_WEARS} GROUP BY itemID`, [], (_, res) => {
+          const result = Math.max(...res.rows._array.map((count) => count["COUNT(*)"]));
+          resolve(result);
+        }),
+      (error) => {
+        reject(error);
+        return false;
+      }
+    )
+  );
+};
+
+export const getMaxCost = async (db: SQLite.WebSQLDatabase) => {
+  return new Promise<number>((resolve, reject) =>
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT cost FROM ${TableNames.WARDROBE}`, [], (_, res) => {
+          const result = Math.max(...res.rows._array.map((count) => count?.cost));
+          resolve(result);
+        }),
+      (error) => {
+        reject(error);
+        return false;
+      }
+    )
+  );
+};
+
 export const setItemAsFavorite = (db: SQLite.WebSQLDatabase, item: Item) => {
   const query = `UPDATE ${TableNames.WARDROBE} SET favorite = ${item.favorite} WHERE uuid = '${item.uuid}'`;
   return new Promise<number | undefined>((resolve, reject) =>
