@@ -90,7 +90,7 @@ export default function OutfitBox({ label, outfitImage, itemImages, outfit }: Ou
                 <Image source={{ uri: item.imageURL }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
               ) : (
                 <View style={styles.noImg}>
-                  <Text>{item.name}</Text>
+                  <Text numberOfLines={2}>{item.name}</Text>
                 </View>
               )}
             </View>
@@ -112,7 +112,7 @@ export default function OutfitBox({ label, outfitImage, itemImages, outfit }: Ou
                   <Image source={{ uri: item.imageURL }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
                 ) : (
                   <View style={styles.noImg}>
-                    <Text>{item.name}</Text>
+                    <Text numberOfLines={2}>{item.name}</Text>
                   </View>
                 )}
               </View>

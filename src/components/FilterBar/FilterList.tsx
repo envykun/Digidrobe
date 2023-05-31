@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Switch } from "react-native";
 import FilterItem from "./FilterItem";
 import { FilterType } from "./FilterBottomSheetHeader";
 import ColorBubble from "@Components/Bubble/ColorBubble";
@@ -6,9 +6,12 @@ import { i18n } from "@Database/i18n/i18n";
 import { utils } from "@Styles/global";
 import DigiMultiSlider from "@Components/Slider/MultiSlider";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
+import { Colors, ColorsRGB } from "@Styles/colors";
 
 export interface FilterListProps {
   handleListItemPress: (type: FilterType) => void;
+  favorite: boolean;
+  toggleFavorite: () => void;
   selectedColors: Array<string> | null;
   selectedBrands: Array<string> | null;
   selectedFabrics: Array<string> | null;
@@ -38,11 +41,25 @@ export default function FilterList({
   costSliderBounds,
   lastWorn,
   boughtDate,
+  favorite,
+  toggleFavorite,
 }: FilterListProps) {
   const dividerPadding = 0;
 
   return (
     <View style={{}}>
+      <View style={utils(dividerPadding).divider} />
+      <View style={styles.favorite}>
+        <Text numberOfLines={1} style={[styles.headline, { alignSelf: "auto" }]}>
+          Favorite
+        </Text>
+        <Switch
+          value={favorite}
+          onValueChange={toggleFavorite}
+          trackColor={{ true: `rgba(${ColorsRGB.primary},0.4)` }}
+          thumbColor={Colors.primary}
+        />
+      </View>
       <View style={utils(dividerPadding).divider} />
       <FilterItem label={i18n.t("item.color")} onPress={() => handleListItemPress("color")}>
         {selectedColors?.map((value) => (
@@ -165,5 +182,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     paddingHorizontal: 4,
+  },
+  favorite: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 16,
   },
 });

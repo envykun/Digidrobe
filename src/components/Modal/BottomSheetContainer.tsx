@@ -5,10 +5,8 @@ import { getCategories, getDatabase, getFabrics, getTags } from "@Database/datab
 import { useGet } from "@Hooks/useGet";
 import { FlatList, Text, StyleSheet, View } from "react-native";
 import BottomSheetItem from "./BottomSheetItem";
-import { NamedColors } from "@Styles/colors";
+import { NamedBaseColors } from "@Styles/colors";
 import { GenericBottomSheetItem } from "@Models/Generic";
-import { getWardrobeItems } from "@Database/item";
-import BottomSheetCard from "./BottomSheetCard";
 
 export function BottomSheetContainer() {
   const bottomSheet = useContext(BottomSheetContext);
@@ -17,7 +15,7 @@ export function BottomSheetContainer() {
   const { data: fabrics, refetch: refetchFabrics } = useGet(getFabrics<GenericBottomSheetItem>(db));
   const { data: tags, refetch: refetchTags } = useGet(getTags<GenericBottomSheetItem>(db));
 
-  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedColors).map(([key, value]) => {
+  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedBaseColors).map(([key, value]) => {
     return { id: key, label: key, hex: value };
   });
   const [searchQuery, setSearchQuery] = useState<string | undefined>();

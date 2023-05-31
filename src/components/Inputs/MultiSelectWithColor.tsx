@@ -1,6 +1,6 @@
 import DigiButton from "@Components/Button/DigiButton";
 import Chip from "@Components/Chip/Chip";
-import { NamedColor, NamedColors } from "@Styles/colors";
+import { NamedBaseColor, NamedBaseColors } from "@Styles/colors";
 import { View } from "react-native";
 
 interface MultiSelectWithColorProps {
@@ -19,7 +19,7 @@ export default function MultiSelectWithColor({ selectedValues, onChipPress, onBu
           label={value}
           onPress={() => onChipPress(value)}
           showCloseIcon={true}
-          colorBubble={NamedColors[value as NamedColor]}
+          colorBubble={NamedBaseColors[value as NamedBaseColor]}
         />
       ))}
       <DigiButton title={buttonLabel ?? "Add"} onPress={onButtonPress} variant="text" />

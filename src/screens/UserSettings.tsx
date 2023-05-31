@@ -24,6 +24,7 @@ import Input from "@Components/Inputs/Input";
 import { Ionicons } from "@expo/vector-icons";
 import { i18n } from "@Database/i18n/i18n";
 import CountryFlag from "react-native-country-flag";
+import ColorBubble from "@Components/Bubble/ColorBubble";
 
 const settings = ["ToS/PrivacyPolicy", "FAQ", "Support", "Feedback", "Notifications", "DB Access (Your data, your choice)"];
 
@@ -84,7 +85,12 @@ export default function UserSettings() {
           <SettingsItem label="Disable quote of the day?" onPress={toggleQuote}>
             <Switch value={data?.quoteDisabled ?? false} onValueChange={toggleQuote} />
           </SettingsItem>
-          <SettingsItem label="Accentcolor" value={data?.accentColor} />
+          <SettingsItem label="Accentcolor" value={data?.accentColor}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <ColorBubble color={data?.accentColor ?? "black"} size={24} />
+              <Text style={{ fontSize: 18, fontWeight: "200", color: data?.accentColor }}>{data?.accentColor}</Text>
+            </View>
+          </SettingsItem>
           <View style={utils(16).divider} />
           {settings.map((setting) => (
             <SettingsItem key={setting} label={setting} onPress={() => console.log("Navigate to", setting)}>

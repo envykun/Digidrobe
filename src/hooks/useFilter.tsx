@@ -1,25 +1,36 @@
 import { useContext, useState } from "react";
 import BottomSheetFilter, { FilterSettings } from "@Components/BottomSheet/BottomSheetFilter";
 import BottomSheetContext from "@Context/BottomSheetContext";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { BottomTabParamList } from "App";
 
 interface UseFilterProps<T> {
   data?: T;
 }
 
 export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
+  const route = useRoute<RouteProp<BottomTabParamList, "Wardrobe">>();
   const bottomSheet = useContext(BottomSheetContext);
   const [filteredData, setFilteredData] = useState<T | undefined>(data);
   const [activeFilters, setActiveFilters] = useState<number>(0);
 
+  console.log("ROUTE", route.params);
+
   const handleBottomSheet = () => {
     if (!bottomSheet) return;
-    bottomSheet.setContent(<BottomSheetFilter onApply={handleFilter} />);
+    bottomSheet.setContent(<BottomSheetFilter onApply={handleFilter} initFavoriteFilter={route.params?.favoriteFilter} />);
     bottomSheet.setIsOpen((prev) => !prev);
   };
 
   const clearAllFilters = () => {
     setActiveFilters(0);
     setFilteredData(data);
+  };
+
+  // Favorite / Bookmarked
+  const filterByFavorite = (data?: T) => {
+    if (!Array.isArray(data)) return;
+    return data.filter((item) => item.favorite);
   };
 
   // Color
@@ -81,10 +92,14 @@ export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
   };
 
   const handleFilter = (props: FilterSettings) => {
-    const { colors, fabrics, brands, stores, wears, costs, lastWorn, boughtDate } = props;
+    const { favorite, colors, fabrics, brands, stores, wears, costs, lastWorn, boughtDate } = props;
     let filteredTemp = data;
     let appliedFiltersCount = 0;
 
+    if (favorite) {
+      filteredTemp = filterByFavorite(filteredTemp) as T;
+      appliedFiltersCount++;
+    }
     if (colors.applied) {
       filteredTemp = filterByColor(colors.value, filteredTemp) as T;
       appliedFiltersCount++;

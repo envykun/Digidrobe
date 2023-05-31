@@ -157,4 +157,22 @@ export const NamedColors = {
   yellowgreen: "#9acd32",
 };
 
+export const NamedBaseColors = {
+  red: "red",
+  pink: "pink",
+  purple: "purple",
+  blue: "blue",
+  navy: "navy",
+  green: "green",
+  lime: "lime",
+  yellow: "yellow",
+  orange: "orange",
+  black: "black",
+  white: "white",
+  gray: "gray",
+  brown: "brown",
+  beige: "beige",
+};
+
 export type NamedColor = keyof typeof NamedColors;
+export type NamedBaseColor = keyof typeof NamedBaseColors;

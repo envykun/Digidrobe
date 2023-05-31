@@ -4,7 +4,7 @@ import BottomSheetItem from "@Components/Modal/BottomSheetItem";
 import Chip from "@Components/Chip/Chip";
 import { Dispatch } from "react";
 import { GenericBottomSheetItem } from "@Models/Generic";
-import { NamedColor, NamedColors } from "@Styles/colors";
+import { NamedBaseColor, NamedBaseColors } from "@Styles/colors";
 
 export interface FilterDetailViewProps {
   filterType: FilterType;
@@ -27,7 +27,7 @@ export interface FilterDetailViewProps {
 }
 
 export default function FilterDetailView({ filterType, brands, colors, stores, fabrics }: FilterDetailViewProps) {
-  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedColors).map(([key, value]) => {
+  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedBaseColors).map(([key, value]) => {
     return { id: key, label: key, hex: value };
   });
 
@@ -35,7 +35,7 @@ export default function FilterDetailView({ filterType, brands, colors, stores, f
     return (
       <View>
         {colors.selectedColors?.map((value) => (
-          <Chip key={value} label={value} colorBubble={NamedColors[value as NamedColor]} />
+          <Chip key={value} label={value} colorBubble={NamedBaseColors[value as NamedBaseColor]} />
         ))}
         {mappedColors
           .filter((color) => !colors.selectedColors?.includes(color.id))

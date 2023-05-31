@@ -9,9 +9,11 @@ import { Dimensions, FlatList, ScrollView, View } from "react-native";
 
 export interface BottomSheetFilterProps {
   onApply: any;
+  initFavoriteFilter?: boolean;
 }
 
 export interface FilterSettings {
+  favorite: boolean;
   colors: FilterSettingsValue<string>;
   fabrics: FilterSettingsValue<string>;
   brands: FilterSettingsValue<string>;
@@ -29,7 +31,7 @@ export type FilterSettingsValue<T> = {
 
 // INJECT current active filters back into bottomsheet
 
-export default function BottomSheetFilter({ onApply }: BottomSheetFilterProps) {
+export default function BottomSheetFilter({ onApply, initFavoriteFilter }: BottomSheetFilterProps) {
   const [selectedColors, setSelectedColors] = useState<Array<string> | null>(null);
   const [selectedFabrics, setSelectedFabrics] = useState<Array<string> | null>(null);
   const [selectedBrands, setSelectedBrands] = useState<Array<string> | null>(null);
@@ -38,6 +40,7 @@ export default function BottomSheetFilter({ onApply }: BottomSheetFilterProps) {
   const [lastWornTo, setLastWornTo] = useState<Date | undefined>();
   const [boughtFrom, setBoughtFrom] = useState<Date | undefined>();
   const [boughtTo, setBoughtTo] = useState<Date | undefined>();
+  const [favorite, setFavorite] = useState<boolean>(initFavoriteFilter ?? false);
 
   const db = getDatabase();
   const { data: maxWearCount = 100 } = useGet(getMaxWearCount(db));
@@ -76,6 +79,7 @@ export default function BottomSheetFilter({ onApply }: BottomSheetFilterProps) {
 
   const handleApply = () => {
     const filterSettings: FilterSettings = {
+      favorite: favorite,
       colors: { applied: Boolean(selectedColors), value: selectedColors ?? [] },
       fabrics: { applied: Boolean(selectedFabrics), value: selectedFabrics ?? [] },
       brands: { applied: Boolean(selectedBrands), value: selectedBrands ?? [] },
@@ -90,6 +94,8 @@ export default function BottomSheetFilter({ onApply }: BottomSheetFilterProps) {
 
   const filters = [
     <FilterList
+      favorite={favorite}
+      toggleFavorite={() => setFavorite((prev) => !prev)}
       handleListItemPress={handleListItemPress}
       selectedBrands={selectedBrands}
       selectedColors={selectedColors}
