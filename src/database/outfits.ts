@@ -313,7 +313,7 @@ export const getPlannedOutfits = (db: SQLite.WebSQLDatabase) => {
   );
 };
 
-export const getPlannedOutfitByDate = (db: SQLite.WebSQLDatabase, date: Date) => {
+export const getPlannedOutfitsByDate = (db: SQLite.WebSQLDatabase, date: Date) => {
   const parsedDate = date.toISOString().split("T")[0] + "%";
   return new Promise<Outfit[]>((resolve, reject) =>
     db.transaction(
@@ -324,10 +324,17 @@ export const getPlannedOutfitByDate = (db: SQLite.WebSQLDatabase, date: Date) =>
           async (t, res) => {
             const outfits = await Promise.all(
               res.rows._array.map(async (outfit) => {
+                const wearDetails = await getOutfitWearDetails(db, outfit.uuid);
                 return new Outfit({
                   uuid: outfit.uuid,
                   name: outfit.name,
-                  imageURL: outfit.imageURL,
+                  wears: wearDetails.wears,
+                  lastWorn: wearDetails.lastWorn ?? undefined,
+                  imageURL: outfit.imageURL ?? undefined,
+                  bookmarked: outfit.bookmarked,
+                  items: await getOutfitItemByCategory(db, outfit.uuid),
+                  tags: await getFromJunctionTableResolved(db, outfit.uuid, "tags"),
+                  planned: await getPlannedOutfitById(db, outfit.uuid),
                 });
               })
             );

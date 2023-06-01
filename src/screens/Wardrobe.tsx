@@ -31,6 +31,8 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const refresh = useReducer((x) => x + 1, 0)[1];
 
+  console.log("WARDROBE", wardrobe?.length, loadingWardrobe);
+
   const [sortedWardrobe, setSortedWardrobe] = useState(wardrobe);
 
   const toggleAdditionalFilter = () => {

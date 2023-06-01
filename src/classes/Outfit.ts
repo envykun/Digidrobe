@@ -96,10 +96,12 @@ export class Outfit implements IOutfit {
 
   public getItemImagePreviews(): Array<ItemImagePreview> {
     const items = Array.from(this.items.values()).flat();
-    return items.map((item) => {
-      const preview: ItemImagePreview = { uuid: item.uuid, name: item.name, imageURL: item.image ?? null };
-      return preview;
-    });
+    return items
+      .map((item) => {
+        const preview: ItemImagePreview = { uuid: item.uuid, name: item.name, imageURL: item.image ?? null };
+        return preview;
+      })
+      .sort((a, b) => (a.imageURL || "zzzz").localeCompare(b.imageURL || "zzzz"));
   }
 
   public setPlannedDate(date?: Date) {
@@ -149,5 +151,10 @@ export class Outfit implements IOutfit {
       });
       return { localeString: dateString, origin: date };
     });
+  }
+
+  public getAllImagesCombined() {
+    const itemImages = this.getItemImageURLs();
+    return [...(this.imageURL || []), ...(itemImages || [])];
   }
 }
