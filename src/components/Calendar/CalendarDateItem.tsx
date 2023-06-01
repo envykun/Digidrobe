@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 
 interface CalendarDateItemProps {
   date: number;
@@ -7,20 +7,36 @@ interface CalendarDateItemProps {
   current?: boolean;
   past?: boolean;
   onPress?: () => void;
+  width?: number;
 }
 
-export default function CalendarDateItem({ date, day, selected = false, current = false, past = false, onPress }: CalendarDateItemProps) {
+export default function CalendarDateItem({
+  date,
+  day,
+  selected = false,
+  current = false,
+  past = false,
+  onPress,
+  width,
+}: CalendarDateItemProps) {
   return (
-    <TouchableHighlight onPress={onPress} style={styles.dateItem}>
-      <View style={[styles.dateItem, selected && styles.selected, current && styles.current, past && !selected && styles.past]}>
-        <Text style={[current && !selected && styles.currentText, past && !selected && styles.past]}>{date}</Text>
-        <Text style={[current && !selected && styles.currentText, past && !selected && styles.past]}>{day}</Text>
-      </View>
-    </TouchableHighlight>
+    <View style={[styles.wrapper, { width: width }]}>
+      <TouchableHighlight onPress={onPress} style={styles.dateItem}>
+        <View style={[styles.dateItem, selected && styles.selected, current && styles.current, past && !selected && styles.past]}>
+          <Text style={[current && !selected && styles.currentText, past && !selected && styles.past]}>{date}</Text>
+          <Text style={[current && !selected && styles.currentText, past && !selected && styles.past]}>{day}</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    paddingVertical: 8,
+    elevation: 2,
+    alignItems: "center",
+  },
   dateItem: {
     width: 48,
     height: 48,

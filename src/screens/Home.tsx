@@ -19,13 +19,15 @@ import BottomSheetContext from "@Context/BottomSheetContext";
 import { useAsyncStorage } from "@Hooks/useAsyncStorage";
 import { useIsFocused } from "@react-navigation/native";
 import { i18n } from "@Database/i18n/i18n";
+import { startOfToday } from "date-fns";
 
 export default function Home() {
+  const today = startOfToday();
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
   const db = getDatabase();
   const isFocused = useIsFocused();
-  const { data: plannedOutfit, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
+  const { data: plannedOutfits, isLoading, error, refetch } = useGet(getPlannedOutfitByDate(db, selectedDate));
   const { quote, isLoading: isLoadingQuote } = useGetQuote("https://zenquotes.io/api/today");
   const { data: settings, refetch: refetchSettings } = useAsyncStorage();
   const bottomSheet = useContext(BottomSheetContext);
@@ -38,7 +40,6 @@ export default function Home() {
   useEffect(() => {
     if (isFocused) {
       refetchSettings();
-      console.log("REFETCHING");
     }
   }, [isFocused]);
 
@@ -74,10 +75,13 @@ export default function Home() {
         <ShortcutBox />
       </LinearGradient>
       <View style={{ alignItems: "center", paddingVertical: 16, gap: 16 }}>
-        <Calendar onChange={setSelectedDate} />
-        {isLoading && <Text>Loading...</Text>}
-        {plannedOutfit && plannedOutfit.length > 0 ? (
-          plannedOutfit.map((outfit) => (
+        <Calendar today={today} selectedDate={selectedDate} onChange={setSelectedDate} />
+        {isLoading ? (
+          <View style={styles.padding}>
+            <Skeleton variant="rounded" height={260} width={"100%"} />
+          </View>
+        ) : plannedOutfits && plannedOutfits.length > 0 ? (
+          plannedOutfits.map((outfit) => (
             <OutfitBox
               key={outfit.uuid}
               label={outfit.name}
@@ -129,5 +133,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 240,
+  },
+  padding: {
+    paddingHorizontal: 8,
   },
 });
