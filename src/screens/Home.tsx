@@ -20,7 +20,7 @@ import { i18n } from "@Database/i18n/i18n";
 import { startOfToday } from "date-fns";
 import PlannedOutfitCard from "@Components/Card/PlannedOutfitCard";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 export default function Home() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

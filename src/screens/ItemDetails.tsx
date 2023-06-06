@@ -4,7 +4,7 @@ import DigiLineChart from "@Components/Charts/LineChart";
 import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 import OutfitBox from "@Components/Box/OutfitBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import { getDatabase } from "@Database/database";
 import { getOutfits } from "@Database/outfits";
 import { useGet } from "@Hooks/useGet";

@@ -41,6 +41,9 @@
       ],
       "@Screens/*": [
         "src/screens/*"
+      ],
+      "@Routes/*": [
+        "src/routes/*"
       ]
     }
   },

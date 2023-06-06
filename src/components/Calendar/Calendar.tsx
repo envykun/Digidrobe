@@ -5,9 +5,9 @@ import { createRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { addDays, eachDayOfInterval, format, getDate, isBefore, isEqual, isSameDay, isToday, subDays } from "date-fns";
 import DigiButton from "@Components/Button/DigiButton";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { de } from "date-fns/locale";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 interface CalendarProps {
   today: Date;

@@ -15,7 +15,7 @@ import { useGet } from "@Hooks/useGet";
 import { getWardrobeItems } from "@Database/item";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import BottomSheetContext from "@Context/BottomSheetContext";
 import { BaseCategories, BaseCategory } from "@Database/constants";
 import { utils } from "@Styles/global";

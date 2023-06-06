@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ItemImagePreview } from "@Models/Outfit";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 export interface PlannedOutfitCardProps {
   outfit: Outfit;

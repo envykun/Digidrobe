@@ -6,7 +6,7 @@ import { ScrollContainer } from "@DigiUtils/ScrollContainer";
 import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 import { useGet } from "@Hooks/useGet";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import { View, StyleSheet, Text, TouchableOpacity, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";

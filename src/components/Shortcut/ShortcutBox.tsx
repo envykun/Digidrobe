@@ -3,7 +3,7 @@ import ShortcutItem from "./ShortcutItem";
 import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import { i18n } from "@Database/i18n/i18n";
 
 export default function ShortcutBox() {

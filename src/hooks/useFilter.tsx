@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import BottomSheetFilter, { FilterSettings } from "@Components/BottomSheet/BottomSheetFilter";
 import BottomSheetContext from "@Context/BottomSheetContext";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { BottomTabParamList } from "App";
+import { BottomTabParamList } from "@Routes/Navigator.interface";
 
 interface UseFilterProps<T> {
   data?: T;

@@ -2,7 +2,6 @@ import { ItemImagePreview } from "@Models/Outfit";
 import { Colors } from "@Styles/colors";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
 import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity } from "react-native";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import DetailTag from "@Components/Chip/DetailTag";
@@ -13,6 +12,7 @@ import { useContext, useReducer } from "react";
 import SnackbarContext from "@Context/SnackbarContext";
 import { addToPlannedOutfits, setOutfitAsBookmarked } from "@Database/outfits";
 import { getDatabase } from "@Database/database";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 interface OutfitBox {
   label?: string;

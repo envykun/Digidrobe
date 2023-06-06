@@ -1,9 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TouchableHighlight } from "react-native";
 import { Item } from "src/classes/Item";
 import { Ionicons } from "@expo/vector-icons";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 interface CardProps {
   item: Item;

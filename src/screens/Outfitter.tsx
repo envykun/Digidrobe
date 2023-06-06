@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Skeleton from "@Components/Skeleton/Skeleton";
 import { Tag } from "@Models/Generic";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BottomTabParamList, RootStackParamList } from "App";
+import { BottomTabParamList, RootStackParamList } from "@Routes/Navigator.interface";
 
 export default function Outfitter({ route }: NativeStackScreenProps<BottomTabParamList, "Outfitter">) {
   const isFocused = useIsFocused();

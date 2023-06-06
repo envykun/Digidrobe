@@ -1,9 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
 import { View, Text, StyleSheet, Image, TouchableHighlight } from "react-native";
 import Detail from "@Components/Detail/Detail";
 import { Item } from "@Classes/Item";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 
 interface OutfitDetailCardProps {
   item: Item;

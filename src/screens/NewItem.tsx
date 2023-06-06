@@ -6,7 +6,7 @@ import { useEffect, useRef, useContext } from "react";
 import { getDatabase } from "src/database/database";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import { randomUUID } from "expo-crypto";
 import Input from "@Components/Inputs/Input";
 import SnackbarContext from "@Context/SnackbarContext";

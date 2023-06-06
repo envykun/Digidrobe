@@ -7,12 +7,12 @@ import { getCategories, getDatabase } from "src/database/database";
 import { Item } from "src/classes/Item";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BottomTabParamList, RootStackParamList } from "App";
 import { useGet } from "@Hooks/useGet";
 import { Ionicons } from "@expo/vector-icons";
 import { getWardrobeItems, setItemAsFavorite } from "@Database/item";
 import Skeleton from "@Components/Skeleton/Skeleton";
 import { Category } from "@Models/Category";
+import { BottomTabParamList, RootStackParamList } from "@Routes/Navigator.interface";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
   const db = getDatabase();

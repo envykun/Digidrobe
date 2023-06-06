@@ -16,7 +16,7 @@ import EditableDetail from "@Components/Detail/EditableDetail";
 import DetailInput from "@Components/Inputs/DetailInput";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "App";
+import { RootStackParamList } from "@Routes/Navigator.interface";
 import DigiButton from "@Components/Button/DigiButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsItem from "@Components/List/SettingsItem";
