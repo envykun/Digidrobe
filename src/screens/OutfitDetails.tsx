@@ -40,6 +40,7 @@ type OutfitDetailsProps = NativeStackScreenProps<RootStackParamList, "OutfitDeta
 export default function OutfitDetails({ route, navigation }: OutfitDetailsProps) {
   const outfit = route.params.outfit;
   const refresh = useReducer((x) => x + 1, 0)[1];
+  outfit.refresh = refresh;
   const db = getDatabase();
   const bottomSheet = useContext(BottomSheetContext);
   const snack = useContext(SnackbarContext);
