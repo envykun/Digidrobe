@@ -15,9 +15,12 @@ import { Category } from "@Models/Category";
 import { BottomTabParamList, RootStackParamList } from "@Routes/Navigator.interface";
 
 export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabParamList, "Wardrobe">) {
+  const isFocused = useIsFocused();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const db = getDatabase();
-  const [activeFilter, setActiveFilter] = useState<string | undefined>();
-  const [refreshing, setRefreshing] = useState(false);
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | undefined>();
+  const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+  const [hasActiveFilters, setHasActiveFilters] = useState(false);
   const { data: wardrobe, isLoading: loadingWardrobe, error: wardrobeError, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
   const {
     data: categories,
@@ -25,14 +28,10 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
     error: categoriesError,
     refetch: refetchCategories,
   } = useGet(getCategories<Category>(db));
-  const flatListRef = useRef<FlatList<Item> | null>();
-  const isFocused = useIsFocused();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const refresh = useReducer((x) => x + 1, 0)[1];
 
-  console.log("WARDROBE", wardrobe?.length, loadingWardrobe);
-
+  const flatListRef = useRef<FlatList<Item> | null>();
   const [sortedWardrobe, setSortedWardrobe] = useState(wardrobe);
 
   const toggleAdditionalFilter = () => {
@@ -51,6 +50,9 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
           ]}
         >
           <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
+          {!additionalFilterOpen && hasActiveFilters && (
+            <View style={{ position: "absolute", width: 10, height: 10, backgroundColor: "red", borderRadius: 160, top: 0, right: -6 }} />
+          )}
         </TouchableOpacity>
       ),
     });
@@ -93,29 +95,29 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
         showAdditionalFilter
         isOpen={additionalFilterOpen}
         additionalFilterProps={{
-          itemData: wardrobe,
+          data: wardrobe,
           dataCallback: setSortedWardrobe,
+          type: "Wardrobe",
+          hasFiltersActive: setHasActiveFilters,
         }}
       >
-        <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
+        <Chip label="All" active={!activeCategoryFilter} onPress={() => setActiveCategoryFilter(undefined)} />
         {loadingCategories
           ? Array.from({ length: 6 }).map((_, idx) => <Skeleton key={idx} variant="rounded" />)
           : categories?.map((item) => (
-              <Chip key={item.id} label={item.label} active={activeFilter === item.label} onPress={() => setActiveFilter(item.label)} />
+              <Chip
+                key={item.id}
+                label={item.label}
+                active={activeCategoryFilter === item.label}
+                onPress={() => setActiveCategoryFilter(item.label)}
+              />
             ))}
       </FilterBar>
       <FlatList
         ref={(ref) => {
           flatListRef.current = ref;
         }}
-        onScroll={() => setAdditionalFilterOpen(false)}
-        data={
-          activeFilter
-            ? sortedWardrobe
-                ?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
-                .filter((item) => item.category?.includes(activeFilter))
-            : sortedWardrobe?.filter((item) => (route.params?.favoriteFilter ? item.isFavorite() : item))
-        }
+        data={activeCategoryFilter ? sortedWardrobe?.filter((item) => item.category?.includes(activeCategoryFilter)) : sortedWardrobe}
         numColumns={2}
         renderItem={({ item }) => (
           <Card
@@ -156,6 +158,7 @@ export default function Wardrobe({ route }: NativeStackScreenProps<BottomTabPara
                 justifyContent: "center",
                 alignItems: "center",
                 flex: 1,
+                height: 80,
               }}
             >
               <Text style={{ fontSize: 16 }}>No clothing.</Text>

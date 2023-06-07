@@ -17,12 +17,14 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
   const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const db = getDatabase();
-  const [activeFilter, setActiveFilter] = useState<string | undefined>();
-  const [searchQuery, setSearchQuery] = useState<string | undefined>();
+  const [activeTagFilter, setActiveTagFilter] = useState<string | undefined>();
+  const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
+  const [hasActiveFilters, sethasActiveFilters] = useState(false);
   const { data: outfits, isLoading: loadingOutfits, error, refetch: refetchOutfits } = useGet(getOutfits(db));
   const { data: tags, isLoading: loadingTags, error: tagsError, refetch: refetchTags } = useGet(getTags<Tag>(db));
-  const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [sortedOutfit, setSortedOutfit] = useState(outfits);
 
   const toggleAdditionalFilter = () => {
     setAdditionalFilterOpen((v) => !v);
@@ -53,16 +55,16 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
           ]}
         >
           <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
+          {!additionalFilterOpen && hasActiveFilters && (
+            <View style={{ position: "absolute", width: 10, height: 10, backgroundColor: "red", borderRadius: 160, top: 0, right: -6 }} />
+          )}
         </TouchableOpacity>
       ),
     });
   }, [navigation, additionalFilterOpen]);
 
   useEffect(() => {
-    // db.transaction((tx) =>
-    //   tx.executeSql(`SELECT * from ${TableNames.OUTFIT_WARDROBE}`, [], (_, res) => console.log("Junc", res.rows._array))
-    // );
-    handleRefetch();
+    isFocused && handleRefetch();
   }, [isFocused]);
 
   return (
@@ -70,23 +72,22 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
       <FilterBar
         showAdditionalFilter
         isOpen={additionalFilterOpen}
-        additionalFilterProps={{ outfitData: outfits, onSearchQuery: setSearchQuery }}
+        additionalFilterProps={{ data: outfits, dataCallback: setSortedOutfit, type: "Outfit", hasFiltersActive: sethasActiveFilters }}
       >
-        <Chip label="All" active={!activeFilter} onPress={() => setActiveFilter(undefined)} />
+        <Chip label="All" active={!activeTagFilter} onPress={() => setActiveTagFilter(undefined)} />
         {loadingTags
           ? Array.from({ length: 6 }).map((_, idx) => <Skeleton key={idx} variant="rounded" />)
           : tags?.map((tag) => (
-              <Chip key={tag.id} label={tag.label} active={activeFilter === tag.label} onPress={() => setActiveFilter(tag.label)} />
+              <Chip key={tag.id} label={tag.label} active={activeTagFilter === tag.label} onPress={() => setActiveTagFilter(tag.label)} />
             ))}
       </FilterBar>
       <FlatList
-        onScroll={() => setAdditionalFilterOpen(false)}
         data={
-          searchQuery
-            ? outfits
-                ?.filter((outfit) => outfit.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-                .filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
-            : outfits?.filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
+          activeTagFilter
+            ? sortedOutfit
+                ?.filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
+                .filter((outfit) => outfit.tags?.includes(activeTagFilter))
+            : sortedOutfit?.filter((outfit) => (route.params?.bookmarkFilter ? outfit.isBookmarked() : outfit))
         }
         renderItem={({ item: outfit }) => (
           <OutfitBox label={outfit.name} outfitImage={outfit.imageURL} itemImages={outfit.getItemImagePreviews()} outfit={outfit} />

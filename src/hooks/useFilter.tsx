@@ -1,24 +1,33 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import BottomSheetFilter, { FilterSettings } from "@Components/BottomSheet/BottomSheetFilter";
 import BottomSheetContext from "@Context/BottomSheetContext";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { BottomTabParamList } from "@Routes/Navigator.interface";
+
+export type FilterType = "Wardrobe" | "Outfit";
 
 interface UseFilterProps<T> {
   data?: T;
+  type?: FilterType;
 }
 
-export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
-  const route = useRoute<RouteProp<BottomTabParamList, "Wardrobe">>();
+export const useFilter = <T,>({ data, type }: UseFilterProps<T>) => {
+  const route = useRoute<RouteProp<BottomTabParamList, any>>();
   const bottomSheet = useContext(BottomSheetContext);
+  const initFilter: boolean = type === "Outfit" ? route.params?.bookmarkFilter : route.params?.favoriteFilter;
   const [filteredData, setFilteredData] = useState<T | undefined>(data);
   const [activeFilters, setActiveFilters] = useState<number>(0);
 
-  console.log("ROUTE", route.params);
+  useEffect(() => {
+    if (!initFilter) return;
+    const filteredTemp = type === "Wardrobe" ? (filterByFavorite(data) as T) : (filterByBookmark(data) as T);
+    setFilteredData(filteredTemp);
+    setActiveFilters(1);
+  }, [initFilter]);
 
   const handleBottomSheet = () => {
     if (!bottomSheet) return;
-    bottomSheet.setContent(<BottomSheetFilter onApply={handleFilter} initFavoriteFilter={route.params?.favoriteFilter} />);
+    bottomSheet.setContent(<BottomSheetFilter onApply={handleFilter} initFavoriteFilter={initFilter} />);
     bottomSheet.setIsOpen((prev) => !prev);
   };
 
@@ -31,6 +40,10 @@ export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
   const filterByFavorite = (data?: T) => {
     if (!Array.isArray(data)) return;
     return data.filter((item) => item.favorite);
+  };
+  const filterByBookmark = (data?: T) => {
+    if (!Array.isArray(data)) return;
+    return data.filter((item) => item.bookmarked);
   };
 
   // Color
@@ -97,7 +110,7 @@ export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
     let appliedFiltersCount = 0;
 
     if (favorite) {
-      filteredTemp = filterByFavorite(filteredTemp) as T;
+      filteredTemp = type === "Wardrobe" ? (filterByFavorite(filteredTemp) as T) : (filterByBookmark(filteredTemp) as T);
       appliedFiltersCount++;
     }
     if (colors.applied) {
@@ -139,5 +152,5 @@ export const useFilter = <T,>({ data }: UseFilterProps<T>) => {
     bottomSheet?.resetBottomSheet();
   };
 
-  return { filteredData, activeFilters, handleBottomSheet, clearAllFilters };
+  return { filteredData: filteredData ?? data, activeFilters, handleBottomSheet, clearAllFilters };
 };
