@@ -20,7 +20,7 @@ export interface IBottomSheetContext {
 
 export const BottomSheetContext = createContext<IBottomSheetContext | null>(null);
 
-export type BottomSheetContent = "Categories" | "Fabric" | "Color" | string;
+export type BottomSheetContent = "Categories" | "Fabric" | "Color" | "BaseCategories" | string;
 
 export const BottomSheetContextProvider = ({ children }: PropsWithChildren) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

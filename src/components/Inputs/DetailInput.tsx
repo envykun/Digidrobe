@@ -5,6 +5,8 @@ import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import MultiSelectWithChips from "./MultiSelectWithChips";
 import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
 import MultiSelectWithColor from "./MultiSelectWithColor";
+import Select from "./Select";
+import { BaseCategories } from "@Database/constants";
 
 export interface DetailInputProps {
   label: string;
@@ -13,7 +15,7 @@ export interface DetailInputProps {
   defaultValue?: string | string[];
 }
 
-export type InputType = "date" | "autocomplete" | "multi-select" | "multi-select-color" | "default";
+export type InputType = "date" | "autocomplete" | "multi-select" | "multi-select-color" | "select" | "default";
 
 export default function DetailInput({ label, inputProps, type = "default", defaultValue, children }: PropsWithChildren<DetailInputProps>) {
   const [selectedValues, setSelectedValues] = useState<Array<string>>(Array.isArray(defaultValue) ? defaultValue : []);
@@ -58,6 +60,8 @@ export default function DetailInput({ label, inputProps, type = "default", defau
         return <MultiSelectWithColor selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
       case "autocomplete":
         return <Text>TODO: Add Autocomplete</Text>;
+      case "select":
+        return <Select contentType={"BaseCategories"} defaultValue={inputProps?.defaultValue} onValueChange={inputProps?.onChange} />;
       default:
         return <Input {...inputProps} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
     }
@@ -65,7 +69,9 @@ export default function DetailInput({ label, inputProps, type = "default", defau
 
   return (
     <View style={styles.detail}>
-      <Text style={{ fontSize: 16, fontWeight: "100", minWidth: "30%" }}>{label}</Text>
+      <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: "100", minWidth: "30%", maxWidth: "35%" }}>
+        {label}
+      </Text>
       {children ?? renderInput(type)}
     </View>
   );
@@ -77,5 +83,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 8,
+    gap: 16,
   },
 });

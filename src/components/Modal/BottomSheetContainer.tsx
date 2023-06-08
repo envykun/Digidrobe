@@ -7,6 +7,7 @@ import { FlatList, Text, StyleSheet, View } from "react-native";
 import BottomSheetItem from "./BottomSheetItem";
 import { NamedBaseColors } from "@Styles/colors";
 import { GenericBottomSheetItem } from "@Models/Generic";
+import { BaseCategories } from "@Database/constants";
 
 export function BottomSheetContainer() {
   const bottomSheet = useContext(BottomSheetContext);
@@ -18,6 +19,10 @@ export function BottomSheetContainer() {
   const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedBaseColors).map(([key, value]) => {
     return { id: key, label: key, hex: value };
   });
+  const mappedBaseCategories: Array<GenericBottomSheetItem> = Object.entries(BaseCategories).map(([key, value]) => {
+    return { id: key, label: value };
+  });
+
   const [searchQuery, setSearchQuery] = useState<string | undefined>();
 
   useEffect(() => {
@@ -50,6 +55,8 @@ export function BottomSheetContainer() {
         break;
       case "Tags":
         data = tags;
+      case "BaseCategories":
+        data = mappedBaseCategories;
       default:
         break;
     }

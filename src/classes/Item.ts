@@ -114,7 +114,7 @@ export class Item implements ItemMetadata {
           if (!value || Array.isArray(value)) return;
           this.baseCategory = parseInt(value) as BaseCategory;
         },
-        inputType: "autocomplete",
+        inputType: "select",
       },
       {
         key: "brand",
