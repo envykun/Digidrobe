@@ -1,23 +1,28 @@
-import DigiButton from "@Components/Button/DigiButton";
-import FullCalendar from "@Components/Calendar/FullCalendar";
 import Select from "@Components/Inputs/Select";
-import Skeleton from "@Components/Skeleton/Skeleton";
-import Snackbar from "@Components/Snackbar/Snackbar";
-import WorkInProgress from "@Components/WIP";
-import { useState } from "react";
+import { getWeatherIconByCode, getWeatherTextByCode } from "@DigiUtils/helperFunctions";
+import React, { useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
+import { Fontisto } from "@expo/vector-icons";
 
 export default function Statistic() {
   return (
-    <View
+    <ScrollView
       style={{
         paddingHorizontal: 15,
         width: "100%",
         height: "100%",
       }}
     >
-      <Select />
-    </View>
+      {[0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99].map((i, idx) => {
+        return (
+          <View key={idx} style={{ flexDirection: "row", alignItems: "center", gap: 16, borderWidth: 1, padding: 12 }}>
+            <Text>{i}</Text>
+            <Fontisto name={getWeatherIconByCode(i)} size={52} color="black" />
+            <Text style={{ fontSize: 24 }}>{getWeatherTextByCode(i)}</Text>
+          </View>
+        );
+      })}
+    </ScrollView>
   );
 }
 
