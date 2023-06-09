@@ -8,11 +8,12 @@ interface DigiButtonProps {
   variant?: DigiButtonVariant;
   icon?: ReactNode;
   badge?: number;
+  selected?: boolean;
 }
 
 type DigiButtonVariant = "default" | "outline" | "contained" | "text";
 
-export default function DigiButton({ title, onPress, variant = "default", icon, badge }: DigiButtonProps) {
+export default function DigiButton({ title, onPress, variant = "default", icon, badge, selected }: DigiButtonProps) {
   switch (variant) {
     case "contained":
     case "outline":
@@ -20,11 +21,11 @@ export default function DigiButton({ title, onPress, variant = "default", icon, 
         <TouchableHighlight
           underlayColor="#dddddd"
           onPress={onPress}
-          style={[styles.button, styles.variantOutline, Boolean(badge) && styles.hasBadge]}
+          style={[styles.button, styles.variantOutline, Boolean(badge) && styles.hasBadge, Boolean(selected) && styles.selected]}
         >
           <>
             {icon}
-            <Text>{title}</Text>
+            <Text style={[Boolean(selected) && { color: "white" }]}>{title}</Text>
             {Boolean(badge) && (
               <Animated.View style={[styles.badge]}>
                 <Text style={{ fontSize: 12 }}>{badge}</Text>
@@ -82,5 +83,8 @@ const styles = StyleSheet.create({
   },
   hasBadge: {
     paddingRight: 32,
+  },
+  selected: {
+    backgroundColor: "black",
   },
 });

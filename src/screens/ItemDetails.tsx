@@ -21,15 +21,8 @@ import DigiButton from "@Components/Button/DigiButton";
 import { deleteAlert } from "@DigiUtils/alertHelper";
 import SnackbarContext from "@Context/SnackbarContext";
 import DetailImage from "@Components/Image/DetailImage";
-
-const chartData: ChartData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-  datasets: [
-    {
-      data: [2, 17, 8, 31, 24, 12, 16],
-    },
-  ],
-};
+import { StatisticData, useGetItemStatistic } from "@Hooks/useGetItemStatistic";
+import Skeleton from "@Components/Skeleton/Skeleton";
 
 type ItemDetailsProps = NativeStackScreenProps<RootStackParamList, "ItemDetails">;
 
@@ -39,9 +32,12 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
   const snack = useContext(SnackbarContext);
   const { data: savedOutfits, isLoading, error, refetch } = useGet(getOutfits(db));
   const { data, isLoading: loadingItem, error: itemError, refetch: refetchItem } = useGet(getWardrobeItemById(db, routeItem.uuid));
+  const { data: chartData } = useGetItemStatistic(routeItem.uuid);
   const item = useRef<Item>(data ? data : routeItem).current;
 
   const [editMode, setEditMode] = useState<boolean>(false);
+
+  const [selectedChartData, setSelectedChartData] = useState<keyof StatisticData>("month");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,15 +188,34 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
         <View
           style={{
             width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
           }}
         >
-          <DigiLineChart chartData={chartData} />
+          <Text style={{ fontSize: 24, marginLeft: 16 }}>Statistic</Text>
+          <View style={{ flexDirection: "row", width: "100%", gap: 8, paddingLeft: 16, marginTop: 16 }}>
+            <DigiButton
+              title="30 Days"
+              variant="outline"
+              selected={selectedChartData === "month"}
+              onPress={() => setSelectedChartData("month")}
+            />
+            <DigiButton
+              title="1 Year"
+              variant="outline"
+              selected={selectedChartData === "year"}
+              onPress={() => setSelectedChartData("year")}
+            />
+            <DigiButton
+              title="Overall"
+              variant="outline"
+              selected={selectedChartData === "overall"}
+              onPress={() => setSelectedChartData("overall")}
+            />
+          </View>
+          {chartData ? <DigiLineChart chartData={chartData[selectedChartData]} /> : <Skeleton />}
         </View>
         {renderSavedOutfits()}
-        <View style={{ flex: 1, height: 80, width: "100%" }}>
-          <DigiButton title="Delete THIS" variant="text" onPress={() => deleteAlert("Item", item.name, handleDeleteItem)} />
+        <View style={{ flex: 1, height: 80, width: "100%", marginTop: 32 }}>
+          <DigiButton title={`Delete ${item.name}`} variant="text" onPress={() => deleteAlert("Item", item.name, handleDeleteItem)} />
         </View>
       </View>
     </ScrollContainer>
@@ -214,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     height: "100%",
     paddingTop: 8,
-    gap: 8,
+    gap: 16,
     elevation: 3,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,

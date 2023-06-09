@@ -146,6 +146,22 @@ export const getWarobeWearDetails = async (db: SQLite.WebSQLDatabase, uuid: stri
   });
 };
 
+export const getWardrobeWears = async (db: SQLite.WebSQLDatabase, uuid: string) => {
+  return new Promise<Array<string>>((resolve, reject) => {
+    db.transaction(
+      (tx) =>
+        tx.executeSql(`SELECT date FROM ${TableNames.WARDROBE_WEARS} WHERE itemID='${uuid}'`, [], (_, res) => {
+          const wears: Array<string> = res.rows._array.map((w) => w.date);
+          resolve(wears);
+        }),
+      (error) => {
+        reject(error);
+        return false;
+      }
+    );
+  });
+};
+
 export const getMaxWearCount = async (db: SQLite.WebSQLDatabase) => {
   return new Promise<number>((resolve, reject) =>
     db.transaction(
