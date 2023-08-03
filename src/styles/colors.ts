@@ -1,5 +1,6 @@
 export const Colors = {
   primary: "#E2C895",
+  error: "#d30b0b",
 };
 
 export const ColorsRGB = {
