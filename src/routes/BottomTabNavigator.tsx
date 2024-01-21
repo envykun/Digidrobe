@@ -14,9 +14,8 @@ const tabOptions: BottomTabNavigationOptions = {};
 export default function BottomTabNavigator() {
   return (
     <Tab.Navigator
-      safeAreaInsets={{ bottom: 8 }}
       screenOptions={() => ({
-        tabBarActiveTintColor: "#E2C895",
+        tabBarActiveTintColor: Colors.primary,
         headerTitleAlign: "center",
       })}
     >
@@ -45,12 +44,12 @@ export default function BottomTabNavigator() {
           headerStyle: { backgroundColor: Colors.primary },
           headerLeft: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
-              <Ionicons name="ios-filter" size={24} color={tintColor} />
+              <Ionicons name="filter" size={24} color={tintColor} />
             </TouchableOpacity>
           ),
           headerRight: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewItem")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
-              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+              <Ionicons name="add-outline" size={32} color={tintColor} />
             </TouchableOpacity>
           ),
         })}
@@ -64,12 +63,12 @@ export default function BottomTabNavigator() {
           headerStyle: { backgroundColor: Colors.primary },
           headerLeft: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginLeft: 16 }}>
-              <Ionicons name="ios-filter" size={24} color={tintColor} />
+              <Ionicons name="filter" size={24} color={tintColor} />
             </TouchableOpacity>
           ),
           headerRight: ({ tintColor, pressOpacity }) => (
             <TouchableOpacity onPress={() => navigation.navigate("NewOutfit")} activeOpacity={pressOpacity} style={{ marginRight: 16 }}>
-              <Ionicons name="ios-add-outline" size={32} color={tintColor} />
+              <Ionicons name="add-outline" size={32} color={tintColor} />
             </TouchableOpacity>
           ),
         })}

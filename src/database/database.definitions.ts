@@ -12,6 +12,7 @@ export enum TableNames {
   CATEGORIES = "categories",
   COLORS = "colors",
   FABRICS = "fabrics",
+  STORES = "stores",
   TAGS = "Tags",
   WARDROBE_CATEGORY = "wardrobe_category",
   WARDROBE_COLOR = "wardrobe_color",

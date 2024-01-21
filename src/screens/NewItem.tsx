@@ -25,7 +25,7 @@ export default function NewItem() {
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={handleCreate}>
-          <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+          <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
         </TouchableOpacity>
       ),
     });

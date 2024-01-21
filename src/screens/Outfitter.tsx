@@ -19,7 +19,7 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
   const db = getDatabase();
   const [activeTagFilter, setActiveTagFilter] = useState<string | undefined>();
   const [additionalFilterOpen, setAdditionalFilterOpen] = useState(false);
-  const [hasActiveFilters, sethasActiveFilters] = useState(false);
+  const [hasActiveFilters, setHasActiveFilters] = useState(false);
   const { data: outfits, isLoading: loadingOutfits, error, refetch: refetchOutfits } = useGet(getOutfits(db));
   const { data: tags, isLoading: loadingTags, error: tagsError, refetch: refetchTags } = useGet(getTags<Tag>(db));
   const [refreshing, setRefreshing] = useState(false);
@@ -54,7 +54,7 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
             additionalFilterOpen && { backgroundColor: "black", borderRadius: 8 },
           ]}
         >
-          <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
+          <Ionicons name="filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
           {!additionalFilterOpen && hasActiveFilters && (
             <View style={{ position: "absolute", width: 10, height: 10, backgroundColor: "red", borderRadius: 160, top: 0, right: -6 }} />
           )}
@@ -72,7 +72,7 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
       <FilterBar
         showAdditionalFilter
         isOpen={additionalFilterOpen}
-        additionalFilterProps={{ data: outfits, dataCallback: setSortedOutfit, type: "Outfit", hasFiltersActive: sethasActiveFilters }}
+        additionalFilterProps={{ data: outfits, dataCallback: setSortedOutfit, type: "Outfit", hasFiltersActive: setHasActiveFilters }}
       >
         <Chip label="All" active={!activeTagFilter} onPress={() => setActiveTagFilter(undefined)} />
         {loadingTags

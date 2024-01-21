@@ -1,5 +1,12 @@
 import { Item } from "@Classes/Item";
 import { Outfit } from "@Classes/Outfit";
+import { CompositeNavigationProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+export type HomeScreenParamList = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList, "Root">,
+  NativeStackNavigationProp<BottomTabParamList>
+>;
 
 export type RootStackParamList = {
   Root: undefined;

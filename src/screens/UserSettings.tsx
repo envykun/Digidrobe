@@ -94,7 +94,7 @@ export default function UserSettings() {
           <View style={utils(16).divider} />
           {settings.map((setting) => (
             <SettingsItem key={setting} label={setting} onPress={() => console.log("Navigate to", setting)}>
-              <Ionicons name="ios-chevron-forward" size={18} color="black" />
+              <Ionicons name="chevron-forward" size={18} color="black" />
             </SettingsItem>
           ))}
           <View style={utils(16).divider} />

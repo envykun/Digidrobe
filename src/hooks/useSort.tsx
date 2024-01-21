@@ -84,7 +84,7 @@ function BottomSheetSort({ handleSortFunctionSelection, sortingFunction, sheetKe
             {item}
           </Text>
           {item === sortingFunction && (
-            <Ionicons name="ios-checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />
+            <Ionicons name="checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />
           )}
         </TouchableOpacity>
       )}

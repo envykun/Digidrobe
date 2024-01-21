@@ -52,7 +52,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={() => handleEdit(true)}>
-          <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+          <Ionicons name="create-outline" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
     });
@@ -64,7 +64,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleSaveUpdatedOutfit(outfit)}>
-            <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+            <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
           </TouchableOpacity>
         ),
       });
@@ -73,7 +73,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleEdit(true)}>
-            <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+            <Ionicons name="create-outline" size={24} color={tintColor} />
           </TouchableOpacity>
         ),
       });
@@ -248,15 +248,20 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
             )}
           </View>
         )}
-        <View style={utils(16).divider} />
-        <View style={styles.details}>
-          {outfit.getAllItems().map((item) => (
-            <OutfitDetailCard key={item.uuid} item={item} />
-          ))}
-        </View>
-        <View style={{ flex: 1, height: 80, width: "100%" }}>
-          <DigiButton title="Delete Outfit" variant="text" onPress={() => deleteAlert("Outfit", outfit.name, handleDeleteOutfit)} />
-        </View>
+        {!editMode && (
+          <>
+            <View style={utils(16).divider} />
+            <View style={styles.details}>
+              {outfit.getAllItems().map((item) => (
+                <OutfitDetailCard key={item.uuid} item={item} />
+              ))}
+            </View>
+            <View style={utils(16).divider} />
+            <View style={{ flex: 1, height: 80, width: "100%" }}>
+              <DigiButton title="Delete Outfit" variant="text" onPress={() => deleteAlert("Outfit", outfit.name, handleDeleteOutfit)} />
+            </View>
+          </>
+        )}
       </View>
     </ScrollContainer>
   );

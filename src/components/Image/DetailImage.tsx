@@ -71,7 +71,7 @@ export default function DetailImage({ image }: DetailImageProps) {
       <Modal visible={showFullscreenImage} statusBarTranslucent={true} onRequestClose={() => setShowFullscreenImage(false)}>
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
           <TouchableOpacity style={styles.closeModal}>
-            <Ionicons name="ios-close" color="white" size={24} onPress={() => setShowFullscreenImage(false)} />
+            <Ionicons name="close" color="white" size={24} onPress={() => setShowFullscreenImage(false)} />
           </TouchableOpacity>
           <PanGestureHandler
             ref={panRef}

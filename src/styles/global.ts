@@ -1,9 +1,9 @@
-import { StyleSheet, StatusBar } from "react-native";
+import { StyleSheet, StatusBar, DimensionValue } from "react-native";
+import { Colors } from "./colors";
 
 export const layout = StyleSheet.create({
   scrollContainer: {
     height: "100%",
-    backgroundColor: "white",
   },
   noHeaderSpacing: {
     paddingTop: StatusBar.currentHeight,
@@ -11,7 +11,7 @@ export const layout = StyleSheet.create({
   },
 });
 
-export const utils = (marginHorizontal?: number | string) =>
+export const utils = (marginHorizontal?: DimensionValue) =>
   StyleSheet.create({
     divider: {
       borderTopWidth: 1,

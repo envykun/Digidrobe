@@ -10,7 +10,7 @@ import { getDatabase } from "@Database/database";
 import DigiButton from "@Components/Button/DigiButton";
 import { useGet } from "@Hooks/useGet";
 import { ScrollContainer } from "@DigiUtils/ScrollContainer";
-import { ColorsRGB } from "@Styles/colors";
+import { Colors, ColorsRGB } from "@Styles/colors";
 import { useGetQuote } from "@Hooks/useGetQuote";
 import Skeleton from "@Components/Skeleton/Skeleton";
 import BottomSheetContext from "@Context/BottomSheetContext";
@@ -20,10 +20,10 @@ import { i18n } from "@Database/i18n/i18n";
 import { startOfToday } from "date-fns";
 import PlannedOutfitCard from "@Components/Card/PlannedOutfitCard";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@Routes/Navigator.interface";
+import { HomeScreenParamList, RootStackParamList } from "@Routes/Navigator.interface";
 
 export default function Home() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<HomeScreenParamList>();
   const today = startOfToday();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -46,7 +46,7 @@ export default function Home() {
   }, [isFocused]);
 
   return (
-    <ScrollContainer headerTransparent={false} headerBackgroundColor={ColorsRGB.primary}>
+    <ScrollContainer headerTransparent={false} headerBackgroundColor={ColorsRGB.primary} scrollViewColor={Colors.primary}>
       <View style={[styles.topContainer, layout.noHeaderSpacing]}>
         <View style={{ marginVertical: 16 }}>
           <Text style={{ fontSize: 32, color: "white" }}>
@@ -73,10 +73,10 @@ export default function Home() {
         </View>
         <WeatherAndLocation />
       </View>
-      <LinearGradient colors={["#E2C895", "transparent"]} style={{ alignItems: "center" }}>
+      <LinearGradient colors={["#E2C895", "white"]} style={{ alignItems: "center", paddingVertical: 4 }}>
         <ShortcutBox />
       </LinearGradient>
-      <View style={{ paddingVertical: 16, gap: 16 }}>
+      <View style={{ paddingVertical: 16, gap: 16, backgroundColor: "white" }}>
         <Calendar today={today} selectedDate={selectedDate} onChange={setSelectedDate} />
         <View style={styles.padding}>
           {isLoading && !plannedOutfits ? (
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   topContainer: {
     padding: 16,
     height: 300,
-    backgroundColor: "#E2C895",
+    backgroundColor: Colors.primary,
     position: "relative",
   },
   topBar: {

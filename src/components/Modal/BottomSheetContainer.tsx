@@ -55,8 +55,10 @@ export function BottomSheetContainer() {
         break;
       case "Tags":
         data = tags;
+        break;
       case "BaseCategories":
         data = mappedBaseCategories;
+        break;
       default:
         break;
     }

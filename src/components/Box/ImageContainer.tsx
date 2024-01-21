@@ -69,7 +69,7 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
       <View style={styles.sheetButton}>
         <ShortcutItem
           label="Files"
-          icon={<Ionicons name="ios-folder-open" size={48} color="#E2C895" />}
+          icon={<Ionicons name="folder-open" size={48} color="#E2C895" />}
           onPress={() => {
             closeModal();
             pickImage();
@@ -79,7 +79,7 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
       <View style={styles.sheetButton}>
         <ShortcutItem
           label="Camera"
-          icon={<Ionicons name="ios-camera" size={48} color="#E2C895" />}
+          icon={<Ionicons name="camera" size={48} color="#E2C895" />}
           onPress={() => {
             closeModal();
             takeImage();
@@ -120,7 +120,7 @@ export default function ImageContainer({ setImageCallback, defaultImage }: Image
                 setImage(null);
               }}
             >
-              <Ionicons name="ios-trash-bin" size={32} color="#ce0000" />
+              <Ionicons name="trash-bin" size={32} color="#ce0000" />
             </TouchableOpacity>
           </View>
         </View>

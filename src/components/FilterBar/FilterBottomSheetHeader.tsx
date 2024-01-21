@@ -17,7 +17,7 @@ export default function FilterBottomSheetHeader({ filterType, handleGoBack, onAp
       <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
         {filterType && (
           <TouchableOpacity onPress={handleGoBack}>
-            <Ionicons name="ios-arrow-back" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
         )}
         <Text>{i18n.t("filter.filterBy", { type: filterType ? i18n.t(`item.${filterType}`) : "..." })}</Text>

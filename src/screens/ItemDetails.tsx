@@ -43,7 +43,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={() => handleEdit(true)}>
-          <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+          <Ionicons name="create-outline" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
     });
@@ -55,7 +55,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleSaveUpdatedItem(item)}>
-            <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+            <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
           </TouchableOpacity>
         ),
       });
@@ -64,7 +64,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleEdit(true)}>
-            <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+            <Ionicons name="create-outline" size={24} color={tintColor} />
           </TouchableOpacity>
         ),
       });
@@ -127,7 +127,7 @@ export default function ItemDetails({ route, navigation }: ItemDetailsProps) {
     );
 
   return (
-    <ScrollContainer isLoading={isLoading} refetch={refetchItem}>
+    <ScrollContainer isLoading={isLoading || loadingItem} refetch={refetchItem}>
       {editMode ? (
         <ImageContainer defaultImage={item.getImage()} setImageCallback={(uri) => item.setImage(uri)} />
       ) : (
