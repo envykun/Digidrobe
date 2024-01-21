@@ -54,7 +54,7 @@ export default function Outfitter({ route }: NativeStackScreenProps<BottomTabPar
             additionalFilterOpen && { backgroundColor: "black", borderRadius: 8 },
           ]}
         >
-          <Ionicons name="ios-filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
+          <Ionicons name="filter" size={24} color={additionalFilterOpen ? "white" : tintColor} />
           {!additionalFilterOpen && hasActiveFilters && (
             <View style={{ position: "absolute", width: 10, height: 10, backgroundColor: "red", borderRadius: 160, top: 0, right: -6 }} />
           )}

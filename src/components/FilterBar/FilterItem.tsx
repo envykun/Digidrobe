@@ -27,7 +27,7 @@ export default function FilterItem({ label, onPress, selectedValues, children }:
               )
             )}
           </View>
-          <Ionicons name="ios-chevron-forward" size={24} color="black" />
+          <Ionicons name="chevron-forward" size={24} color="black" />
         </>
       </TouchableOpacity>
     </View>

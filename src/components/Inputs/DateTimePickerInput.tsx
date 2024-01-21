@@ -29,7 +29,7 @@ export default function DateTimePickerInput({ onChange, text, iconSize, defaultV
   return (
     <View style={{ height: 40, justifyContent: "center" }}>
       <TouchableOpacity onPress={showDatePicker} style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-        <Ionicons name="ios-calendar-outline" size={iconSize ?? 20} color="black" />
+        <Ionicons name="calendar-outline" size={iconSize ?? 20} color="black" />
         <Text style={{ fontSize: 16, maxWidth: 240 }}>
           {text ? text : date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
         </Text>

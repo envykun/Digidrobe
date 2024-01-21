@@ -42,7 +42,7 @@ export default function RootNavigator() {
             title: route.params?.item.name,
             headerRight: ({ tintColor }) => (
               <TouchableOpacity onPress={() => console.log("Edit")}>
-                <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+                <Ionicons name="create-outline" size={24} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -55,7 +55,7 @@ export default function RootNavigator() {
             title: "Create new Outfit",
             headerRight: ({ tintColor }) => (
               <TouchableOpacity>
-                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+                <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -68,7 +68,7 @@ export default function RootNavigator() {
             title: route.params?.title,
             headerRight: ({ tintColor }) => (
               <TouchableOpacity onPress={() => console.log("Create Item")}>
-                <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+                <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
               </TouchableOpacity>
             ),
           })}
@@ -89,7 +89,7 @@ export default function RootNavigator() {
             title: route.params?.outfit.name,
             headerRight: ({ tintColor }) => (
               <TouchableOpacity onPress={() => console.log("Edit")}>
-                <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+                <Ionicons name="create-outline" size={24} color={tintColor} />
               </TouchableOpacity>
             ),
           })}

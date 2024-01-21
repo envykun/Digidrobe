@@ -52,7 +52,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
     navigation.setOptions({
       headerRight: ({ tintColor }: any) => (
         <TouchableOpacity onPress={() => handleEdit(true)}>
-          <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+          <Ionicons name="create-outline" size={24} color={tintColor} />
         </TouchableOpacity>
       ),
     });
@@ -64,7 +64,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleSaveUpdatedOutfit(outfit)}>
-            <Ionicons name="ios-checkmark-circle-outline" size={32} color={tintColor} />
+            <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
           </TouchableOpacity>
         ),
       });
@@ -73,7 +73,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleEdit(true)}>
-            <Ionicons name="ios-create-outline" size={24} color={tintColor} />
+            <Ionicons name="create-outline" size={24} color={tintColor} />
           </TouchableOpacity>
         ),
       });

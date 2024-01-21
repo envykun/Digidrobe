@@ -72,7 +72,7 @@ export default function AdditionalFilter({ data, dataCallback, type, hasFiltersA
           />
           {Boolean(activeFilters) && (
             <TouchableOpacity>
-              <Ionicons name="ios-close-circle-outline" size={28} onPress={clearAllFilters} />
+              <Ionicons name="close-circle-outline" size={28} onPress={clearAllFilters} />
             </TouchableOpacity>
           )}
         </View>

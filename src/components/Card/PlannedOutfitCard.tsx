@@ -28,7 +28,7 @@ export default function PlannedOutfitCard({ outfit }: PlannedOutfitCardProps) {
           style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}
         >
           <Text style={{ fontSize: 20, fontWeight: "200" }}>{outfit.name}</Text>
-          <Ionicons name="ios-open-outline" size={20} color="black" />
+          <Ionicons name="open-outline" size={20} color="black" />
         </TouchableOpacity>
         <DigiButton title="I wear it!" variant="outline" onPress={() => console.log("Set wear")} />
       </View>

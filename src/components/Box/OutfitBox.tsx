@@ -159,7 +159,7 @@ export default function OutfitBox({ label, outfitImage, itemImages, outfit }: Ou
         }}
       >
         <View style={{ flex: 1, flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <Ionicons name="ios-pricetags-outline" color="black" />
+          <Ionicons name="pricetags-outline" color="black" />
           <View style={{ flex: 1, flexDirection: "row", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
             {outfit.tags?.map((tag) => (
               <DetailTag key={tag} label={tag} />

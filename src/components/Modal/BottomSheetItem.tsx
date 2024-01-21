@@ -11,7 +11,7 @@ export default function BottomSheetItem({ label, onPress, selected = false, colo
     <TouchableOpacity style={{ justifyContent: "center", alignItems: "center", height: 40 }} onPress={handlePress}>
       {color && <View style={[styles(color).colorBubble, styles(color).shadowProp]} />}
       <Text style={{ fontSize: 16 }}>{label}</Text>
-      {selected && <Ionicons name="ios-checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />}
+      {selected && <Ionicons name="checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />}
     </TouchableOpacity>
   );
 }
