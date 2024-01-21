@@ -30,9 +30,11 @@ export default function RootNavigator() {
         }}
       />
       <Stack.Group
-        screenOptions={{
-          presentation: "card",
-        }}
+        screenOptions={
+          {
+            // presentation: "modal",
+          }
+        }
       >
         <Stack.Screen
           name="ItemDetails"

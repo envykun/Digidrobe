@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { initDatabase } from "@Database/database";
@@ -30,12 +30,12 @@ export default function App() {
     prepare();
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
+  const onLayoutRootView = async () => {
     if (appIsReady) {
       console.info("Data initialized.");
       await SplashScreen.hideAsync();
     }
-  }, [appIsReady]);
+  };
 
   if (!appIsReady) {
     return null;

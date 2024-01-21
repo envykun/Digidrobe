@@ -4,6 +4,7 @@ import { RefreshControl, SafeAreaView, ScrollView } from "react-native";
 import { headerOnScrollTransition } from "./helperFunctions";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { layout } from "@Styles/global";
+import { Colors } from "@Styles/colors";
 
 export interface ScrollContainerProps {
   isLoading?: boolean;
@@ -13,6 +14,7 @@ export interface ScrollContainerProps {
   disableRefresh?: boolean;
   headerTransparent?: boolean;
   headerBackgroundColor?: string;
+  scrollViewColor?: string;
 }
 
 export function ScrollContainer({
@@ -24,13 +26,14 @@ export function ScrollContainer({
   disableRefresh,
   headerTransparent = true,
   headerBackgroundColor,
+  scrollViewColor,
 }: PropsWithChildren<ScrollContainerProps>) {
   const navigation = useNavigation();
   const headerHeight = useHeaderHeight();
   return (
     <SafeAreaView>
       <ScrollView
-        style={[layout.scrollContainer]}
+        style={[layout.scrollContainer, { backgroundColor: scrollViewColor }]}
         showsVerticalScrollIndicator={false}
         onLayout={(e) => {
           navigation.setOptions({
@@ -40,6 +43,7 @@ export function ScrollContainer({
         }}
         refreshControl={disableRefresh ? undefined : <RefreshControl refreshing={isLoading} onRefresh={refetch} />}
         onScroll={(event) => headerOnScrollTransition({ event, navigation, headerHeight, headerBackgroundColor: headerBackgroundColor })}
+        scrollEventThrottle={32}
         contentInsetAdjustmentBehavior="never"
       >
         {children}

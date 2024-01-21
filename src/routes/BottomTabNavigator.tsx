@@ -14,9 +14,8 @@ const tabOptions: BottomTabNavigationOptions = {};
 export default function BottomTabNavigator() {
   return (
     <Tab.Navigator
-      safeAreaInsets={{ bottom: 8 }}
       screenOptions={() => ({
-        tabBarActiveTintColor: "#E2C895",
+        tabBarActiveTintColor: Colors.primary,
         headerTitleAlign: "center",
       })}
     >
