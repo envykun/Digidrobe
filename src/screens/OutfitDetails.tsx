@@ -248,15 +248,20 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
             )}
           </View>
         )}
-        <View style={utils(16).divider} />
-        <View style={styles.details}>
-          {outfit.getAllItems().map((item) => (
-            <OutfitDetailCard key={item.uuid} item={item} />
-          ))}
-        </View>
-        <View style={{ flex: 1, height: 80, width: "100%" }}>
-          <DigiButton title="Delete Outfit" variant="text" onPress={() => deleteAlert("Outfit", outfit.name, handleDeleteOutfit)} />
-        </View>
+        {!editMode && (
+          <>
+            <View style={utils(16).divider} />
+            <View style={styles.details}>
+              {outfit.getAllItems().map((item) => (
+                <OutfitDetailCard key={item.uuid} item={item} />
+              ))}
+            </View>
+            <View style={utils(16).divider} />
+            <View style={{ flex: 1, height: 80, width: "100%" }}>
+              <DigiButton title="Delete Outfit" variant="text" onPress={() => deleteAlert("Outfit", outfit.name, handleDeleteOutfit)} />
+            </View>
+          </>
+        )}
       </View>
     </ScrollContainer>
   );

@@ -66,6 +66,38 @@ export const getFabrics = <T>(db: SQLite.WebSQLDatabase) => {
   );
 };
 
+export const getBrands = <T>(db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<T>>((resolve, reject) =>
+    db.transaction((tx) =>
+      tx.executeSql(
+        `SELECT * FROM ${TableNames.BRANDS}`,
+        [],
+        (_, res) => resolve(res.rows._array.sort((a, b) => a.label.localeCompare(b.label))),
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      )
+    )
+  );
+};
+
+export const getStores = <T>(db: SQLite.WebSQLDatabase) => {
+  return new Promise<Array<T>>((resolve, reject) =>
+    db.transaction((tx) =>
+      tx.executeSql(
+        `SELECT * FROM ${TableNames.BOUGHT_FROM}`,
+        [],
+        (_, res) => resolve(res.rows._array.sort((a, b) => a.label.localeCompare(b.label))),
+        (_, error) => {
+          reject(error);
+          return true;
+        }
+      )
+    )
+  );
+};
+
 export const getTags = <T>(db: SQLite.WebSQLDatabase) => {
   return new Promise<Array<T>>((resolve, reject) =>
     db.transaction((tx) =>

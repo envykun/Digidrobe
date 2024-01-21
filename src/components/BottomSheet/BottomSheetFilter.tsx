@@ -1,15 +1,17 @@
 import FilterBottomSheetHeader, { FilterType } from "@Components/FilterBar/FilterBottomSheetHeader";
 import FilterDetailView from "@Components/FilterBar/FilterDetailView";
 import FilterList from "@Components/FilterBar/FilterList";
-import { getDatabase } from "@Database/database";
+import { getBrands, getDatabase, getFabrics, getStores } from "@Database/database";
 import { getMaxCost, getMaxWearCount } from "@Database/item";
 import { useGet } from "@Hooks/useGet";
+import { GenericBottomSheetItem } from "@Models/Generic";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, ScrollView, View } from "react-native";
 
 export interface BottomSheetFilterProps {
   onApply: any;
   initFavoriteFilter?: boolean;
+  initFilter: FilterSettings | null;
 }
 
 export interface FilterSettings {
@@ -29,28 +31,35 @@ export type FilterSettingsValue<T> = {
   value: Array<T>;
 };
 
-// INJECT current active filters back into bottomsheet
-
-export default function BottomSheetFilter({ onApply, initFavoriteFilter }: BottomSheetFilterProps) {
-  const [selectedColors, setSelectedColors] = useState<Array<string> | null>(null);
-  const [selectedFabrics, setSelectedFabrics] = useState<Array<string> | null>(null);
-  const [selectedBrands, setSelectedBrands] = useState<Array<string> | null>(null);
-  const [selectedStores, setSelectedStores] = useState<Array<string> | null>(null);
-  const [lastWornFrom, setLastWornFrom] = useState<Date | undefined>();
-  const [lastWornTo, setLastWornTo] = useState<Date | undefined>();
-  const [boughtFrom, setBoughtFrom] = useState<Date | undefined>();
-  const [boughtTo, setBoughtTo] = useState<Date | undefined>();
+export default function BottomSheetFilter({ onApply, initFavoriteFilter, initFilter }: BottomSheetFilterProps) {
+  const [selectedColors, setSelectedColors] = useState<Array<string> | null>(initFilter?.colors.applied ? initFilter.colors.value : null);
+  const [selectedFabrics, setSelectedFabrics] = useState<Array<string> | null>(
+    initFilter?.fabrics.applied ? initFilter.fabrics.value : null
+  );
+  const [selectedBrands, setSelectedBrands] = useState<Array<string> | null>(initFilter?.brands.applied ? initFilter.brands.value : null);
+  const [selectedStores, setSelectedStores] = useState<Array<string> | null>(initFilter?.stores.applied ? initFilter.stores.value : null);
+  const [lastWornFrom, setLastWornFrom] = useState<Date | undefined>(
+    initFilter?.lastWorn.applied ? initFilter.lastWorn.value[0] : undefined
+  );
+  const [lastWornTo, setLastWornTo] = useState<Date | undefined>(initFilter?.lastWorn.applied ? initFilter.lastWorn.value[1] : undefined);
+  const [boughtFrom, setBoughtFrom] = useState<Date | undefined>(
+    initFilter?.boughtDate.applied ? initFilter.boughtDate.value[0] : undefined
+  );
+  const [boughtTo, setBoughtTo] = useState<Date | undefined>(initFilter?.boughtDate.applied ? initFilter.boughtDate.value[1] : undefined);
   const [favorite, setFavorite] = useState<boolean>(initFavoriteFilter ?? false);
 
   const db = getDatabase();
   const { data: maxWearCount = 100 } = useGet(getMaxWearCount(db));
   const { data: maxCost = 100 } = useGet(getMaxCost(db));
+  const { data: allBrands = [] } = useGet<Array<GenericBottomSheetItem>>(getBrands(db));
+  const { data: allFabrics = [] } = useGet<Array<GenericBottomSheetItem>>(getFabrics(db));
+  const { data: allStores = [] } = useGet<Array<GenericBottomSheetItem>>(getStores(db));
 
-  const [wearCountMin, setWearCountMin] = useState<number>(0);
-  const [wearCountMax, setWearCountMax] = useState<number>(100);
+  const [wearCountMin, setWearCountMin] = useState<number>(initFilter?.wears.applied ? initFilter.wears.value[0] : 0);
+  const [wearCountMax, setWearCountMax] = useState<number>(initFilter?.wears.applied ? initFilter.wears.value[1] : 100);
 
-  const [costCountMin, setCostCountMin] = useState<number>(0);
-  const [costCountMax, setCostCountMax] = useState<number>(100);
+  const [costCountMin, setCostCountMin] = useState<number>(initFilter?.costs.applied ? initFilter.costs.value[0] : 0);
+  const [costCountMax, setCostCountMax] = useState<number>(initFilter?.costs.applied ? initFilter.costs.value[1] : 100);
 
   const [filterType, setFilterType] = useState<FilterType>(undefined);
 
@@ -58,11 +67,11 @@ export default function BottomSheetFilter({ onApply, initFavoriteFilter }: Botto
   const listRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    maxWearCount && setWearCountMax(maxWearCount);
+    !initFilter?.wears.applied && maxWearCount && setWearCountMax(maxWearCount);
   }, [maxWearCount]);
 
   useEffect(() => {
-    maxCost && setCostCountMax(maxCost);
+    !initFilter?.costs.applied && maxCost && setCostCountMax(maxCost);
   }, [maxCost]);
 
   const handleListItemPress = (type: FilterType) => {
@@ -101,17 +110,20 @@ export default function BottomSheetFilter({ onApply, initFavoriteFilter }: Botto
       selectedColors={selectedColors}
       selectedFabrics={selectedFabrics}
       selectedStores={selectedStores}
-      costSliderBounds={{ max: { costCountMax, setCostCountMax }, min: { costCountMin, setCostCountMin } }}
-      wearSliderBounds={{ max: { wearCountMax, setWearCountMax }, min: { wearCountMin, setWearCountMin } }}
+      costSliderBounds={{ max: { costCountMax, setCostCountMax, maxValue: maxCost }, min: { costCountMin, setCostCountMin, minValue: 0 } }}
+      wearSliderBounds={{
+        max: { wearCountMax, setWearCountMax, maxValue: maxWearCount },
+        min: { wearCountMin, setWearCountMin, minValue: 0 },
+      }}
       lastWorn={{ from: { date: lastWornFrom, onChange: setLastWornFrom }, to: { date: lastWornTo, onChange: setLastWornTo } }}
       boughtDate={{ from: { date: boughtFrom, onChange: setBoughtFrom }, to: { date: boughtTo, onChange: setBoughtTo } }}
     />,
     <FilterDetailView
       filterType={filterType}
       colors={{ selectedColors, setSelectedColors }}
-      brands={{ selectedBrands, setSelectedBrands }}
-      fabrics={{ selectedFabrics, setSelectedFabrics }}
-      stores={{ selectedStores, setSelectedStores }}
+      brands={{ allBrands, selectedBrands, setSelectedBrands }}
+      fabrics={{ allFabrics, selectedFabrics, setSelectedFabrics }}
+      stores={{ allStores, selectedStores, setSelectedStores }}
     />,
   ];
 

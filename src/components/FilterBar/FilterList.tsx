@@ -17,15 +17,16 @@ export interface FilterListProps {
   selectedFabrics: Array<string> | null;
   selectedStores: Array<string> | null;
   wearSliderBounds: {
-    max: { wearCountMax: number; setWearCountMax: (value: number) => void };
+    max: { wearCountMax: number; setWearCountMax: (value: number) => void; maxValue: number };
     min: {
       wearCountMin: number;
       setWearCountMin: (value: number) => void;
+      minValue: number;
     };
   };
   costSliderBounds: {
-    max: { costCountMax: number; setCostCountMax: (value: number) => void };
-    min: { costCountMin: number; setCostCountMin: (value: number) => void };
+    max: { costCountMax: number; setCostCountMax: (value: number) => void; maxValue: number };
+    min: { costCountMin: number; setCostCountMin: (value: number) => void; minValue: number };
   };
   lastWorn: { from: { date?: Date; onChange?: (value?: Date) => void }; to: { date?: Date; onChange?: (value?: Date) => void } };
   boughtDate: { from: { date?: Date; onChange?: (value?: Date) => void }; to: { date?: Date; onChange?: (value?: Date) => void } };
@@ -83,8 +84,8 @@ export default function FilterList({
           {i18n.t("item.wears")}
         </Text>
         <DigiMultiSlider
-          minValue={0}
-          maxValue={wearSliderBounds.max.wearCountMax}
+          minValue={wearSliderBounds.min.minValue}
+          maxValue={wearSliderBounds.max.maxValue}
           initMinValue={wearSliderBounds.min.wearCountMin}
           initMaxValue={wearSliderBounds.max.wearCountMax}
           onValueChange={(values) => {
@@ -103,8 +104,8 @@ export default function FilterList({
           {i18n.t("item.cost")}
         </Text>
         <DigiMultiSlider
-          minValue={0}
-          maxValue={costSliderBounds.max.costCountMax}
+          minValue={costSliderBounds.min.minValue}
+          maxValue={costSliderBounds.max.maxValue}
           initMinValue={costSliderBounds.min.costCountMin}
           initMaxValue={costSliderBounds.max.costCountMax}
           onValueChange={(values) => {

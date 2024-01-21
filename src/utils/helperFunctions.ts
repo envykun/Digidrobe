@@ -251,3 +251,10 @@ export const calculateOutfitContainerSize = ({ inset, gap }: ICalculateOutfitCon
   const itemImageHeight = itemImageWidth;
   return { outfitImageWidth, outfitImageHeight, itemImageWidth, itemImageHeight };
 };
+
+export const addOrRemoveToArray = (prev: Array<string>, item: string) => {
+  if (prev.includes(item)) {
+    return prev.filter((p) => p !== item);
+  }
+  return [...prev, item];
+};
