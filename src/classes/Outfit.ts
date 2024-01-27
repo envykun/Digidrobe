@@ -1,6 +1,7 @@
 import { IOutfit, ItemImagePreview, OutfitMap, PreparedForDatabaseOutfit } from "@Models/Outfit";
 import { Item } from "./Item";
-import { BaseCategory } from "@Database/constants";
+import { BaseCategories, BaseCategory } from "@Database/constants";
+import { pickRandomElement } from "@DigiUtils/helperFunctions";
 
 export class Outfit implements IOutfit {
   uuid: string;
@@ -156,5 +157,32 @@ export class Outfit implements IOutfit {
   public getAllImagesCombined() {
     const itemImages = this.getItemImageURLs();
     return [...(this.imageURL || []), ...(itemImages || [])];
+  }
+
+  public generateRandomOutfit(wardrobe: Array<Item>) {
+    this.items.clear();
+    Object.keys(BaseCategories)
+      .map(Number)
+      .map((key) => {
+        const randomItem = this.pickRandomItem(wardrobe, key as any as BaseCategory);
+        console.log("Generating...", randomItem);
+        if (randomItem) {
+          this.addItem(key as any as BaseCategory, randomItem);
+        }
+      });
+  }
+
+  private pickRandomItem(wardrobe: Array<Item>, baseCategory: BaseCategory): Item {
+    const wardrobeMap = wardrobe.reduce((map, item) => {
+      const key = item["baseCategory"];
+      if (map.has(key)) {
+        map.get(key)!.push(item);
+      } else {
+        map.set(key, [item]);
+      }
+      return map;
+    }, new Map<BaseCategory, Array<Item>>());
+    const wardrobeCategory = wardrobeMap.get(baseCategory);
+    return pickRandomElement(wardrobeCategory ?? []);
   }
 }

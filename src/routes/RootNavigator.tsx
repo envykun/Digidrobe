@@ -13,6 +13,7 @@ import OutfitDetails from "@Screens/OutfitDetails";
 import Outfits from "@Screens/Outfits";
 import Recent from "@Screens/Recent";
 import UserSettings from "@Screens/UserSettings";
+import SurpriseMe from "@Screens/SurpriseMe";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const headerOptions: NativeStackNavigationOptions = {
@@ -126,6 +127,14 @@ export default function RootNavigator() {
           options={({ route }) => ({
             ...headerOptions,
             title: i18n.t("screens.calendar"),
+          })}
+        />
+        <Stack.Screen
+          name="SurpriseMe"
+          component={SurpriseMe}
+          options={({ route }) => ({
+            ...headerOptions,
+            title: route.params?.title,
           })}
         />
       </Stack.Group>

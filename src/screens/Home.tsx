@@ -87,6 +87,7 @@ export default function Home() {
             <View style={styles.plannedOutfitBox}>
               <Text>You have no outfits planned.</Text>
               <DigiButton title="Plan now" variant="text" onPress={() => navigation.navigate("Root", { screen: "Outfitter" })} />
+              <DigiButton title="Surprise me!" variant="text" onPress={() => navigation.navigate("SurpriseMe")} />
             </View>
           )}
         </View>

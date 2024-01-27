@@ -19,6 +19,7 @@ export type RootStackParamList = {
   Recent: undefined;
   UserSettings: undefined;
   Calendar: undefined;
+  SurpriseMe: undefined;
   NotFound: undefined;
 };
 

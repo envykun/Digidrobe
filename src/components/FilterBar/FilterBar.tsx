@@ -45,7 +45,7 @@ export default function FilterBar({
     <>
       <LinearGradient colors={[Colors.primary, "white"]} style={{ alignItems: "center", zIndex: 4 }}>
         <View style={styles.container}>
-          <ScrollView horizontal contentContainerStyle={styles.filterBar}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterBar}>
             {children}
           </ScrollView>
         </View>

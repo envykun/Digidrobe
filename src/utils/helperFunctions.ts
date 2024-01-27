@@ -258,3 +258,7 @@ export const addOrRemoveToArray = (prev: Array<string>, item: string) => {
   }
   return [...prev, item];
 };
+
+export const pickRandomElement = <T>(array: Array<T>): T => {
+  return array[Math.floor(Math.random() * array.length)];
+};

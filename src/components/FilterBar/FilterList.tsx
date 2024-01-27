@@ -83,7 +83,7 @@ export default function FilterList({
         <Text numberOfLines={1} style={styles.headline}>
           {i18n.t("item.wears")}
         </Text>
-        <DigiMultiSlider
+        {/* <DigiMultiSlider
           minValue={wearSliderBounds.min.minValue}
           maxValue={wearSliderBounds.max.maxValue}
           initMinValue={wearSliderBounds.min.wearCountMin}
@@ -92,7 +92,7 @@ export default function FilterList({
             wearSliderBounds.min.setWearCountMin(values[0]);
             wearSliderBounds.max.setWearCountMax(values[1]);
           }}
-        />
+        /> */}
         <View style={styles.sliderInfo}>
           <Text>{wearSliderBounds.min.wearCountMin}x</Text>
           <Text>{wearSliderBounds.max.wearCountMax}x</Text>
@@ -103,7 +103,7 @@ export default function FilterList({
         <Text numberOfLines={1} style={styles.headline}>
           {i18n.t("item.cost")}
         </Text>
-        <DigiMultiSlider
+        {/* <DigiMultiSlider
           minValue={costSliderBounds.min.minValue}
           maxValue={costSliderBounds.max.maxValue}
           initMinValue={costSliderBounds.min.costCountMin}
@@ -112,7 +112,7 @@ export default function FilterList({
             costSliderBounds.min.setCostCountMin(values[0]);
             costSliderBounds.max.setCostCountMax(values[1]);
           }}
-        />
+        /> */}
         <View style={styles.sliderInfo}>
           <Text>{costSliderBounds.min.costCountMin}€</Text>
           <Text>{costSliderBounds.max.costCountMax}€</Text>
