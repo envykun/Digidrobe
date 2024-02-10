@@ -1,4 +1,12 @@
-import { Dispatch, SetStateAction, ReactNode, createContext, PropsWithChildren, useState } from "react";
+import { GenericBottomSheetItem } from "@Models/Generic";
+import {
+  Dispatch,
+  SetStateAction,
+  ReactNode,
+  createContext,
+  PropsWithChildren,
+  useState,
+} from "react";
 
 export interface IBottomSheetContext {
   isOpen: boolean;
@@ -9,27 +17,40 @@ export interface IBottomSheetContext {
   setContent: Dispatch<SetStateAction<ReactNode | undefined>>;
   title: string | undefined;
   setTitle: Dispatch<SetStateAction<string | undefined>>;
-  onPress: ((value?: string) => void) | undefined;
-  setOnPress: Dispatch<SetStateAction<((value?: string) => void) | undefined>>;
+  onPress: ((item?: GenericBottomSheetItem) => void) | undefined;
+  setOnPress: Dispatch<
+    SetStateAction<((value?: GenericBottomSheetItem) => void) | undefined>
+  >;
   showSearch: boolean;
   setShowSearch: Dispatch<SetStateAction<boolean>>;
-  selectedValues: Array<string>;
-  setSelectedValues: Dispatch<SetStateAction<Array<string>>>;
+  selectedValues: Array<GenericBottomSheetItem>;
+  setSelectedValues: Dispatch<SetStateAction<Array<GenericBottomSheetItem>>>;
   resetBottomSheet: () => void;
 }
 
-export const BottomSheetContext = createContext<IBottomSheetContext | null>(null);
+export const BottomSheetContext = createContext<IBottomSheetContext | null>(
+  null
+);
 
-export type BottomSheetContent = "Categories" | "Fabric" | "Color" | "BaseCategories" | string;
+export type BottomSheetContent =
+  | "Categories"
+  | "Fabric"
+  | "Color"
+  | "BaseCategories"
+  | string;
 
 export const BottomSheetContextProvider = ({ children }: PropsWithChildren) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [contentType, setContentType] = useState<BottomSheetContent>();
   const [content, setContent] = useState<ReactNode>();
-  const [onPress, setOnPress] = useState<((value?: string) => void) | undefined>();
+  const [onPress, setOnPress] = useState<
+    ((value?: GenericBottomSheetItem) => void) | undefined
+  >();
   const [title, setTitle] = useState<string>();
-  const [selectedValues, setSelectedValues] = useState<Array<string>>([]);
+  const [selectedValues, setSelectedValues] = useState<
+    Array<GenericBottomSheetItem>
+  >([]);
 
   const resetBottomSheet = () => {
     setIsOpen(false);
@@ -58,7 +79,11 @@ export const BottomSheetContextProvider = ({ children }: PropsWithChildren) => {
     resetBottomSheet,
   };
 
-  return <BottomSheetContext.Provider value={value}>{children}</BottomSheetContext.Provider>;
+  return (
+    <BottomSheetContext.Provider value={value}>
+      {children}
+    </BottomSheetContext.Provider>
+  );
 };
 
 export default BottomSheetContext;

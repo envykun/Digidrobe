@@ -55,6 +55,7 @@ export default function Calendar({ today, selectedDate, onChange }: CalendarProp
             horizontal
             pagingEnabled
             data={dates}
+            showsHorizontalScrollIndicator={false}
             initialNumToRender={100}
             onScrollToIndexFailed={(info) => {
               const wait = new Promise((resolve) => setTimeout(resolve, 500));

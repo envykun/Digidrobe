@@ -19,4 +19,14 @@ export const utils = (marginHorizontal?: DimensionValue) =>
       marginVertical: 8,
       marginHorizontal: marginHorizontal ?? 8,
     },
+    elevation: {
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22,
+      shadowRadius: 2.22,
+    },
   });

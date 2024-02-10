@@ -1,36 +1,52 @@
 import { useContext, useState } from "react";
 import { View, Text, StyleSheet, TouchableHighlight } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
+import BottomSheetContext, {
+  BottomSheetContent,
+} from "@Context/BottomSheetContext";
+import { GenericBottomSheetItem } from "@Models/Generic";
 
 export interface SelectProps {
   contentType?: BottomSheetContent;
-  onValueChange?: (value?: string) => void;
-  defaultValue?: string;
+  onValueChange?: (value?: GenericBottomSheetItem) => void;
+  defaultValue?: GenericBottomSheetItem;
 }
 
-export default function Select({ contentType, defaultValue, onValueChange }: SelectProps) {
+export default function Select({
+  contentType,
+  defaultValue,
+  onValueChange,
+}: SelectProps) {
   const bottomSheet = useContext(BottomSheetContext);
-  const [selectedValue, setSelectedValue] = useState<string | undefined>(defaultValue);
-
+  const [selectedValue, setSelectedValue] = useState<
+    GenericBottomSheetItem | undefined
+  >(defaultValue);
   const toggleOpen = () => {
     if (!bottomSheet) return;
     bottomSheet.setContentType(contentType);
     bottomSheet.setOnPress(() => handleItemSelect);
     bottomSheet.setIsOpen(true);
   };
-  const handleItemSelect = (i: string) => {
+  const handleItemSelect = (i: GenericBottomSheetItem) => {
+    console.log("III", i);
     onValueChange && onValueChange(i);
     setSelectedValue(i);
     bottomSheet?.resetBottomSheet();
   };
 
   return (
-    <View style={{ position: "relative", flex: 1, borderRadius: 12, overflow: "hidden" }}>
+    <View
+      style={{
+        position: "relative",
+        flex: 1,
+        borderRadius: 12,
+        overflow: "hidden",
+      }}
+    >
       <TouchableHighlight onPress={toggleOpen} underlayColor="#979797">
         <>
           <View style={styles.selectBox}>
-            <Text>{selectedValue}</Text>
+            <Text>{selectedValue?.label}</Text>
           </View>
           <View style={styles.iconStyle}>
             <Ionicons name="chevron-down" size={20} color="#7c7c7c" />

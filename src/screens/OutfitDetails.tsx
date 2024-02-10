@@ -7,7 +7,13 @@ import { formatTimeAgo } from "@DigiUtils/helperFunctions";
 import { useGet } from "@Hooks/useGet";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@Routes/Navigator.interface";
-import { View, StyleSheet, Text, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePickerInput from "@Components/Inputs/DateTimePickerInput";
 import { Outfit } from "@Classes/Outfit";
@@ -35,16 +41,24 @@ import DigiButton from "@Components/Button/DigiButton";
 import { deleteAlert } from "@DigiUtils/alertHelper";
 import DetailImage from "@Components/Image/DetailImage";
 
-type OutfitDetailsProps = NativeStackScreenProps<RootStackParamList, "OutfitDetails">;
+type OutfitDetailsProps = NativeStackScreenProps<
+  RootStackParamList,
+  "OutfitDetails"
+>;
 
-export default function OutfitDetails({ route, navigation }: OutfitDetailsProps) {
+export default function OutfitDetails({
+  route,
+  navigation,
+}: OutfitDetailsProps) {
   const outfit = route.params.outfit;
   const refresh = useReducer((x) => x + 1, 0)[1];
   outfit.refresh = refresh;
   const db = getDatabase();
   const bottomSheet = useContext(BottomSheetContext);
   const snack = useContext(SnackbarContext);
-  const { data: wardrobe, refetch: refetchWardrobe } = useGet(getWardrobeItems(db));
+  const { data: wardrobe, refetch: refetchWardrobe } = useGet(
+    getWardrobeItems(db)
+  );
 
   const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -64,7 +78,11 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
       navigation.setOptions({
         headerRight: ({ tintColor }: any) => (
           <TouchableOpacity onPress={() => handleSaveUpdatedOutfit(outfit)}>
-            <Ionicons name="checkmark-circle-outline" size={32} color={tintColor} />
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={32}
+              color={tintColor}
+            />
           </TouchableOpacity>
         ),
       });
@@ -83,7 +101,9 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
   const handleSaveUpdatedOutfit = async (currOutfit: Outfit) => {
     handleEdit(false);
     updateOutfit(db, currOutfit)
-      .then(() => snack && snack.setMessage(`Saved changes for ${currOutfit.name}.`))
+      .then(
+        () => snack && snack.setMessage(`Saved changes for ${currOutfit.name}.`)
+      )
       .catch((e) => snack && snack.setMessage(`There was an error: ${e}`))
       .finally(() => snack && snack.setIsOpen(true));
   };
@@ -118,7 +138,9 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
 
     bottomSheet.setContent(
       <FlatList
-        data={filteredData?.filter((item) => item.baseCategory === baseCategory)}
+        data={filteredData?.filter(
+          (item) => item.baseCategory === baseCategory
+        )}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{
@@ -128,6 +150,7 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
         }}
         renderItem={({ item }) => (
           <BottomSheetCard
+            id={item.uuid}
             twoColumn
             label={item.name}
             imageURL={item.getImage()}
@@ -168,7 +191,11 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
 
   return (
     <ScrollContainer isLoading={false}>
-      {editMode ? <OutfitItemPicker outfit={outfit} onPress={handleOpenBottomSheet} /> : <DetailImage image={outfit.imageURL} />}
+      {editMode ? (
+        <OutfitItemPicker outfit={outfit} onPress={handleOpenBottomSheet} />
+      ) : (
+        <DetailImage image={outfit.imageURL} />
+      )}
       <View style={styles.content}>
         <View style={styles.description}>
           <View style={styles.descriptionInner}>
@@ -182,7 +209,10 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
             ) : (
               <Text style={{ fontSize: 24 }}>{outfit.name}</Text>
             )}
-            <TouchableOpacity onPress={handleFavoritePress} style={{ paddingLeft: 16 }}>
+            <TouchableOpacity
+              onPress={handleFavoritePress}
+              style={{ paddingLeft: 16 }}
+            >
               <Ionicons
                 name={outfit.isBookmarked() ? "bookmark" : "bookmark-outline"}
                 size={28}
@@ -201,7 +231,9 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
         </View>
         <View style={utils(16).divider} />
         <View style={styles.details}>
-          <Text style={{ fontSize: 18, marginLeft: 8, marginBottom: 8 }}>Details</Text>
+          <Text style={{ fontSize: 18, marginLeft: 8, marginBottom: 8 }}>
+            Details
+          </Text>
           {Object.values(outfit.getOutfitStatistic()).map((stat) => (
             <Detail key={stat.label} {...stat} />
           ))}
@@ -212,13 +244,22 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
             detailInput={{
               defaultValue: outfit.tags,
               type: "multi-select",
-              inputProps: { onChange: (value) => value && outfit.addTags(value) },
+              inputProps: {
+                onChange: (value) => value && outfit.addTags(value),
+              },
             }}
           />
         </View>
         <View style={utils(16).divider} />
         {editMode ? (
-          <View style={{ marginVertical: 12, borderRadius: 80, overflow: "hidden", marginHorizontal: 16 }}>
+          <View
+            style={{
+              marginVertical: 12,
+              borderRadius: 80,
+              overflow: "hidden",
+              marginHorizontal: 16,
+            }}
+          >
             <ImageContainer
               defaultImage={outfit.imageURL}
               setImageCallback={(uri) => {
@@ -228,7 +269,9 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
           </View>
         ) : (
           <View style={{ marginVertical: 16 }}>
-            <Text style={{ fontSize: 18, marginLeft: 16, marginBottom: 8 }}>Planned</Text>
+            <Text style={{ fontSize: 18, marginLeft: 16, marginBottom: 8 }}>
+              Planned
+            </Text>
             {outfit.hasPlannedDates() ? (
               outfit
                 .getPlannedDatesPrettyfied()
@@ -242,7 +285,13 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
                   />
                 ))
             ) : (
-              <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 16 }}>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: 16,
+                }}
+              >
                 <Text>Nothing Planned.</Text>
               </View>
             )}
@@ -258,7 +307,13 @@ export default function OutfitDetails({ route, navigation }: OutfitDetailsProps)
             </View>
             <View style={utils(16).divider} />
             <View style={{ flex: 1, height: 80, width: "100%" }}>
-              <DigiButton title="Delete Outfit" variant="text" onPress={() => deleteAlert("Outfit", outfit.name, handleDeleteOutfit)} />
+              <DigiButton
+                title="Delete Outfit"
+                variant="text"
+                onPress={() =>
+                  deleteAlert("Outfit", outfit.name, handleDeleteOutfit)
+                }
+              />
             </View>
           </>
         )}

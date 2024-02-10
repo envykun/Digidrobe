@@ -3,15 +3,33 @@ import { BottomSheetItemProps } from "./BottomSheet.interface";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@Styles/colors";
 
-export default function BottomSheetItem({ label, onPress, selected = false, color }: BottomSheetItemProps) {
+export default function BottomSheetItem({
+  id,
+  label,
+  onPress,
+  selected = false,
+  color,
+}: BottomSheetItemProps) {
   const handlePress = () => {
-    onPress && onPress(label);
+    onPress && onPress({ id, label, hex: color });
   };
   return (
-    <TouchableOpacity style={{ justifyContent: "center", alignItems: "center", height: 40 }} onPress={handlePress}>
-      {color && <View style={[styles(color).colorBubble, styles(color).shadowProp]} />}
+    <TouchableOpacity
+      style={{ justifyContent: "center", alignItems: "center", height: 40 }}
+      onPress={handlePress}
+    >
+      {color && (
+        <View style={[styles(color).colorBubble, styles(color).shadowProp]} />
+      )}
       <Text style={{ fontSize: 16 }}>{label}</Text>
-      {selected && <Ionicons name="checkmark" color={Colors.primary} size={18} style={{ position: "absolute", right: "10%" }} />}
+      {selected && (
+        <Ionicons
+          name="checkmark"
+          color={Colors.primary}
+          size={18}
+          style={{ position: "absolute", right: "10%" }}
+        />
+      )}
     </TouchableOpacity>
   );
 }

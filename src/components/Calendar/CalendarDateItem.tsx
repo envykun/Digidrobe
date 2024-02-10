@@ -1,3 +1,4 @@
+import { utils } from "@Styles/global";
 import { Dimensions, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 
 interface CalendarDateItemProps {
@@ -20,7 +21,7 @@ export default function CalendarDateItem({
   width,
 }: CalendarDateItemProps) {
   return (
-    <View style={[styles.wrapper, { width: width }]}>
+    <View style={[styles.wrapper, { width: width }, utils().elevation]}>
       <TouchableHighlight onPress={onPress} style={styles.dateItem}>
         <View style={[styles.dateItem, selected && styles.selected, current && styles.current, past && !selected && styles.past]}>
           <Text style={[current && !selected && styles.currentText, past && !selected && styles.past]}>{date}</Text>
@@ -34,7 +35,6 @@ export default function CalendarDateItem({
 const styles = StyleSheet.create({
   wrapper: {
     paddingVertical: 8,
-    elevation: 2,
     alignItems: "center",
   },
   dateItem: {

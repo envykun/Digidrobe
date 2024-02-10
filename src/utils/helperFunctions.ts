@@ -1,6 +1,11 @@
+import { GenericBottomSheetItem } from "@Models/Generic";
 import { NavigationProp } from "@react-navigation/native";
 import { formatRelative, formatDistanceToNow } from "date-fns";
-import { Dimensions, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
+import {
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from "react-native";
 
 export const calculateCostPerWear = (cost: number, wear: number) => {
   return (cost / wear).toFixed(2);
@@ -211,7 +216,10 @@ const categoryTranslation: ICategoryTranslation = {
   },
 };
 
-export const mapPredefinedCategories = (id: keyof CategoryIDs, locale: "en" | "de") => {
+export const mapPredefinedCategories = (
+  id: keyof CategoryIDs,
+  locale: "en" | "de"
+) => {
   switch (locale) {
     case "de":
       return categoryTranslation.de[id];
@@ -229,12 +237,23 @@ export interface IHeaderOnScrollTransition {
   headerBackgroundColor?: string;
 }
 
-export const headerOnScrollTransition = ({ event, navigation, headerHeight, headerBackgroundColor }: IHeaderOnScrollTransition) => {
-  const headerOpacity = Math.min(Math.max(event.nativeEvent.contentOffset.y, 0) / headerHeight, 1.0) ?? 0.0;
+export const headerOnScrollTransition = ({
+  event,
+  navigation,
+  headerHeight,
+  headerBackgroundColor,
+}: IHeaderOnScrollTransition) => {
+  const headerOpacity =
+    Math.min(
+      Math.max(event.nativeEvent.contentOffset.y, 0) / headerHeight,
+      1.0
+    ) ?? 0.0;
   navigation.setOptions({
     headerStyle: {
       elevation: headerOpacity,
-      backgroundColor: headerBackgroundColor ? `rgba(${headerBackgroundColor},${headerOpacity})` : `rgba(255,255,255,${headerOpacity})`,
+      backgroundColor: headerBackgroundColor
+        ? `rgba(${headerBackgroundColor},${headerOpacity})`
+        : `rgba(255,255,255,${headerOpacity})`,
     },
     headerShadowVisible: headerOpacity == 1 ? true : false,
   });
@@ -244,12 +263,21 @@ export interface ICalculateOutfitContainerSize {
   inset: number;
   gap: number;
 }
-export const calculateOutfitContainerSize = ({ inset, gap }: ICalculateOutfitContainerSize) => {
-  const outfitImageWidth = (Dimensions.get("screen").width - 2 * inset - gap) / 2;
+export const calculateOutfitContainerSize = ({
+  inset,
+  gap,
+}: ICalculateOutfitContainerSize) => {
+  const outfitImageWidth =
+    (Dimensions.get("screen").width - 2 * inset - gap) / 2;
   const itemImageWidth = (outfitImageWidth - gap) / 2;
   const outfitImageHeight = itemImageWidth * 3 + 2 * gap;
   const itemImageHeight = itemImageWidth;
-  return { outfitImageWidth, outfitImageHeight, itemImageWidth, itemImageHeight };
+  return {
+    outfitImageWidth,
+    outfitImageHeight,
+    itemImageWidth,
+    itemImageHeight,
+  };
 };
 
 export const addOrRemoveToArray = (prev: Array<string>, item: string) => {
@@ -261,4 +289,19 @@ export const addOrRemoveToArray = (prev: Array<string>, item: string) => {
 
 export const pickRandomElement = <T>(array: Array<T>): T => {
   return array[Math.floor(Math.random() * array.length)];
+};
+
+export const getKeyByValue = <T>(object: any, value: T) => {
+  return Object.keys(object).find((key) => object[key] === value);
+};
+
+export const transformValueToBottomSheetItem = (
+  value: string | string[]
+): GenericBottomSheetItem | GenericBottomSheetItem[] => {
+  if (Array.isArray(value)) {
+    return value.map((v) => {
+      return { id: v, label: v };
+    });
+  }
+  return { id: value, label: value };
 };

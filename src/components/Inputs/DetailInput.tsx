@@ -1,12 +1,13 @@
-import { Text, View, StyleSheet, Switch } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import Input, { InputProps } from "./Input";
 import DateTimePickerInput from "./DateTimePickerInput";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import MultiSelectWithChips from "./MultiSelectWithChips";
-import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
+import BottomSheetContext from "@Context/BottomSheetContext";
 import MultiSelectWithColor from "./MultiSelectWithColor";
 import Select from "./Select";
-import { BaseCategories } from "@Database/constants";
+import { GenericBottomSheetItem } from "@Models/Generic";
+import { transformValueToBottomSheetItem } from "@DigiUtils/helperFunctions";
 
 export interface DetailInputProps {
   label: string;
@@ -15,20 +16,36 @@ export interface DetailInputProps {
   defaultValue?: string | string[];
 }
 
-export type InputType = "date" | "autocomplete" | "multi-select" | "multi-select-color" | "select" | "default";
+export type InputType =
+  | "date"
+  | "autocomplete"
+  | "multi-select"
+  | "multi-select-color"
+  | "select"
+  | "default";
 
-export default function DetailInput({ label, inputProps, type = "default", defaultValue, children }: PropsWithChildren<DetailInputProps>) {
-  const [selectedValues, setSelectedValues] = useState<Array<string>>(Array.isArray(defaultValue) ? defaultValue : []);
+export default function DetailInput({
+  label,
+  inputProps,
+  type = "default",
+  defaultValue,
+  children,
+}: PropsWithChildren<DetailInputProps>) {
+  const defaultValueParsed = defaultValue
+    ? transformValueToBottomSheetItem(defaultValue)
+    : defaultValue;
+  const [selectedValues, setSelectedValues] = useState<
+    GenericBottomSheetItem[]
+  >(Array.isArray(defaultValueParsed) ? defaultValueParsed : []);
   const bottomSheet = useContext(BottomSheetContext);
 
-  const handleMultiSelect = (value: string) => {
+  const handleMultiSelect = (value: GenericBottomSheetItem) => {
     setSelectedValues((old) => [...old, value]);
   };
 
-  const removeSelectedValue = (value: string) => {
-    setSelectedValues((oldValues) => oldValues.filter((v) => v !== value));
+  const removeSelectedValue = (id: string) => {
+    setSelectedValues((oldValues) => oldValues.filter((v) => v.id !== id));
   };
-
   const handleBottomSheet = () => {
     if (!bottomSheet) return;
     bottomSheet.setTitle(`Select ${label}...`);
@@ -40,7 +57,9 @@ export default function DetailInput({ label, inputProps, type = "default", defau
   };
 
   const handleDateChange = (value?: Date) => {
-    inputProps && inputProps.onChange && inputProps.onChange(value?.toISOString());
+    inputProps &&
+      inputProps.onChange &&
+      inputProps.onChange(value?.toISOString());
   };
 
   useEffect(() => {
@@ -53,23 +72,67 @@ export default function DetailInput({ label, inputProps, type = "default", defau
   const renderInput = (inputType?: InputType) => {
     switch (inputType) {
       case "date":
-        return <DateTimePickerInput onChange={handleDateChange} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
+        return (
+          <DateTimePickerInput
+            onChange={handleDateChange}
+            defaultValue={
+              !Array.isArray(defaultValue) ? defaultValue : undefined
+            }
+          />
+        );
       case "multi-select":
-        return <MultiSelectWithChips selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
+        return (
+          <MultiSelectWithChips
+            selectedValues={selectedValues}
+            onButtonPress={handleBottomSheet}
+            onChipPress={removeSelectedValue}
+          />
+        );
       case "multi-select-color":
-        return <MultiSelectWithColor selectedValues={selectedValues} onButtonPress={handleBottomSheet} onChipPress={removeSelectedValue} />;
+        return (
+          <MultiSelectWithColor
+            selectedValues={selectedValues}
+            onButtonPress={handleBottomSheet}
+            onChipPress={removeSelectedValue}
+          />
+        );
       case "autocomplete":
         return <Text>TODO: Add Autocomplete</Text>;
       case "select":
-        return <Select contentType={"BaseCategories"} defaultValue={inputProps?.defaultValue} onValueChange={inputProps?.onChange} />;
+        return (
+          <Select
+            contentType={"BaseCategories"}
+            defaultValue={
+              defaultValue && !Array.isArray(defaultValue)
+                ? { id: defaultValue, label: defaultValue }
+                : undefined
+            }
+            onValueChange={inputProps?.onChange}
+          />
+        );
       default:
-        return <Input {...inputProps} defaultValue={!Array.isArray(defaultValue) ? defaultValue : undefined} />;
+        return (
+          <Input
+            {...inputProps}
+            defaultValue={
+              !Array.isArray(defaultValue) ? defaultValue : undefined
+            }
+          />
+        );
     }
   };
 
   return (
     <View style={styles.detail}>
-      <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: "100", minWidth: "30%", maxWidth: "35%" }}>
+      <Text
+        numberOfLines={1}
+        style={{
+          fontSize: 16,
+          fontWeight: "100",
+          minWidth: "30%",
+          maxWidth: "35%",
+        }}
+      >
         {label}
       </Text>
       {children ?? renderInput(type)}

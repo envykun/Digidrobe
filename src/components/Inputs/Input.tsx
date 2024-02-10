@@ -1,18 +1,32 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TextInputProps, TouchableOpacity, Text, View } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@Styles/colors";
 
 export interface InputProps {
   placeholder?: string;
   textInputProps?: Partial<TextInputProps>;
-  defaultValue?: string;
+  defaultValue?: any;
   onChange?: (value?: any) => void;
   clearButton?: boolean;
   error?: string;
 }
 
-export default function Input({ placeholder, textInputProps, defaultValue, onChange, clearButton = false, error }: InputProps) {
+export default function Input({
+  placeholder,
+  textInputProps,
+  defaultValue,
+  onChange,
+  clearButton = false,
+  error,
+}: InputProps) {
   const [text, setText] = useState<string>(defaultValue ?? "");
 
   const handleChange = (text: string) => {
@@ -33,7 +47,10 @@ export default function Input({ placeholder, textInputProps, defaultValue, onCha
         }}
       />
       {clearButton && text && text !== "" && (
-        <TouchableOpacity onPress={() => handleChange("")} style={styles.iconStyle}>
+        <TouchableOpacity
+          onPress={() => handleChange("")}
+          style={styles.iconStyle}
+        >
           <Ionicons name="close-outline" size={28} color="black" />
         </TouchableOpacity>
       )}

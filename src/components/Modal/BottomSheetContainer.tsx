@@ -1,7 +1,14 @@
-import BottomSheetContext, { BottomSheetContent } from "@Context/BottomSheetContext";
+import BottomSheetContext, {
+  BottomSheetContent,
+} from "@Context/BottomSheetContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import BottomSheet from "./BottomSheet";
-import { getCategories, getDatabase, getFabrics, getTags } from "@Database/database";
+import {
+  getCategories,
+  getDatabase,
+  getFabrics,
+  getTags,
+} from "@Database/database";
 import { useGet } from "@Hooks/useGet";
 import { FlatList, Text, StyleSheet, View } from "react-native";
 import BottomSheetItem from "./BottomSheetItem";
@@ -12,14 +19,24 @@ import { BaseCategories } from "@Database/constants";
 export function BottomSheetContainer() {
   const bottomSheet = useContext(BottomSheetContext);
   const db = getDatabase();
-  const { data: categories, refetch: refetchCategories } = useGet(getCategories<GenericBottomSheetItem>(db));
-  const { data: fabrics, refetch: refetchFabrics } = useGet(getFabrics<GenericBottomSheetItem>(db));
-  const { data: tags, refetch: refetchTags } = useGet(getTags<GenericBottomSheetItem>(db));
+  const { data: categories, refetch: refetchCategories } = useGet(
+    getCategories<GenericBottomSheetItem>(db)
+  );
+  const { data: fabrics, refetch: refetchFabrics } = useGet(
+    getFabrics<GenericBottomSheetItem>(db)
+  );
+  const { data: tags, refetch: refetchTags } = useGet(
+    getTags<GenericBottomSheetItem>(db)
+  );
 
-  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(NamedBaseColors).map(([key, value]) => {
+  const mappedColors: Array<GenericBottomSheetItem> = Object.entries(
+    NamedBaseColors
+  ).map(([key, value]) => {
     return { id: key, label: key, hex: value };
   });
-  const mappedBaseCategories: Array<GenericBottomSheetItem> = Object.entries(BaseCategories).map(([key, value]) => {
+  const mappedBaseCategories: Array<GenericBottomSheetItem> = Object.entries(
+    BaseCategories
+  ).map(([key, value]) => {
     return { id: key, label: value };
   });
 
@@ -63,29 +80,44 @@ export function BottomSheetContainer() {
         break;
     }
 
-    data = data?.filter((i) => !bottomSheet?.selectedValues.includes(i.label));
-    data = search ? data?.filter((d) => d.label.toLowerCase().includes(search.toLowerCase())) : data;
-    data = type !== "Color" && search ? data?.concat({ id: search, label: search }) : data;
+    data = data?.filter(
+      (i) => !bottomSheet?.selectedValues.some((value) => value.id === i.id)
+    );
+    data = search
+      ? data?.filter((d) =>
+          d.label.toLowerCase().includes(search.toLowerCase())
+        )
+      : data;
+    data =
+      type !== "Color" && search
+        ? data?.concat({ id: search, label: search })
+        : data;
 
     return data;
   };
 
-  const handleBySearch = (value?: string) => {
-    bottomSheet?.onPress && bottomSheet?.onPress(value);
+  const handleBySearch = (item: GenericBottomSheetItem): void => {
+    bottomSheet?.onPress && bottomSheet?.onPress(item);
     handleCloseModal();
   };
 
   const renderList = (type?: BottomSheetContent) => {
     if (!type || !bottomSheet) return null;
     const data = handleData(bottomSheet.contentType, searchQuery);
+    console.log("DATA in Bottomsheet", data);
     return (
       <FlatList
         data={data}
         renderItem={({ item }) => (
           <BottomSheetItem
+            id={item.id}
             label={item.label}
-            onPress={item.label === searchQuery ? handleBySearch : bottomSheet.onPress}
-            selected={bottomSheet.selectedValues.includes(item.label)}
+            onPress={
+              item.label === searchQuery ? handleBySearch : bottomSheet.onPress
+            }
+            selected={bottomSheet.selectedValues.some(
+              (value) => value.id === item.id
+            )}
             color={item.hex}
           />
         )}
